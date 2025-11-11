@@ -106,14 +106,8 @@ log "✓ Geo database built"
 
 # 6. Start the dev server in the background
 log "Starting development server on port 3001 (with hot reload)..."
-# Log to both /tmp/umami-server.log and NITESHIFT_LOG_FILE for unified logging
-if [ "$LOG_FILE" = "/dev/stdout" ]; then
-  # If no NITESHIFT_LOG_FILE is set, just log to /tmp/umami-server.log
-  pnpm run dev > /tmp/umami-server.log 2>&1 &
-else
-  # If NITESHIFT_LOG_FILE is set, log to both locations
-  pnpm run dev > >(tee -a /tmp/umami-server.log >> "$LOG_FILE") 2>&1 &
-fi
+# Log dev server output to NITESHIFT_LOG_FILE (or stdout if not set)
+pnpm run dev >> "$LOG_FILE" 2>&1 &
 SERVER_PID=$!
 log "✓ Dev server started with PID $SERVER_PID"
 
@@ -129,8 +123,7 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
   ATTEMPT=$((ATTEMPT + 1))
   if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
     log_error "Dev server failed to start within 60 seconds"
-    log_error "Server logs:"
-    cat /tmp/umami-server.log
+    log_error "Check the log file for details: $LOG_FILE"
     kill $SERVER_PID 2>/dev/null || true
     exit 1
   fi
@@ -147,10 +140,8 @@ log "  Username: admin"
 log "  Password: umami"
 log ""
 log "Server PID: $SERVER_PID"
-if [ "$LOG_FILE" = "/dev/stdout" ]; then
-  log "Server logs: /tmp/umami-server.log"
-else
-  log "Server logs: /tmp/umami-server.log and $LOG_FILE"
+if [ "$LOG_FILE" != "/dev/stdout" ]; then
+  log "Server logs: $LOG_FILE"
 fi
 log ""
 log "Hot reload is enabled - changes will be reflected automatically"
