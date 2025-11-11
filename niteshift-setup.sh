@@ -61,42 +61,67 @@ if ! pnpm install --frozen-lockfile; then
 fi
 log "✓ Dependencies installed"
 
-# 5. Build the application
-# The build script includes:
+# 5. Build only what's needed for dev (skip production Next.js build)
+# For dev mode we need:
 # - check-env: validates environment variables
 # - build-db: generates Prisma client and builds database
 # - check-db: verifies database connection and applies migrations
-# - build-tracker: bundles tracker script
-# - build-geo: processes geographic data
-# - build-app: builds Next.js application
-log "Building application (this may take a few minutes)..."
-if ! pnpm run build; then
-  log_error "Build failed"
+# - build-tracker: bundles tracker script (needed for tracking functionality)
+# - build-geo: processes geographic data (needed for geo features)
+# We skip build-app (production Next.js build) since dev mode compiles on-the-fly
+log "Validating environment..."
+if ! pnpm run check-env; then
+  log_error "Environment validation failed"
   exit 1
 fi
-log "✓ Build completed successfully"
+log "✓ Environment validated"
 
-# 6. Database is ready (migrations applied during build)
+log "Building database client..."
+if ! pnpm run build-db; then
+  log_error "Database client build failed"
+  exit 1
+fi
+log "✓ Database client built"
+
+log "Checking database and applying migrations..."
+if ! pnpm run check-db; then
+  log_error "Database check failed"
+  exit 1
+fi
 log "✓ Database migrations applied"
 
-# 7. Start the application in the background
-log "Starting application on port 3000..."
-pnpm run start > /tmp/umami-server.log 2>&1 &
-SERVER_PID=$!
-log "✓ Server started with PID $SERVER_PID"
+log "Building tracker script..."
+if ! pnpm run build-tracker; then
+  log_error "Tracker build failed"
+  exit 1
+fi
+log "✓ Tracker script built"
 
-# 8. Wait for server to be ready
-log "Waiting for server to be ready..."
-MAX_ATTEMPTS=30
+log "Building geo database..."
+if ! pnpm run build-geo; then
+  log_error "Geo build failed"
+  exit 1
+fi
+log "✓ Geo database built"
+
+# 6. Start the dev server in the background
+log "Starting development server on port 3001 (with hot reload)..."
+pnpm run dev > /tmp/umami-server.log 2>&1 &
+SERVER_PID=$!
+log "✓ Dev server started with PID $SERVER_PID"
+
+# 7. Wait for dev server to be ready
+log "Waiting for dev server to be ready (this may take 30-60 seconds on first run)..."
+MAX_ATTEMPTS=60
 ATTEMPT=0
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/heartbeat | grep -q "200"; then
-    log "✓ Server is ready and responding"
+  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/api/heartbeat 2>/dev/null | grep -q "200"; then
+    log "✓ Dev server is ready and responding"
     break
   fi
   ATTEMPT=$((ATTEMPT + 1))
   if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-    log_error "Server failed to start within 30 seconds"
+    log_error "Dev server failed to start within 60 seconds"
     log_error "Server logs:"
     cat /tmp/umami-server.log
     kill $SERVER_PID 2>/dev/null || true
@@ -107,7 +132,7 @@ done
 
 log ""
 log "================================================================"
-log "Setup complete! Umami is running on http://localhost:3000"
+log "Setup complete! Umami dev server is running on http://localhost:3001"
 log "================================================================"
 log ""
 log "Default credentials:"
@@ -116,6 +141,8 @@ log "  Password: umami"
 log ""
 log "Server PID: $SERVER_PID"
 log "Server logs: /tmp/umami-server.log"
+log ""
+log "Hot reload is enabled - changes will be reflected automatically"
 log ""
 log "To stop the server: kill $SERVER_PID"
 log ""
