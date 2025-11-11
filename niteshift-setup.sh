@@ -92,8 +92,16 @@ setup_database() {
     if [[ -f "$SCRIPT_DIR/docker-compose.yml" ]] && check_command docker; then
       log "Starting PostgreSQL via docker-compose..."
 
+      # Create a docker-compose override to expose the database port
+      cat > "$SCRIPT_DIR/docker-compose.override.yml" <<EOF
+services:
+  db:
+    ports:
+      - "5432:5432"
+EOF
+
       # Start only the database service
-      docker compose -f "$SCRIPT_DIR/docker-compose.yml" up -d db || \
+      docker compose -f "$SCRIPT_DIR/docker-compose.yml" -f "$SCRIPT_DIR/docker-compose.override.yml" up -d db || \
         error "Failed to start database container"
 
       # Wait for database to be ready (with timeout)
