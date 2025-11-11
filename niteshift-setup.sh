@@ -106,7 +106,14 @@ log "✓ Geo database built"
 
 # 6. Start the dev server in the background
 log "Starting development server on port 3001 (with hot reload)..."
-pnpm run dev > /tmp/umami-server.log 2>&1 &
+# Log to both /tmp/umami-server.log and NITESHIFT_LOG_FILE for unified logging
+if [ "$LOG_FILE" = "/dev/stdout" ]; then
+  # If no NITESHIFT_LOG_FILE is set, just log to /tmp/umami-server.log
+  pnpm run dev > /tmp/umami-server.log 2>&1 &
+else
+  # If NITESHIFT_LOG_FILE is set, log to both locations
+  pnpm run dev > >(tee -a /tmp/umami-server.log >> "$LOG_FILE") 2>&1 &
+fi
 SERVER_PID=$!
 log "✓ Dev server started with PID $SERVER_PID"
 
@@ -140,7 +147,11 @@ log "  Username: admin"
 log "  Password: umami"
 log ""
 log "Server PID: $SERVER_PID"
-log "Server logs: /tmp/umami-server.log"
+if [ "$LOG_FILE" = "/dev/stdout" ]; then
+  log "Server logs: /tmp/umami-server.log"
+else
+  log "Server logs: /tmp/umami-server.log and $LOG_FILE"
+fi
 log ""
 log "Hot reload is enabled - changes will be reflected automatically"
 log ""
