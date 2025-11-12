@@ -1,8 +1,10 @@
+'use client';
+
 import { FloatingTooltip, Column, useTheme, ColumnProps } from '@umami/react-zen';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import { colord } from 'colord';
-import { useRouter } from 'next/navigation';
 import { ISO_COUNTRIES, MAP_FILE } from '@/lib/constants';
 import {
   useWebsiteMetricsQuery,
@@ -69,11 +71,16 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   };
 
   const handleClick = (code: string) => {
+    console.log('Country clicked:', code);
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
+    console.log('Country data:', country);
     if (country) {
       const url = updateParams({ country: `eq.${code}` });
+      console.log('Navigating to:', url);
       router.push(url);
+    } else {
+      console.log('No country data found for:', code);
     }
   };
 
