@@ -98,9 +98,14 @@ export function Funnel({ id, name, type, parameters, websiteId }) {
                     </Row>
                     <Row alignItems="center" gap>
                       {index > 0 && (
-                        <ChangeLabel value={-dropped}>
-                          {formatLongNumber(dropped)} ({Math.round(dropoff * 100)}%)
-                        </ChangeLabel>
+                        <>
+                          <ChangeLabel value={-dropped}>
+                            {formatLongNumber(dropped)}
+                          </ChangeLabel>
+                          <ChangeLabel value={-dropoff}>
+                            {Math.round(dropoff * 100)}%
+                          </ChangeLabel>
+                        </>
                       )}
                       <Icon>
                         <User />
