@@ -100,7 +100,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
-                    onClick={() => handleClick(code)}
+                    onDoubleClick={() => handleClick(code)}
                   />
                 );
               });
