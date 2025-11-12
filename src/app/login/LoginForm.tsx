@@ -10,6 +10,7 @@ import {
   Heading,
 } from '@umami/react-zen';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMessages, useUpdateQuery } from '@/components/hooks';
 import { setUser } from '@/store/app';
 import { setClientAuthToken } from '@/lib/client';
@@ -18,6 +19,7 @@ import { Logo } from '@/components/svg';
 export function LoginForm() {
   const { formatMessage, labels, getErrorMessage } = useMessages();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutateAsync, error } = useUpdateQuery('/auth/login');
 
   const handleSubmit = async (data: any) => {
@@ -54,11 +56,20 @@ export function LoginForm() {
         }
 
         try {
-          console.log(`[LoginForm.tsx] Step 3: Calling router.push('/websites')...`);
-          router.push('/websites');
-          console.log(`[LoginForm.tsx] ✓ Step 3 complete: Navigation initiated`);
+          console.log(`[LoginForm.tsx] Step 3: Resetting 'login' query cache...`);
+          // Reset the 'login' query to clear any stale error state
+          queryClient.resetQueries({ queryKey: ['login'] });
+          console.log(`[LoginForm.tsx] ✓ Step 3 complete: Query cache reset`);
         } catch (error) {
-          console.error(`[LoginForm.tsx] ✗ Step 3 FAILED: router.push threw error`, error);
+          console.error(`[LoginForm.tsx] ✗ Step 3 FAILED: queryClient.resetQueries threw error`, error);
+        }
+
+        try {
+          console.log(`[LoginForm.tsx] Step 4: Calling router.push('/websites')...`);
+          router.push('/websites');
+          console.log(`[LoginForm.tsx] ✓ Step 4 complete: Navigation initiated`);
+        } catch (error) {
+          console.error(`[LoginForm.tsx] ✗ Step 4 FAILED: router.push threw error`, error);
         }
 
         console.log(`[LoginForm.tsx] onSuccess callback completed`);
