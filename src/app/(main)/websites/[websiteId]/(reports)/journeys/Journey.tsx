@@ -21,9 +21,22 @@ export interface JourneyProps {
   steps: number;
   startStep?: string;
   endStep?: string;
+  isFunnelCreationMode?: boolean;
+  selectedFunnelSteps?: { columnIndex: number; type: string; value: string }[];
+  onFunnelNodeClick?: (columnIndex: number, type: string, value: string) => void;
+  onCancelFunnelCreation?: () => void;
 }
 
-export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) {
+export function Journey({
+  websiteId,
+  steps,
+  startStep,
+  endStep,
+  isFunnelCreationMode,
+  selectedFunnelSteps,
+  onFunnelNodeClick,
+  onCancelFunnelCreation,
+}: JourneyProps) {
   const [selectedNode, setSelectedNode] = useState(null);
   const [activeNode, setActiveNode] = useState(null);
   const { formatMessage, labels } = useMessages();
@@ -34,7 +47,13 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
     endStep,
   });
 
-  useEscapeKey(() => setSelectedNode(null));
+  useEscapeKey(() => {
+    if (isFunnelCreationMode) {
+      onCancelFunnelCreation?.();
+    } else {
+      setSelectedNode(null);
+    }
+  });
 
   const columns = useMemo(() => {
     if (!data) {
@@ -145,17 +164,49 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
   }, [data, selectedNode, activeNode]);
 
   const handleClick = (name: string, columnIndex: number, paths: any[]) => {
-    if (name !== selectedNode?.name || columnIndex !== selectedNode?.columnIndex) {
-      setSelectedNode({ name, columnIndex, paths });
+    if (isFunnelCreationMode) {
+      // Funnel creation mode - determine type based on name
+      const type = name.startsWith('/') ? 'path' : 'event';
+      onFunnelNodeClick?.(columnIndex, type, name);
     } else {
-      setSelectedNode(null);
+      // Normal selection mode
+      if (name !== selectedNode?.name || columnIndex !== selectedNode?.columnIndex) {
+        setSelectedNode({ name, columnIndex, paths });
+      } else {
+        setSelectedNode(null);
+      }
+      setActiveNode(null);
     }
-    setActiveNode(null);
+  };
+
+  const getNodeClassName = (name: string, columnIndex: number, selected: boolean, active: boolean) => {
+    const classes = [];
+
+    if (isFunnelCreationMode) {
+      const isFunnelSelected = selectedFunnelSteps?.some(
+        step => step.columnIndex === columnIndex && step.value === name,
+      );
+      const expectedColumn = selectedFunnelSteps?.length || 0;
+      const isSelectable = columnIndex === expectedColumn;
+
+      if (isFunnelSelected) {
+        classes.push(styles.funnelSelected);
+      } else if (isSelectable) {
+        classes.push(styles.funnelSelectable);
+      } else {
+        classes.push(styles.funnelDisabled);
+      }
+    } else {
+      if (selected) classes.push(styles.selected);
+      if (active) classes.push(styles.active);
+    }
+
+    return classNames(styles.node, ...classes);
   };
 
   return (
     <LoadingPanel data={data} isLoading={isLoading} error={error} height="100%">
-      <div className={styles.container}>
+      <div className={classNames(styles.container, { [styles.funnelCreationMode]: isFunnelCreationMode })}>
         <div className={styles.view}>
           {columns.map(({ visitorCount, nodes }, columnIndex) => {
             return (
@@ -199,21 +250,25 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
 
                       const dropped = 100 - remaining;
 
+                      const stepNumber = isFunnelCreationMode
+                        ? selectedFunnelSteps?.findIndex(
+                            s => s.columnIndex === columnIndex && s.value === name,
+                          ) + 1
+                        : undefined;
+
                       return (
                         <div
                           key={name}
                           className={styles.wrapper}
                           onMouseEnter={() =>
-                            selected && setActiveNode({ name, columnIndex, paths })
+                            !isFunnelCreationMode && selected && setActiveNode({ name, columnIndex, paths })
                           }
-                          onMouseLeave={() => selected && setActiveNode(null)}
+                          onMouseLeave={() => !isFunnelCreationMode && selected && setActiveNode(null)}
                         >
                           <div
-                            className={classNames(styles.node, {
-                              [styles.selected]: selected,
-                              [styles.active]: active,
-                            })}
+                            className={getNodeClassName(name, columnIndex, selected, active)}
                             onClick={() => handleClick(name, columnIndex, paths)}
+                            data-step-number={stepNumber > 0 ? stepNumber : undefined}
                           >
                             <Row alignItems="center" className={styles.name} title={name} gap>
                               <Icon>{name.startsWith('/') ? <File /> : <Lightning />}</Icon>
