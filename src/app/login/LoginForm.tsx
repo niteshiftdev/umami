@@ -21,12 +21,47 @@ export function LoginForm() {
   const { mutateAsync, error } = useUpdateQuery('/auth/login');
 
   const handleSubmit = async (data: any) => {
+    console.log(`[LoginForm.tsx] handleSubmit called`, {
+      username: data?.username,
+      isInIframe: typeof window !== 'undefined' && window.self !== window.top,
+    });
+
     await mutateAsync(data, {
       onSuccess: async ({ token, user }) => {
-        setClientAuthToken(token);
-        setUser(user);
+        console.log(`[LoginForm.tsx] onSuccess callback triggered`, {
+          hasToken: !!token,
+          hasUser: !!user,
+          userId: user?.id,
+          username: user?.username,
+          isInIframe: typeof window !== 'undefined' && window.self !== window.top,
+        });
 
-        router.push('/websites');
+        try {
+          console.log(`[LoginForm.tsx] Step 1: Calling setClientAuthToken...`);
+          setClientAuthToken(token);
+          console.log(`[LoginForm.tsx] ✓ Step 1 complete: Token set`);
+        } catch (error) {
+          console.error(`[LoginForm.tsx] ✗ Step 1 FAILED: setClientAuthToken threw error`, error);
+          throw error;
+        }
+
+        try {
+          console.log(`[LoginForm.tsx] Step 2: Calling setUser...`);
+          setUser(user);
+          console.log(`[LoginForm.tsx] ✓ Step 2 complete: User set`);
+        } catch (error) {
+          console.error(`[LoginForm.tsx] ✗ Step 2 FAILED: setUser threw error`, error);
+        }
+
+        try {
+          console.log(`[LoginForm.tsx] Step 3: Calling router.push('/websites')...`);
+          router.push('/websites');
+          console.log(`[LoginForm.tsx] ✓ Step 3 complete: Navigation initiated`);
+        } catch (error) {
+          console.error(`[LoginForm.tsx] ✗ Step 3 FAILED: router.push threw error`, error);
+        }
+
+        console.log(`[LoginForm.tsx] onSuccess callback completed`);
       },
     });
   };

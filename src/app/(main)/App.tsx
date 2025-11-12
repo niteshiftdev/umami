@@ -11,22 +11,53 @@ export function App({ children }) {
   const config = useConfig();
   const { pathname, router } = useNavigation();
 
+  console.log(`[App.tsx] Render`, {
+    hasUser: !!user,
+    userId: user?.id,
+    isLoading,
+    hasError: !!error,
+    errorMessage: error?.message,
+    hasConfig: !!config,
+    pathname,
+    isInIframe: typeof window !== 'undefined' && window.self !== window.top,
+    cloudMode: process.env.cloudMode,
+  });
+
   if (isLoading || !config) {
+    console.log(`[App.tsx] Showing loading state`, { isLoading, hasConfig: !!config });
     return <Loading placement="absolute" />;
   }
 
   if (error) {
+    console.error(`[App.tsx] Auth error detected - redirecting to login`, {
+      error,
+      errorStatus: error?.status,
+      errorMessage: error?.message,
+      cloudMode: process.env.cloudMode,
+      willUseWindowLocation: !!process.env.cloudMode,
+    });
+
     if (process.env.cloudMode) {
+      console.log(`[App.tsx] Redirecting via window.location.href (cloudMode)`);
       window.location.href = '/login';
     } else {
+      console.log(`[App.tsx] Redirecting via router.push`);
       router.push('/login');
     }
     return null;
   }
 
   if (!user || !config) {
+    console.log(`[App.tsx] No user or config - returning null`, {
+      hasUser: !!user,
+      hasConfig: !!config,
+    });
     return null;
   }
+
+  console.log(`[App.tsx] Rendering app content for authenticated user`);
+
+
 
   return (
     <Grid
