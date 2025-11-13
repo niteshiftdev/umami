@@ -265,3 +265,58 @@
 .column.active .line:not(.active) .segment:before {
   display: none;
 }
+
+/* Funnel creation mode styles */
+.funnelCreationMode {
+  cursor: help;
+  user-select: none;
+}
+
+.funnelCreationMode .node {
+  transition: all 0.2s ease;
+}
+
+.node.funnelSelected {
+  background-color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  color: var(--primary-font-color);
+  font-weight: bold;
+}
+
+.node.funnelSelected::before {
+  content: attr(data-step-number);
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--primary-font-color);
+  border: 3px solid var(--base-color-1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.node.funnelSelectable {
+  cursor: pointer;
+  border: 2px dashed var(--primary-color);
+  opacity: 1;
+}
+
+.node.funnelSelectable:hover {
+  background-color: var(--base-color-5);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.node.funnelDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
