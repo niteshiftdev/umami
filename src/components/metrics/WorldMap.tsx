@@ -66,7 +66,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
-  const handleDoubleClick = (code: string) => {
+  const handleClick = (code: string) => {
     if (code === 'AQ') return;
     const url = updateParams({ country: code });
     router.push(url);
@@ -100,7 +100,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
-                    onDoubleClick={() => handleDoubleClick(code)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
