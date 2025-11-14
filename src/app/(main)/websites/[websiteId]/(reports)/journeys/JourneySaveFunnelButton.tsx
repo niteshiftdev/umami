@@ -55,7 +55,7 @@ export function JourneySaveFunnelButton({
                 <X />
               </Icon>
             </div>
-            <Text>Creating Funnel</Text>
+            <Text>Creating Funnel ({selectedCount})</Text>
           </Row>
         </Button>
         <Modal>
