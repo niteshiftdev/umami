@@ -7,16 +7,36 @@ import { ensureArray } from '@/lib/utils';
 import redis from '@/lib/redis';
 import { getUser } from '@/queries/prisma/user';
 
+// Debug logger for authentication operations
 const log = debug('umami:auth');
 
+/**
+ * Extracts the Bearer token from the Authorization header
+ *
+ * @param request - The incoming HTTP request
+ * @returns The token string without the "Bearer " prefix, or undefined if not present
+ */
 export function getBearerToken(request: Request) {
   const auth = request.headers.get('authorization');
 
+  // Split "Bearer <token>" and return just the token part
   return auth?.split(' ')[1];
 }
 
+/**
+ * Checks authentication for an incoming request
+ *
+ * Supports multiple authentication methods:
+ * 1. Disabled auth mode (development) - returns hardcoded admin user
+ * 2. JWT bearer token authentication
+ * 3. Redis-based auth key lookup (for session management)
+ * 4. Share token authentication (for public sharing)
+ *
+ * @param request - The incoming HTTP request
+ * @returns Object containing token, authKey, shareToken, and user, or null if unauthorized
+ */
 export async function checkAuth(request: Request) {
-  // If auth is disabled, return admin user
+  // Development mode: bypass authentication and use admin user
   if (process.env.disableAuth) {
     const adminUser = await getUser('41e2b680-648e-4b09-bcd7-3e2b10c06264');
     if (adminUser) {
@@ -31,6 +51,7 @@ export async function checkAuth(request: Request) {
     }
   }
 
+  // Extract and parse authentication tokens
   const token = getBearerToken(request);
   const payload = parseSecureToken(token, secret());
   const shareToken = await parseShareToken(request);
@@ -38,9 +59,12 @@ export async function checkAuth(request: Request) {
   let user = null;
   const { userId, authKey } = payload || {};
 
+  // Attempt to load user from JWT payload
   if (userId) {
     user = await getUser(userId);
-  } else if (redis.enabled && authKey) {
+  }
+  // Fallback: Load user from Redis session store (if enabled)
+  else if (redis.enabled && authKey) {
     const key = await redis.client.get(authKey);
 
     if (key?.userId) {
@@ -50,11 +74,13 @@ export async function checkAuth(request: Request) {
 
   log({ token, payload, authKey, shareToken, user });
 
+  // Deny access if no valid user or share token found
   if (!user?.id && !shareToken) {
     log('User not authorized');
     return null;
   }
 
+  // Set admin flag based on user role
   if (user) {
     user.isAdmin = user.role === ROLES.admin;
   }

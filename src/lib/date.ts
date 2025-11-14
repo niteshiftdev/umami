@@ -40,6 +40,10 @@ import {
 import { getDateLocale } from '@/lib/lang';
 import { DateRange } from '@/lib/types';
 
+/**
+ * Time unit constants
+ * Used throughout the app for date range calculations and analytics grouping
+ */
 export const TIME_UNIT = {
   minute: 'minute',
   hour: 'hour',
@@ -49,6 +53,11 @@ export const TIME_UNIT = {
   year: 'year',
 };
 
+/**
+ * Date utility function mappings
+ * Provides a unified interface for date operations across different time units
+ * Each unit has: diff (calculate difference), add, subtract, start, and end functions
+ */
 export const DATE_FUNCTIONS = {
   minute: {
     diff: differenceInMinutes,
@@ -94,19 +103,31 @@ export const DATE_FUNCTIONS = {
   },
 };
 
+/**
+ * Standard date format strings for each time unit
+ * Used for consistent date formatting across charts and reports
+ */
 export const DATE_FORMATS = {
   minute: 'yyyy-MM-dd HH:mm',
   hour: 'yyyy-MM-dd HH',
   day: 'yyyy-MM-dd',
-  week: "yyyy-'W'II",
+  week: "yyyy-'W'II",      // ISO week format (e.g., "2025-W46")
   month: 'yyyy-MM',
   year: 'yyyy',
 };
 
+/**
+ * Timezone name mappings for legacy/deprecated IANA timezone IDs
+ * Maps old timezone names to their current canonical names
+ */
 const TIMEZONE_MAPPINGS: Record<string, string> = {
-  'Asia/Calcutta': 'Asia/Kolkata',
+  'Asia/Calcutta': 'Asia/Kolkata',  // Old colonial name -> modern name
 };
 
+/**
+ * Normalizes timezone identifiers to their canonical forms
+ * Handles legacy timezone names that have been renamed
+ */
 export function normalizeTimezone(timezone: string): string {
   return TIMEZONE_MAPPINGS[timezone] || timezone;
 }
