@@ -119,6 +119,38 @@
   background: var(--primary-color);
 }
 
+.node.funnelMode {
+  transition: all 0.2s ease;
+}
+
+.node.funnelMode:not(.selected):not(.notClickable):hover {
+  background: var(--base-color-5);
+  transform: scale(1.02);
+}
+
+.node.notClickable {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+.stepBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--base-color-1);
+  color: var(--base-color-12);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.node.selected .stepBadge {
+  background: var(--base-color-1);
+  color: var(--base-color-12);
+}
+
 .name {
   max-width: 200px;
 }
