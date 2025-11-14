@@ -26,7 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
-  const { updateParams } = useNavigation();
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -68,7 +68,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const handleClick = (code: string) => {
     if (code === 'AQ') return;
-    updateParams({ country: `eq.${code}` });
+    router.replace(updateParams({ country: `eq.${code}` }));
   };
 
   return (
