@@ -8,6 +8,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
 } from '@/components/hooks';
 import { formatLongNumber } from '@/lib/format';
 import { percentFilter } from '@/lib/filters';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, pathname, query } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleCountryClick = (code: string) => {
+    if (code === 'AQ') return;
+    const newQuery = { ...query, country: `eq.${code}` };
+    const queryString = Object.entries(newQuery)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join('&');
+    router.push(`${pathname}${queryString ? '?' + queryString : ''}`);
+  };
+
   return (
     <Column
       {...props}
@@ -86,12 +97,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: { outline: 'none', cursor: 'pointer' },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleCountryClick(code)}
                   />
                 );
               });
