@@ -55,7 +55,7 @@ export function JourneySaveFunnelButton({
                 <X />
               </Icon>
             </div>
-            <Text>Creating Funnel ({selectedCount} steps)</Text>
+            <Text>Creating Funnel</Text>
           </Row>
         </Button>
         <Modal>
@@ -92,9 +92,7 @@ export function JourneySaveFunnelButton({
             <X />
           </Icon>
         </div>
-        <Text>
-          {selectedCount > 0 ? `Creating Funnel (${selectedCount} steps)` : 'Creating Funnel'}
-        </Text>
+        <Text>Creating Funnel</Text>
       </Row>
     </Button>
   );
