@@ -71,7 +71,7 @@ log "✓ pnpm is available"
 # 4. Install dependencies
 if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
   log "Installing dependencies with pnpm..."
-  if ! pnpm install --frozen-lockfile; then
+  if ! pnpm install --package-import-method=copy --frozen-lockfile; then
     log_error "Failed to install dependencies"
     exit 1
   fi
