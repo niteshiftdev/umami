@@ -12,6 +12,7 @@ export function WebsiteControls({
   allowMonthFilter,
   allowDownload = false,
   allowCompare = false,
+  children,
 }: {
   websiteId: string;
   allowFilter?: boolean;
@@ -19,12 +20,14 @@ export function WebsiteControls({
   allowMonthFilter?: boolean;
   allowDownload?: boolean;
   allowCompare?: boolean;
+  children?: React.ReactNode;
 }) {
   return (
     <Column gap>
       <Grid columns={{ xs: '1fr', md: 'auto 1fr' }} gap>
-        <Row alignItems="center" justifyContent="flex-end">
-          {allowFilter ? <WebsiteFilterButton websiteId={websiteId} /> : <div />}
+        <Row alignItems="center" justifyContent="flex-end" gap>
+          {allowFilter && <WebsiteFilterButton websiteId={websiteId} />}
+          {children}
         </Row>
         <Row alignItems="center" justifyContent="flex-end">
           {allowDateFilter && (
