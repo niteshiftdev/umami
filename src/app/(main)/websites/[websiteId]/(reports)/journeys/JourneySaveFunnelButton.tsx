@@ -38,7 +38,7 @@ export function JourneySaveFunnelButton({
           <Icon>
             <Filter />
           </Icon>
-          <Text>Save as Funnel</Text>
+          <Text>Create Funnel</Text>
         </Row>
       </Button>
     );
