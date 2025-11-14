@@ -14,6 +14,11 @@ const NODE_HEIGHT = 60;
 const NODE_GAP = 10;
 const LINE_WIDTH = 3;
 
+export interface SelectedStep {
+  name: string;
+  columnIndex: number;
+}
+
 export interface JourneyProps {
   websiteId: string;
   startDate: Date;
@@ -21,9 +26,20 @@ export interface JourneyProps {
   steps: number;
   startStep?: string;
   endStep?: string;
+  selectionMode?: boolean;
+  selectedSteps?: SelectedStep[];
+  onStepSelect?: (name: string, columnIndex: number) => void;
 }
 
-export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) {
+export function Journey({
+  websiteId,
+  steps,
+  startStep,
+  endStep,
+  selectionMode = false,
+  selectedSteps = [],
+  onStepSelect,
+}: JourneyProps) {
   const [selectedNode, setSelectedNode] = useState(null);
   const [activeNode, setActiveNode] = useState(null);
   const { formatMessage, labels } = useMessages();
@@ -34,7 +50,11 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
     endStep,
   });
 
-  useEscapeKey(() => setSelectedNode(null));
+  useEscapeKey(() => {
+    if (!selectionMode) {
+      setSelectedNode(null);
+    }
+  });
 
   const columns = useMemo(() => {
     if (!data) {
@@ -145,12 +165,45 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
   }, [data, selectedNode, activeNode]);
 
   const handleClick = (name: string, columnIndex: number, paths: any[]) => {
-    if (name !== selectedNode?.name || columnIndex !== selectedNode?.columnIndex) {
-      setSelectedNode({ name, columnIndex, paths });
+    if (selectionMode) {
+      // In funnel creation mode
+      onStepSelect?.(name, columnIndex);
     } else {
-      setSelectedNode(null);
+      // Normal mode - existing behavior
+      if (name !== selectedNode?.name || columnIndex !== selectedNode?.columnIndex) {
+        setSelectedNode({ name, columnIndex, paths });
+      } else {
+        setSelectedNode(null);
+      }
+      setActiveNode(null);
     }
-    setActiveNode(null);
+  };
+
+  // Helper to check if a node is selected in funnel mode
+  const isFunnelStepSelected = (columnIndex: number, name: string) => {
+    return selectedSteps.some(step => step.columnIndex === columnIndex && step.name === name);
+  };
+
+  // Helper to get the step number for a selected funnel step
+  const getFunnelStepNumber = (columnIndex: number, name: string) => {
+    const index = selectedSteps.findIndex(
+      step => step.columnIndex === columnIndex && step.name === name,
+    );
+    return index !== -1 ? index + 1 : null;
+  };
+
+  // Helper to check if a node is clickable in funnel mode
+  const isNodeClickable = (columnIndex: number) => {
+    if (!selectionMode) return true;
+
+    // In funnel mode, can only select from the next available column
+    const maxSelectedColumn =
+      selectedSteps.length > 0 ? Math.max(...selectedSteps.map(s => s.columnIndex)) : -1;
+
+    // Can select from column 0 if nothing selected, or from the next column
+    return (
+      columnIndex === 0 || columnIndex === maxSelectedColumn + 1 || columnIndex <= maxSelectedColumn
+    );
   };
 
   return (
@@ -198,46 +251,58 @@ export function Journey({ websiteId, steps, startStep, endStep }: JourneyProps) 
                           : 0;
 
                       const dropped = 100 - remaining;
+                      const isFunnelSelected = isFunnelStepSelected(columnIndex, name);
+                      const funnelStepNumber = getFunnelStepNumber(columnIndex, name);
+                      const clickable = isNodeClickable(columnIndex);
 
                       return (
                         <div
                           key={name}
                           className={styles.wrapper}
                           onMouseEnter={() =>
-                            selected && setActiveNode({ name, columnIndex, paths })
+                            !selectionMode &&
+                            selected &&
+                            setActiveNode({ name, columnIndex, paths })
                           }
-                          onMouseLeave={() => selected && setActiveNode(null)}
+                          onMouseLeave={() => !selectionMode && selected && setActiveNode(null)}
                         >
                           <div
                             className={classNames(styles.node, {
-                              [styles.selected]: selected,
-                              [styles.active]: active,
+                              [styles.selected]: selectionMode ? isFunnelSelected : selected,
+                              [styles.active]: selectionMode ? false : active,
+                              [styles.funnelMode]: selectionMode,
+                              [styles.notClickable]: selectionMode && !clickable,
                             })}
-                            onClick={() => handleClick(name, columnIndex, paths)}
+                            onClick={() => clickable && handleClick(name, columnIndex, paths)}
+                            style={{ cursor: clickable ? 'pointer' : 'not-allowed' }}
                           >
                             <Row alignItems="center" className={styles.name} title={name} gap>
                               <Icon>{name.startsWith('/') ? <File /> : <Lightning />}</Icon>
                               <Text truncate>{name}</Text>
                             </Row>
                             <div className={styles.count} title={nodeCount}>
-                              <TooltipTrigger
-                                delay={0}
-                                isDisabled={columnIndex === 0 || (selectedNode && !selected)}
-                              >
-                                <Focusable>
-                                  <div>{formatLongNumber(nodeCount)}</div>
-                                </Focusable>
-                                <Tooltip placement="top" offset={20} showArrow>
-                                  <Text transform="lowercase" color="ruby">
-                                    {`${dropped}% ${formatMessage(labels.dropoff)}`}
-                                  </Text>
-                                  <Column>
-                                    <Text transform="lowercase">
-                                      {`${remaining}% ${formatMessage(labels.conversion)}`}
+                              {selectionMode && isFunnelSelected ? (
+                                <div className={styles.stepBadge}>{funnelStepNumber}</div>
+                              ) : (
+                                <TooltipTrigger
+                                  delay={0}
+                                  isDisabled={columnIndex === 0 || (selectedNode && !selected)}
+                                >
+                                  <Focusable>
+                                    <div>{formatLongNumber(nodeCount)}</div>
+                                  </Focusable>
+                                  <Tooltip placement="top" offset={20} showArrow>
+                                    <Text transform="lowercase" color="ruby">
+                                      {`${dropped}% ${formatMessage(labels.dropoff)}`}
                                     </Text>
-                                  </Column>
-                                </Tooltip>
-                              </TooltipTrigger>
+                                    <Column>
+                                      <Text transform="lowercase">
+                                        {`${remaining}% ${formatMessage(labels.conversion)}`}
+                                      </Text>
+                                    </Column>
+                                  </Tooltip>
+                                </TooltipTrigger>
+                              )}
                             </div>
                             {columnIndex < columns.length &&
                               lines.map(([fromIndex, nodeIndex], i) => {
