@@ -41,12 +41,12 @@ export function PropControl({
 
       {type === 'select' && options && (
         <Select
-          value={value}
-          onChange={e => onChange(e.target.value)}
+          selectedKey={String(value)}
+          onSelectionChange={(key) => onChange(String(key))}
           style={{ minWidth: '150px' }}
         >
           {options.map(opt => (
-            <ListItem key={opt.value} id={opt.value}>
+            <ListItem key={opt.value} id={String(opt.value)}>
               {opt.label}
             </ListItem>
           ))}
