@@ -19,10 +19,6 @@ export function DesignSystemPage() {
       <PageHeader title="Design System" />
 
       <Column gap="6" paddingX="6">
-        <Heading size="6">
-          Explore and interact with all components in the Umami design system
-        </Heading>
-
         <Tabs>
           <TabList>
             <Tab id="buttons">Buttons</Tab>
