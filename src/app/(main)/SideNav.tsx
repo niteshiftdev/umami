@@ -9,7 +9,7 @@ import {
   SidebarProps,
   ThemeButton,
 } from '@umami/react-zen';
-import { Globe, LinkIcon, Grid2x2, PanelLeft } from '@/components/icons';
+import { Globe, LinkIcon, Grid2x2, PanelLeft, Palette } from '@/components/icons';
 import { Logo } from '@/components/svg';
 import { useMessages, useNavigation, useGlobalState } from '@/components/hooks';
 import { NavButton } from '@/components/input/NavButton';
@@ -41,6 +41,12 @@ export function SideNav(props: SidebarProps) {
       label: formatMessage(labels.pixels),
       path: '/pixels',
       icon: <Grid2x2 />,
+    },
+    {
+      id: 'design-system',
+      label: 'Design System',
+      path: '/design-system',
+      icon: <Palette />,
     },
   ];
 
