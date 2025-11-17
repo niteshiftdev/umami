@@ -25,50 +25,50 @@ export function DesignSystemPage() {
 
         <Tabs>
           <TabList>
-            <Tab>Buttons</Tab>
-            <Tab>Layout</Tab>
-            <Tab>Forms</Tab>
-            <Tab>Modals</Tab>
-            <Tab>Navigation</Tab>
-            <Tab>Data Display</Tab>
-            <Tab>Typography</Tab>
-            <Tab>Feedback</Tab>
-            <Tab>Styles</Tab>
+            <Tab id="buttons">Buttons</Tab>
+            <Tab id="layout">Layout</Tab>
+            <Tab id="forms">Forms</Tab>
+            <Tab id="modals">Modals</Tab>
+            <Tab id="navigation">Navigation</Tab>
+            <Tab id="data-display">Data Display</Tab>
+            <Tab id="typography">Typography</Tab>
+            <Tab id="feedback">Feedback</Tab>
+            <Tab id="styles">Styles</Tab>
           </TabList>
 
-          <TabPanel>
+          <TabPanel id="buttons">
             <ButtonsShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="layout">
             <LayoutShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="forms">
             <FormsShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="modals">
             <ModalsShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="navigation">
             <NavigationShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="data-display">
             <DataDisplayShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="typography">
             <TypographyShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="feedback">
             <FeedbackShowcase />
           </TabPanel>
 
-          <TabPanel>
+          <TabPanel id="styles">
             <StylesShowcase />
           </TabPanel>
         </Tabs>
