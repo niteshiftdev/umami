@@ -27,15 +27,50 @@ export function ModalsShowcase() {
     <Column gap="8" paddingY="6">
       <ShowcaseSection
         title="Basic Modal"
-        description="Standard modal dialog"
-        code={`<DialogTrigger>
+        description="Standard modal dialog with various placements"
+        code={`import { DialogTrigger, Modal, Dialog, Button } from '@umami/react-zen';
+
+// Center modal (most common)
+<DialogTrigger>
   <Button>Open Modal</Button>
   <Modal placement="center">
     <Dialog title="Modal Title">
-      Content goes here
+      <Column gap="4">
+        <Text>Modal content goes here</Text>
+        <Row justifyContent="flex-end" gap="3">
+          <Button variant="outline">Cancel</Button>
+          <Button variant="primary">Confirm</Button>
+        </Row>
+      </Column>
     </Dialog>
   </Modal>
-</DialogTrigger>`}
+</DialogTrigger>
+
+// Side panel (right/left)
+<Modal placement="right">
+  <Dialog title="Settings">
+    {/* Settings form */}
+  </Dialog>
+</Modal>
+
+// Bottom sheet (mobile-friendly)
+<Modal placement="bottom">
+  <Dialog title="Options">
+    {/* Options list */}
+  </Dialog>
+</Modal>
+
+// Fullscreen
+<Modal placement="fullscreen">
+  <Dialog title="Full View">
+    {/* Full content */}
+  </Dialog>
+</Modal>
+
+// Dismissable modal (click outside to close)
+<Modal placement="center" isDismissable>
+  <Dialog>{/* Content */}</Dialog>
+</Modal>`}
       >
         <Row gap="3" wrap="wrap">
           <DialogTrigger>

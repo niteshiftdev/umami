@@ -15,8 +15,35 @@ export function LayoutShowcase() {
     <Column gap="8" paddingY="6">
       <ShowcaseSection
         title="Row"
-        description="Horizontal flexbox layout"
-        code={`<Row gap="${gap}" justifyContent="${justifyContent}" alignItems="${alignItems}">...</Row>`}
+        description="Horizontal flexbox layout - the most common layout component"
+        code={`// Basic horizontal layout
+<Row gap="3">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</Row>
+
+// Space between items
+<Row justifyContent="space-between" alignItems="center">
+  <Text>Left side</Text>
+  <Button>Right side</Button>
+</Row>
+
+// Center content
+<Row justifyContent="center" alignItems="center" minHeight="200px">
+  <Loading />
+</Row>
+
+// Responsive gap
+<Row gap={{ xs: '2', md: '4', lg: '6' }}>
+  <Box>Item 1</Box>
+  <Box>Item 2</Box>
+</Row>
+
+// Wrap items
+<Row gap="3" wrap="wrap">
+  {items.map(item => <Card key={item.id}>{item.name}</Card>)}
+</Row>`}
       >
         <Column gap="6">
           <Column gap="3" padding="4" backgroundColor="2" borderRadius="2">

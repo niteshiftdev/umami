@@ -81,6 +81,30 @@ export function ButtonsShowcase() {
       <ShowcaseSection
         title="All Button Variants"
         description="Complete set of button variants"
+        code={`// Primary - Main call-to-action
+<Button variant="primary" onPress={handleSave}>
+  Save Changes
+</Button>
+
+// Outline - Secondary actions
+<Button variant="outline" onPress={handleCancel}>
+  Cancel
+</Button>
+
+// Quiet - Tertiary actions, less emphasis
+<Button variant="quiet" onPress={handleLearnMore}>
+  Learn More
+</Button>
+
+// Danger - Destructive actions
+<Button variant="danger" onPress={handleDelete}>
+  Delete Item
+</Button>
+
+// Zero - Completely unstyled for custom use
+<Button variant="zero" onPress={handleCustom}>
+  Custom Styled Button
+</Button>`}
       >
         <Row gap="3" wrap="wrap">
           <Button variant="primary">Primary</Button>
@@ -94,6 +118,17 @@ export function ButtonsShowcase() {
       <ShowcaseSection
         title="Button Sizes"
         description="All available button sizes"
+        code={`// Available sizes: xs, sm, md (default), lg, xl
+<Button size="xs">Extra Small</Button>
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
+<Button size="xl">Extra Large</Button>
+
+// Combine with variants
+<Button variant="primary" size="lg">
+  Large Primary Button
+</Button>`}
       >
         <Row gap="3" wrap="wrap" alignItems="center">
           <Button size="xs">Extra Small</Button>
@@ -106,8 +141,36 @@ export function ButtonsShowcase() {
 
       <ShowcaseSection
         title="Loading Button"
-        description="Button with loading state"
-        code='<LoadingButton isLoading={isLoading}>Submit</LoadingButton>'
+        description="Button with loading state for async operations"
+        code={`const [isLoading, setIsLoading] = useState(false);
+
+const handleSubmit = async () => {
+  setIsLoading(true);
+  try {
+    await apiCall();
+    // Success handling
+  } catch (error) {
+    // Error handling
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+<LoadingButton
+  isLoading={isLoading}
+  onPress={handleSubmit}
+>
+  Submit Form
+</LoadingButton>
+
+// Disabled while loading
+<LoadingButton
+  isLoading={isLoading}
+  isDisabled={isLoading}
+  variant="outline"
+>
+  Save Draft
+</LoadingButton>`}
       >
         <Column gap="3">
           <PropControl
@@ -127,11 +190,28 @@ export function ButtonsShowcase() {
 
       <ShowcaseSection
         title="Copy Button"
-        description="Button that copies value to clipboard"
-        code='<CopyButton value="Text to copy" />'
+        description="Button that copies value to clipboard with visual feedback"
+        code={`// Copy a simple value
+<CopyButton value="Hello, World!">
+  Copy Text
+</CopyButton>
+
+// Copy API key or token
+<CopyButton value="sk_test_1234567890abcdef">
+  Copy API Key
+</CopyButton>
+
+// Custom timeout (default: 2000ms)
+<CopyButton value="https://example.com" timeout={3000}>
+  Copy URL
+</CopyButton>
+
+// The button shows a checkmark briefly after copying`}
       >
         <Row gap="3">
           <CopyButton value="Hello, World!">Copy Text</CopyButton>
+          <CopyButton value="sk_test_1234567890abcdef">Copy API Key</CopyButton>
+          <CopyButton value="https://umami.is">Copy URL</CopyButton>
         </Row>
       </ShowcaseSection>
     </Column>

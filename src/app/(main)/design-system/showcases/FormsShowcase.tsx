@@ -35,14 +35,42 @@ export function FormsShowcase() {
     <Column gap="8" paddingY="6">
       <ShowcaseSection
         title="Complete Form"
-        description="Full form with validation and submission"
-        code={`<Form onSubmit={handleSubmit}>
-  <FormField name="email" label="Email" rules={{ required: true }}>
-    <TextField />
-  </FormField>
-  <FormButtons>
-    <FormSubmitButton>Submit</FormSubmitButton>
-  </FormButtons>
+        description="Full form with validation and submission using React Hook Form"
+        code={`import { Form, FormField, TextField, FormButtons, FormSubmitButton } from '@umami/react-zen';
+
+// Form automatically handles React Hook Form setup
+<Form onSubmit={(data) => {
+  console.log(data); // { name: "...", email: "..." }
+  // Handle form submission
+}}>
+  <Column gap="4">
+    <FormField
+      name="name"
+      label="Name"
+      rules={{ required: 'Name is required' }}
+    >
+      <TextField placeholder="Enter your name" />
+    </FormField>
+
+    <FormField
+      name="email"
+      label="Email"
+      rules={{
+        required: 'Email is required',
+        pattern: {
+          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i,
+          message: 'Invalid email address'
+        }
+      }}
+    >
+      <TextField placeholder="email@example.com" />
+    </FormField>
+
+    <FormButtons>
+      <FormResetButton variant="outline">Reset</FormResetButton>
+      <FormSubmitButton>Submit</FormSubmitButton>
+    </FormButtons>
+  </Column>
 </Form>`}
       >
         <Form onSubmit={data => alert(JSON.stringify(data, null, 2))}>
@@ -70,7 +98,32 @@ export function FormsShowcase() {
       <ShowcaseSection
         title="Text Fields"
         description="Text input variations"
-        code='<TextField placeholder="Enter text" />'
+        code={`// Basic text field
+<TextField
+  placeholder="Enter text"
+  onChange={(e) => setValue(e.target.value)}
+/>
+
+// Read-only field
+<TextField value="Read-only value" isReadOnly />
+
+// Disabled field
+<TextField placeholder="Disabled" isDisabled />
+
+// Textarea
+<TextField
+  placeholder="Multi-line text"
+  asTextArea
+  resize="vertical"
+  rows={4}
+/>
+
+// With copy button
+<TextField
+  value="text-to-copy"
+  allowCopy
+  isReadOnly
+/>`}
       >
         <Column gap="4">
           <TextField placeholder="Default text field" />
@@ -82,8 +135,25 @@ export function FormsShowcase() {
 
       <ShowcaseSection
         title="Search Field"
-        description="Search input with debounce"
-        code='<SearchField value={value} onSearch={handleSearch} delay={600} />'
+        description="Search input with automatic debounce - perfect for filtering"
+        code={`const [searchValue, setSearchValue] = useState('');
+
+// onSearch triggers after delay (default: 600ms)
+<SearchField
+  value={searchValue}
+  onSearch={(value) => {
+    setSearchValue(value);
+    // Perform search/filter operation
+    filterResults(value);
+  }}
+  placeholder="Type to search..."
+  delay={300} // Custom delay in milliseconds
+/>
+
+// Use with DataGrid for table filtering
+<DataGrid query={query} allowSearch>
+  {(data) => <DataTable data={data.data}>...</DataTable>}
+</DataGrid>`}
       >
         <Column gap="3">
           <SearchField
@@ -103,10 +173,40 @@ export function FormsShowcase() {
       <ShowcaseSection
         title="Select Dropdown"
         description="Select component with options"
-        code={`<Select value={value} onChange={handleChange}>
-  <ListItem id="1">Option 1</ListItem>
-  <ListItem id="2">Option 2</ListItem>
-</Select>`}
+        code={`const [value, setValue] = useState('option1');
+
+<Select
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+>
+  <ListItem id="option1">First Option</ListItem>
+  <ListItem id="option2">Second Option</ListItem>
+  <ListItem id="option3">Third Option</ListItem>
+</Select>
+
+// With search functionality
+<Select
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  allowSearch
+  searchValue={searchTerm}
+  onSearch={setSearchTerm}
+>
+  {filteredOptions.map(opt => (
+    <ListItem key={opt.id} id={opt.id}>
+      {opt.label}
+    </ListItem>
+  ))}
+</Select>
+
+// In a form
+<FormField name="country" label="Country">
+  <Select>
+    <ListItem id="us">United States</ListItem>
+    <ListItem id="uk">United Kingdom</ListItem>
+    <ListItem id="ca">Canada</ListItem>
+  </Select>
+</FormField>`}
       >
         <Column gap="3">
           <Select value={selectValue} onChange={e => setSelectValue(e.target.value)}>
