@@ -209,9 +209,12 @@ class DialRegistry {
 
   /**
    * Notify registry listeners (for overlay UI updates)
+   * Deferred to avoid React "setState during render" errors
    */
   private notifyRegistryListeners(): void {
-    this.registryListeners.forEach(listener => listener());
+    queueMicrotask(() => {
+      this.registryListeners.forEach(listener => listener());
+    });
   }
 
   /**
