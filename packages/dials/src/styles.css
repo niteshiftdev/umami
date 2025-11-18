@@ -1,0 +1,308 @@
+/**
+ * Styles for dials overlay and controls
+ */
+
+/* Control base styles */
+.dial-control {
+  padding: 12px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.control-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.control-header label {
+  font-weight: 500;
+  font-size: 13px;
+  color: #333;
+  flex: 1;
+}
+
+.control-description {
+  font-size: 11px;
+  color: #666;
+  display: block;
+  margin-top: 2px;
+}
+
+.reset-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.reset-button:hover {
+  color: #333;
+}
+
+.control-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Color control */
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+  gap: 6px;
+}
+
+.color-preset {
+  width: 32px;
+  height: 32px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.color-preset:hover {
+  transform: scale(1.1);
+  border-color: #666;
+}
+
+.color-preset.active {
+  border-color: #000;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #000;
+}
+
+.color-current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.color-value {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #666;
+}
+
+.color-custom {
+  margin-top: 4px;
+}
+
+.custom-toggle {
+  width: 100%;
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.custom-toggle:hover {
+  background: #f5f5f5;
+}
+
+.custom-input {
+  display: flex;
+  gap: 4px;
+}
+
+.custom-input input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.custom-input button {
+  padding: 6px 12px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.custom-input button:last-child {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+/* Spacing control */
+.spacing-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 6px;
+}
+
+.spacing-option {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.spacing-option:hover {
+  border-color: #999;
+}
+
+.spacing-option.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.spacing-custom input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Variant control */
+.variant-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.variant-option {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.variant-option:hover {
+  border-color: #999;
+}
+
+.variant-option.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+/* Boolean control */
+.boolean-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.toggle-option {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.toggle-option:hover {
+  border-color: #999;
+}
+
+.toggle-option.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+/* Number control */
+.number-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 6px;
+}
+
+.number-option {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.number-option:hover {
+  border-color: #999;
+}
+
+.number-option.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.number-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-slider input[type='range'] {
+  flex: 1;
+}
+
+.slider-value {
+  font-size: 12px;
+  color: #666;
+  min-width: 60px;
+  text-align: right;
+}
+
+.number-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.number-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.number-unit {
+  font-size: 12px;
+  color: #666;
+}

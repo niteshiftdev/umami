@@ -462,6 +462,241 @@ export default function MyPage() {
 7. **TypeScript**: Leverage type inference - the codebase has strong typing
 8. **Component library first**: Always check if `@umami/react-zen` has what you need before writing custom UI
 
+## Niteshift Dials SDK
+
+**New capability for design prototyping!** The Dials SDK allows you to expose design parameters as runtime-adjustable "dials" that users can tweak via an overlay UI. This gives designers and PMs fine-grained control without requiring code changes.
+
+### When to Use Dials
+
+Use dials when:
+- Making design changes with subjective choices (colors, spacing, typography, icons)
+- You're unsure of the exact value but can provide good defaults
+- Changes involve design system tokens (colors from palette, spacing scale)
+- User might want to experiment with variations
+- Creating layout alternatives or component variants
+- Toggling features or UI sections (A/B testing, experimental features)
+
+**Key principle**: The coding agent decides what should be adjustable, but users have final control over values.
+
+### Design System Manifest
+
+The `.niteshift-manifest` file in the project root defines available design tokens:
+- Colors (primary, base, accent, semantic)
+- Spacing scale (4px to 128px)
+- Typography (fonts, sizes, weights)
+- Border radius, shadows
+
+Reference these in dial configs to provide users with design system-aligned options.
+
+### Available Dial Types
+
+#### Color Dials
+For any color value (backgrounds, text, borders, etc.):
+```typescript
+import { useDynamicColor } from '@niteshift/dials';
+
+const bgColor = useDynamicColor('hero-background', {
+  label: 'Hero Background Color',
+  description: 'Background color for the hero section',
+  group: 'Hero Section',
+  default: '#1a1a1a',
+  options: ['#1a1a1a', '#2d2d2d', '#404040', '#525252'], // From design system
+  allowCustom: true  // Allows custom hex input
+});
+
+<div style={{ backgroundColor: bgColor }}>...</div>
+```
+
+#### Spacing Dials
+For padding, margin, gap, dimensions:
+```typescript
+import { useDynamicSpacing } from '@niteshift/dials';
+
+const padding = useDynamicSpacing('card-padding', {
+  label: 'Card Padding',
+  group: 'Card Component',
+  default: '1.5rem',
+  options: ['0.5rem', '1rem', '1.5rem', '2rem', '3rem'],
+  allowCustom: true
+});
+
+<div style={{ padding }}>...</div>
+```
+
+#### Variant Dials
+For discrete choices (layouts, styles, chart types):
+```typescript
+import { useDynamicVariant } from '@niteshift/dials';
+
+const layout = useDynamicVariant('dashboard-layout', {
+  label: 'Dashboard Layout',
+  group: 'Dashboard',
+  default: 'grid',
+  options: ['grid', 'list', 'compact'] as const
+});
+
+{layout === 'grid' && <GridView />}
+{layout === 'list' && <ListView />}
+{layout === 'compact' && <CompactView />}
+```
+
+#### Boolean Dials
+For toggles, feature flags, show/hide:
+```typescript
+import { useDynamicBoolean } from '@niteshift/dials';
+
+const showDelta = useDynamicBoolean('show-metrics-delta', {
+  label: 'Show Change Indicators',
+  description: 'Display +/- changes in metrics',
+  default: true,
+  trueLabel: 'Visible',
+  falseLabel: 'Hidden',
+  group: 'Metrics Bar'
+});
+
+{showDelta && <DeltaIndicator value={change} />}
+```
+
+#### Number Dials
+For numeric values with constraints:
+```typescript
+import { useDynamicNumber } from '@niteshift/dials';
+
+const chartHeight = useDynamicNumber('chart-height', {
+  label: 'Chart Height',
+  default: 400,
+  min: 200,
+  max: 800,
+  step: 50,
+  unit: 'px',
+  options: [300, 400, 500, 600], // Preset options
+  group: 'Chart'
+});
+
+<Chart height={chartHeight} />
+```
+
+### Advanced Use Cases
+
+**Layout Controls:**
+```typescript
+const columns = useDynamicVariant('metrics-columns', {
+  label: 'Metrics Layout',
+  default: '4',
+  options: ['2', '3', '4', '6'] as const,
+  group: 'Dashboard'
+});
+
+<Grid columns={Number(columns)}>
+  {metrics.map(m => <MetricCard key={m.id} {...m} />)}
+</Grid>
+```
+
+**Chart Type Selection:**
+```typescript
+const chartType = useDynamicVariant('analytics-chart', {
+  label: 'Visualization Type',
+  default: 'line',
+  options: ['line', 'bar', 'area'] as const,
+  group: 'Analytics'
+});
+
+{chartType === 'line' && <LineChart data={data} />}
+{chartType === 'bar' && <BarChart data={data} />}
+{chartType === 'area' && <AreaChart data={data} />}
+```
+
+**Feature Flags:**
+```typescript
+const showSparklines = useDynamicBoolean('show-sparklines', {
+  label: 'Show Sparklines',
+  default: false,
+  group: 'Metrics Display'
+});
+
+<MetricsBar data={metrics} showSparklines={showSparklines} />
+```
+
+**Icon Selection:**
+```typescript
+const emptyIcon = useDynamicVariant('empty-state-icon', {
+  label: 'Empty State Icon',
+  default: 'inbox',
+  options: ['inbox', 'folder', 'archive', 'alert'] as const,
+  group: 'Empty States'
+});
+
+const icons = { inbox: <Inbox />, folder: <Folder />, archive: <Archive />, alert: <Alert /> };
+<EmptyState icon={icons[emptyIcon]} />
+```
+
+### Best Practices
+
+1. **Use semantic IDs**: e.g., `'hero-background'` not `'color-1'`
+2. **Provide design system options first**: Always include tokens from `.niteshift-manifest`
+3. **Group related dials**: Use the `group` property to organize by component/section
+4. **Add helpful labels**: Make labels clear for non-technical users
+5. **Set sensible defaults**: Choose the best option; users can refine later
+6. **Reference manifest colors**: Pull from design system categories:
+   ```typescript
+   // Colors from .niteshift-manifest
+   options: ['#147af3', '#2680eb', '#0090ff', '#3e63dd'] // Primary colors
+   ```
+
+### Communicating with Users
+
+After creating dials, tell the user:
+> "I've made [X, Y, Z] adjustable via design dials. Press **Cmd/Ctrl+K** to open the dials panel and fine-tune these values. You can select from design system options or enter custom values."
+
+### Accessing the Overlay
+
+- **Keyboard shortcut**: `Cmd/Ctrl+K` toggles the dials overlay
+- **Location**: Bottom-right floating panel
+- **Features**:
+  - Search/filter dials
+  - Grouped by component/section
+  - Reset individual dials or all at once
+  - Values persist across hot reloads (localStorage)
+
+### Examples from Umami
+
+**WebsitePage with dynamic chart:**
+```typescript
+const chartHeight = useDynamicNumber('website-chart-height', {
+  label: 'Chart Height',
+  default: 520,
+  options: [400, 520, 640, 760],
+  allowCustom: true,
+  unit: 'px',
+  group: 'Website Analytics'
+});
+
+<Panel minHeight={`${chartHeight}px`}>
+  <WebsiteChart websiteId={websiteId} />
+</Panel>
+```
+
+**Dashboard with layout options:**
+```typescript
+const layout = useDynamicVariant('dashboard-layout', {
+  label: 'Board Layout',
+  default: 'grid',
+  options: ['grid', 'list', 'masonry'] as const,
+  group: 'Dashboard'
+});
+
+{layout === 'grid' && <GridLayout boards={boards} />}
+{layout === 'list' && <ListView boards={boards} />}
+{layout === 'masonry' && <MasonryLayout boards={boards} />}
+```
+
+### Implementation Notes
+
+- Dials are already integrated into the app via `DialsProvider` in `src/app/Providers.tsx`
+- The overlay (`DialsOverlay`) is automatically rendered
+- Values are persisted to localStorage and survive hot reloads
+- No additional setup required - just import and use the hooks!
+
 ## Project Architecture
 
 ### Directory Structure
