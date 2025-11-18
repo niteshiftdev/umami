@@ -38,22 +38,6 @@ export function NumberControl({ id, value, config, onChange, onReset }: NumberCo
       </div>
 
       <div className="control-body">
-        {/* Preset options if provided */}
-        {config.options && config.options.length > 0 && (
-          <div className="number-options">
-            {config.options.map(num => (
-              <button
-                key={num}
-                className={`number-option ${value === num ? 'active' : ''}`}
-                onClick={() => onChange(num)}
-              >
-                {num}
-                {config.unit}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Slider for range */}
         {hasRange && (
           <div className="number-slider">
@@ -65,10 +49,20 @@ export function NumberControl({ id, value, config, onChange, onReset }: NumberCo
               value={value}
               onChange={handleSliderChange}
             />
-            <span className="slider-value">
-              {value}
-              {config.unit}
-            </span>
+            <div className="slider-labels">
+              <span>
+                {config.min}
+                {config.unit}
+              </span>
+              <span className="slider-value">
+                {value}
+                {config.unit}
+              </span>
+              <span>
+                {config.max}
+                {config.unit}
+              </span>
+            </div>
           </div>
         )}
 

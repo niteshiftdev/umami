@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import type { ColorDialConfig } from '../types';
+import { designManifest } from '@/config/niteshift-manifest';
 
 export interface ColorControlProps {
   id: string;
@@ -13,9 +14,35 @@ export interface ColorControlProps {
   onReset: () => void;
 }
 
+// Helper to get color name from design system
+function getColorName(hex: string): string | null {
+  const normalizedHex = hex.toLowerCase();
+
+  // Check accent colors
+  if (designManifest.colors.accent.values) {
+    for (const [name, color] of Object.entries(designManifest.colors.accent.values)) {
+      if (color.toLowerCase() === normalizedHex) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+      }
+    }
+  }
+
+  // Check semantic colors
+  if (designManifest.colors.semantic.values) {
+    for (const [name, color] of Object.entries(designManifest.colors.semantic.values)) {
+      if (color.toLowerCase() === normalizedHex) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+      }
+    }
+  }
+
+  return null;
+}
+
 export function ColorControl({ id, value, config, onChange, onReset }: ColorControlProps) {
   const [showCustom, setShowCustom] = useState(false);
   const [customValue, setCustomValue] = useState(value);
+  const colorName = getColorName(value);
 
   const handlePresetClick = (color: string) => {
     onChange(color);
@@ -40,22 +67,25 @@ export function ColorControl({ id, value, config, onChange, onReset }: ColorCont
         {/* Preset colors */}
         {config.options && config.options.length > 0 && (
           <div className="color-presets">
-            {config.options.map(color => (
-              <button
-                key={color}
-                className={`color-preset ${value === color ? 'active' : ''}`}
-                style={{ backgroundColor: color }}
-                onClick={() => handlePresetClick(color)}
-                title={color}
-              />
-            ))}
+            {config.options.map(color => {
+              const name = getColorName(color);
+              return (
+                <button
+                  key={color}
+                  className={`color-preset ${value === color ? 'active' : ''}`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handlePresetClick(color)}
+                  title={name || color}
+                />
+              );
+            })}
           </div>
         )}
 
         {/* Current value display */}
         <div className="color-current">
           <div className="color-swatch" style={{ backgroundColor: value }} />
-          <span className="color-value">{value}</span>
+          <span className="color-value">{colorName || value}</span>
         </div>
 
         {/* Custom color input */}
