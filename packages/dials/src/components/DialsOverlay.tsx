@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { Gauge } from 'lucide-react';
 import { getDialRegistry } from '../registry';
 import { ColorControl } from '../controls/ColorControl';
 import { SpacingControl } from '../controls/SpacingControl';
@@ -35,12 +36,33 @@ export interface DialsOverlayProps {
 export function DialsOverlay({
   defaultVisible = true,
   toggleKey = 'k',
-  position = 'bottom-right',
+  position = 'bottom-left',
 }: DialsOverlayProps) {
   const [isVisible, setIsVisible] = useState(defaultVisible);
   const [searchTerm, setSearchTerm] = useState('');
   const [dials, setDials] = useState<DialRegistration[]>([]);
+  const [hasNextOverlay, setHasNextOverlay] = useState(false);
   const registry = getDialRegistry();
+
+  // Detect Next.js error overlay
+  useEffect(() => {
+    const checkNextOverlay = () => {
+      // Next.js error overlay has specific identifiers
+      const nextjsOverlay =
+        document.querySelector('nextjs-portal') ||
+        document.querySelector('[data-nextjs-dialog-overlay]') ||
+        document.querySelector('[data-nextjs-toast]');
+      setHasNextOverlay(!!nextjsOverlay);
+    };
+
+    // Check on mount and set up observer
+    checkNextOverlay();
+
+    const observer = new MutationObserver(checkNextOverlay);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Subscribe to registry changes
   useEffect(() => {
@@ -111,6 +133,9 @@ export function DialsOverlay({
     }
   };
 
+  // Calculate bottom position based on Next.js overlay presence
+  const bottomPosition = hasNextOverlay ? '140px' : '20px';
+
   if (!isVisible) {
     return (
       <button
@@ -119,7 +144,9 @@ export function DialsOverlay({
         title={`Show Dials (${toggleKey === 'k' ? 'Cmd/Ctrl+K' : toggleKey})`}
         style={{
           position: 'fixed',
-          [position.includes('bottom') ? 'bottom' : 'top']: '20px',
+          [position.includes('bottom') ? 'bottom' : 'top']: position.includes('bottom')
+            ? bottomPosition
+            : '20px',
           [position.includes('right') ? 'right' : 'left']: '20px',
           width: '48px',
           height: '48px',
@@ -129,13 +156,13 @@ export function DialsOverlay({
           color: '#fff',
           fontSize: '20px',
           cursor: 'pointer',
-          zIndex: 999999,
+          zIndex: 9999999, // Very high to be above everything
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        🎛️
+        <Gauge size={24} />
       </button>
     );
   }
@@ -145,7 +172,9 @@ export function DialsOverlay({
       className="dials-overlay"
       style={{
         position: 'fixed',
-        [position.includes('bottom') ? 'bottom' : 'top']: '20px',
+        [position.includes('bottom') ? 'bottom' : 'top']: position.includes('bottom')
+          ? bottomPosition
+          : '20px',
         [position.includes('right') ? 'right' : 'left']: '20px',
         width: '380px',
         maxHeight: '80vh',
@@ -153,7 +182,7 @@ export function DialsOverlay({
         border: '1px solid #ddd',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        zIndex: 999999,
+        zIndex: 9999999, // Very high to be above everything
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'system-ui, -apple-system, sans-serif',

@@ -57,7 +57,7 @@ export function Providers({ children }) {
           <QueryClientProvider client={client}>
             <DialsProvider manifest={designManifest}>
               <ErrorBoundary>{children}</ErrorBoundary>
-              <DialsOverlay defaultVisible={false} toggleKey="k" position="bottom-right" />
+              <DialsOverlay defaultVisible={false} toggleKey="k" position="bottom-left" />
             </DialsProvider>
           </QueryClientProvider>
         </MessagesProvider>
