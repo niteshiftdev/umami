@@ -60,7 +60,7 @@ export const labels = defineMessages({
   transferWebsite: { id: 'label.transfer-website', defaultMessage: 'Transfer website' },
   deleteReport: { id: 'label.delete-report', defaultMessage: 'Delete report' },
   reset: { id: 'label.reset', defaultMessage: 'Reset' },
-  addWebsite: { id: 'label.add-website', defaultMessage: 'Add website' },
+  addWebsite: { id: 'label.add-website', defaultMessage: 'Yeet a new website into the void' },
   addMember: { id: 'label.add-member', defaultMessage: 'Add member' },
   editMember: { id: 'label.edit-member', defaultMessage: 'Edit member' },
   removeMember: { id: 'label.remove-member', defaultMessage: 'Remove member' },
