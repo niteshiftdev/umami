@@ -8,159 +8,85 @@ import { OverviewAltRealtimePreview } from './OverviewAltRealtimePreview';
 import { OverviewAltTopContent } from './OverviewAltTopContent';
 import { OverviewAltEvents } from './OverviewAltEvents';
 import { OverviewAltWorldMap } from './OverviewAltWorldMap';
-import {
-  useDynamicVariant,
-  useDynamicNumber,
-  useDynamicBoolean,
-  useDynamicSpacing,
-} from '@niteshift/dials';
+import { useDynamicVariant, useDynamicColor, useDynamicNumber } from '@niteshift/dials';
 
 export function OverviewAltPage({ websiteId }: { websiteId: string }) {
-  // Layout Controls
-  const metricsLayout = useDynamicVariant('metrics-layout', {
-    label: 'Metrics Layout',
-    description: 'Display metrics in a grid or compact row',
-    default: 'grid',
-    options: ['grid', 'row'] as const,
-    group: 'Overview Alt - Layout',
-  });
-
-  const showRealtimePreview = useDynamicBoolean('show-realtime-preview', {
-    label: 'Show Realtime Activity',
-    description: 'Display live visitor activity at the top',
-    default: true,
-    trueLabel: 'Visible',
-    falseLabel: 'Hidden',
-    group: 'Overview Alt - Sections',
-  });
-
-  const showEvents = useDynamicBoolean('show-events', {
-    label: 'Show Top Events',
-    description: 'Display most popular events',
-    default: true,
-    trueLabel: 'Visible',
-    falseLabel: 'Hidden',
-    group: 'Overview Alt - Sections',
-  });
-
-  const showTopContent = useDynamicBoolean('show-top-content', {
-    label: 'Show Top Content Section',
-    description: 'Display top pages and sources section',
-    default: true,
-    trueLabel: 'Visible',
-    falseLabel: 'Hidden',
-    group: 'Overview Alt - Sections',
-  });
-
-  const showWorldMap = useDynamicBoolean('show-world-map', {
-    label: 'Show World Map',
-    description: 'Display geographic distribution',
-    default: true,
-    trueLabel: 'Visible',
-    falseLabel: 'Hidden',
-    group: 'Overview Alt - Sections',
-  });
-
-  // Chart Controls
-  const chartHeight = useDynamicNumber('chart-height', {
-    label: 'Chart Height',
-    description: 'Height of the main analytics chart',
-    default: 400,
-    min: 200,
-    max: 800,
-    step: 50,
-    unit: 'px',
-    options: [300, 400, 500, 600],
-    group: 'Overview Alt - Chart',
-  });
-
-  const chartPadding = useDynamicSpacing('chart-padding', {
-    label: 'Chart Padding',
-    description: 'Internal padding of chart panel',
-    default: '24px',
-    options: ['12px', '16px', '24px', '32px', '48px'],
-    group: 'Overview Alt - Chart',
-  });
-
-  // Spacing Controls
-  const sectionGap = useDynamicSpacing('section-gap', {
-    label: 'Section Spacing',
-    description: 'Gap between major sections',
-    default: '24px',
-    options: ['12px', '16px', '24px', '32px', '48px'],
-    group: 'Overview Alt - Layout',
-  });
-
-  // Page Styling Controls
-  const pageMaxWidth = useDynamicVariant('page-max-width', {
-    label: 'Page Max Width',
-    description: 'Maximum width constraint for page content',
-    default: 'none',
-    options: ['none', '1200px', '1400px', '1600px', '1800px'] as const,
-    group: 'Overview Alt - Layout',
-  });
-
-  const chartBorderRadius = useDynamicVariant('chart-border-radius', {
-    label: 'Chart Panel Radius',
-    description: 'Corner rounding of chart panel',
+  // Border Treatment Controls
+  const borderRadius = useDynamicVariant('panel-border-radius', {
+    label: 'Border Radius',
+    description: 'Corner rounding for all panels',
     default: '8px',
-    options: ['2px', '4px', '8px', '16px'] as const,
-    group: 'Overview Alt - Chart',
+    options: ['0px', '2px', '4px', '8px', '12px', '16px', '24px'] as const,
+    group: 'Border Treatment',
   });
 
-  const bottomGridGap = useDynamicSpacing('bottom-grid-gap', {
-    label: 'Bottom Grid Spacing',
-    description: 'Gap between events and world map',
-    default: '24px',
-    options: ['12px', '16px', '24px', '32px', '48px'],
-    group: 'Overview Alt - Layout',
+  const borderWidth = useDynamicNumber('panel-border-width', {
+    label: 'Border Width',
+    description: 'Thickness of panel borders',
+    default: 1,
+    min: 0,
+    max: 4,
+    step: 1,
+    unit: 'px',
+    options: [0, 1, 2, 3, 4],
+    group: 'Border Treatment',
   });
+
+  const borderColor = useDynamicColor('panel-border-color', {
+    label: 'Border Color',
+    description: 'Color of panel borders',
+    default: 'var(--base-border-color)',
+    options: [
+      'var(--base-border-color)',
+      '#e0e0e0',
+      '#d0d0d0',
+      '#b0b0b0',
+      '#404040',
+      '#303030',
+      '#3e63dd',
+      '#30a46c',
+    ],
+    allowCustom: true,
+    group: 'Border Treatment',
+  });
+
+  const borderStyle = useDynamicVariant('panel-border-style', {
+    label: 'Border Style',
+    description: 'Style of panel borders',
+    default: 'solid',
+    options: ['solid', 'dashed', 'dotted', 'none'] as const,
+    group: 'Border Treatment',
+  });
+
+  const panelStyle = {
+    borderRadius,
+    border: borderStyle === 'none' ? 'none' : `${borderWidth}px ${borderStyle} ${borderColor}`,
+  };
 
   return (
-    <Column
-      gap
-      style={{
-        gap: sectionGap,
-        maxWidth: pageMaxWidth === 'none' ? undefined : pageMaxWidth,
-        margin: pageMaxWidth !== 'none' ? '0 auto' : undefined,
-        width: '100%',
-      }}
-    >
+    <Column gap="3">
       <WebsiteControls websiteId={websiteId} />
 
-      {showRealtimePreview && <OverviewAltRealtimePreview websiteId={websiteId} />}
+      <OverviewAltRealtimePreview websiteId={websiteId} panelStyle={panelStyle} />
 
-      <OverviewAltMetrics websiteId={websiteId} layout={metricsLayout} />
+      <OverviewAltMetrics websiteId={websiteId} panelStyle={panelStyle} />
 
-      <Panel
-        style={{
-          minHeight: `${chartHeight}px`,
-          padding: chartPadding,
-          borderRadius: chartBorderRadius,
-        }}
-      >
+      <Panel style={panelStyle}>
         <OverviewAltChart websiteId={websiteId} />
       </Panel>
 
-      {showTopContent && <OverviewAltTopContent websiteId={websiteId} />}
+      <OverviewAltTopContent websiteId={websiteId} panelStyle={panelStyle} />
 
-      <Grid
-        columns={{ xs: '1fr', lg: showEvents && showWorldMap ? '1fr 1fr' : '1fr' }}
-        gap={bottomGridGap}
-      >
-        {showEvents && (
-          <Panel>
-            <Heading size="2" marginBottom="4">
-              Top Events
-            </Heading>
-            <OverviewAltEvents websiteId={websiteId} />
-          </Panel>
-        )}
-        {showWorldMap && (
-          <Panel padding="0">
-            <OverviewAltWorldMap websiteId={websiteId} />
-          </Panel>
-        )}
+      <Grid columns={{ xs: '1fr', lg: '1fr 1fr' }} gap="3">
+        <Panel style={panelStyle}>
+          <Heading size="2" marginBottom="4">
+            Top Events
+          </Heading>
+          <OverviewAltEvents websiteId={websiteId} />
+        </Panel>
+        <Panel padding="0" style={panelStyle}>
+          <OverviewAltWorldMap websiteId={websiteId} />
+        </Panel>
       </Grid>
     </Column>
   );
