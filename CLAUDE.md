@@ -480,13 +480,19 @@ Use dials when:
 
 ### Design System Manifest
 
-The `.niteshift-manifest` file in the project root defines available design tokens:
+The design system manifest is defined in `src/config/niteshift-manifest.ts` as a TypeScript module:
 - Colors (primary, base, accent, semantic)
 - Spacing scale (4px to 128px)
 - Typography (fonts, sizes, weights)
 - Border radius, shadows
 
-Reference these in dial configs to provide users with design system-aligned options.
+**Benefits of TypeScript manifest:**
+- Type-safe with full IDE autocomplete
+- Bundled with app (not publicly accessible)
+- No runtime HTTP fetch (faster)
+- Hot reload compatible
+
+Reference these tokens in dial configs to provide users with design system-aligned options.
 
 ### Available Dial Types
 
