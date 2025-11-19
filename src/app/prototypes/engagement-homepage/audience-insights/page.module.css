@@ -1,0 +1,414 @@
+.header {
+  padding: 0 0 1.5rem 0;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-color-secondary, #666);
+  font-size: 0.95rem;
+}
+
+.metricsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.metricsTable thead {
+  background-color: var(--background-color-secondary, #f5f5f5);
+}
+
+.metricsTable th {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.metricsTable td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  color: var(--text-color-primary, #333);
+}
+
+.metricsTable tbody tr:hover {
+  background-color: var(--background-color-secondary, #f9f9f9);
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.highlight {
+  color: #2680eb;
+  font-weight: 600;
+}
+
+.engagement {
+  color: #44b556;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.growth {
+  color: #44b556;
+  font-weight: 600;
+}
+
+.good {
+  color: #44b556;
+  font-weight: 600;
+}
+
+.warning {
+  color: #e68619;
+  font-weight: 600;
+}
+
+.poor {
+  color: #e34850;
+  font-weight: 600;
+}
+
+.excellent {
+  color: #44b556;
+  font-weight: 600;
+}
+
+.fair {
+  color: #e68619;
+  font-weight: 600;
+}
+
+.inactive {
+  color: #999;
+}
+
+.scoreBar {
+  width: 100%;
+  height: 20px;
+  background-color: var(--background-color-secondary, #f0f0f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.scoreFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.deviceList {
+  margin-bottom: 1.5rem;
+}
+
+.deviceItem {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.deviceItem:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.deviceName {
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+  font-size: 0.95rem;
+}
+
+.deviceBar {
+  height: 24px;
+  background-color: var(--background-color-secondary, #f0f0f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.deviceFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.deviceStats {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary, #666);
+  text-align: right;
+  min-width: 120px;
+}
+
+.percent {
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+}
+
+.progressBar {
+  position: relative;
+  height: 4px;
+  background-color: var(--background-color-secondary, #e9e9e9);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #2680eb;
+  transition: width 0.3s ease;
+}
+
+.segmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.segmentCard {
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  padding: 1rem;
+  background-color: var(--background-color-secondary, #f9f9f9);
+}
+
+.segmentCard h4 {
+  margin: 0;
+}
+
+.segmentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.badge {
+  background-color: #2680eb;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.segmentMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.metricRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.metricRow span:first-child {
+  color: var(--text-color-secondary, #666);
+}
+
+.value {
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+}
+
+.veryHigh {
+  color: #44b556;
+  font-weight: 600;
+}
+
+.high {
+  color: #44b556;
+  font-weight: 600;
+}
+
+.medium {
+  color: #2680eb;
+  font-weight: 600;
+}
+
+.low {
+  color: #e68619;
+  font-weight: 600;
+}
+
+.lifecycleChart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  height: 280px;
+  margin-bottom: 1rem;
+}
+
+.lifecycleStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.stageName {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-color-secondary, #666);
+}
+
+.stageBar {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+.stageFill {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.3s ease;
+}
+
+.stageFill:hover {
+  opacity: 0.8;
+  filter: brightness(1.1);
+}
+
+.stageLabel {
+  font-size: 0.75rem;
+  color: var(--text-color-secondary, #666);
+  text-align: center;
+}
+
+.matrixTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.matrixTable thead {
+  background-color: var(--background-color-secondary, #f5f5f5);
+}
+
+.matrixTable th {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.matrixTable td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  color: var(--text-color-primary, #333);
+}
+
+.segmentLabel {
+  font-weight: 500;
+  max-width: 300px;
+  word-break: break-word;
+}
+
+.ltv {
+  font-weight: 600;
+  color: #2680eb;
+  font-size: 1.05rem;
+}
+
+.cohortTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.cohortTable thead {
+  background-color: var(--background-color-secondary, #f5f5f5);
+}
+
+.cohortTable th {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-color-primary, #333);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.cohortTable td {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  color: var(--text-color-primary, #333);
+}
+
+.cohortLabel {
+  font-weight: 600;
+  text-align: left;
+}
+
+.day0 {
+  font-weight: 600;
+  background-color: var(--background-color-secondary, #f5f5f5);
+}
+
+@media (max-width: 1024px) {
+  .segmentGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .lifecycleChart {
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .metricsTable {
+    font-size: 0.8rem;
+  }
+
+  .metricsTable th,
+  .metricsTable td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .deviceItem {
+    grid-template-columns: 70px 1fr;
+  }
+
+  .deviceStats {
+    grid-column: 2;
+  }
+
+  .cohortTable {
+    font-size: 0.75rem;
+  }
+
+  .cohortTable th,
+  .cohortTable td {
+    padding: 0.25rem;
+  }
+
+  .segmentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .lifecycleChart {
+    height: 200px;
+    gap: 0.5rem;
+  }
+
+  .stageName {
+    font-size: 0.7rem;
+  }
+}
