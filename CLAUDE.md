@@ -468,29 +468,26 @@ export default function MyPage() {
 
 ### Setup and Installation
 
-The Dials SDK is located in `packages/dials/` and is automatically built when you run `pnpm install` via a postinstall script. This ensures the SDK is always up-to-date with your changes.
+The Dials SDK lives in `packages/dials/` and is automatically built when you run `pnpm install` via the repo’s postinstall script. **Do not edit the SDK source or build pipeline unless the user explicitly instructs you to do so.** Your default interaction with dials should be importing the provided hooks inside app components.
 
 **Key files:**
-- `packages/dials/src/` - SDK source code
-- `packages/dials/dist/` - Built package (gitignored, auto-generated)
-- `src/config/niteshift-manifest.ts` - Umami's design system manifest
+- `packages/dials/src/` – SDK source **(hands-off unless asked)**
+- `packages/dials/dist/` – Built package (gitignored, auto-generated)
+- `src/config/niteshift-manifest.ts` – Umami’s design system manifest for reference in app code
 
-**No manual build needed!** The SDK rebuilds automatically on install. If you make changes to the SDK source, run:
+If—*and only if*—a user asks you to modify the SDK internals, rebuild with:
 ```bash
 pnpm --filter @niteshift/dials build
 ```
 
 ### When to Use Dials
 
-Use dials when:
-- Making design changes with subjective choices (colors, spacing, typography, icons)
-- You're unsure of the exact value but can provide good defaults
-- Changes involve design system tokens (colors from palette, spacing scale)
-- User might want to experiment with variations
-- Creating layout alternatives or component variants
-- Toggling features or UI sections (A/B testing, experimental features)
+Only add dials when the user explicitly says they want “dials” (or otherwise asks for adjustable controls). When they do, prioritize these scenarios:
+- Subjective color/spacing/typography tweaks tied to design-system tokens
+- Layout variants or experimental sections the user wants to tune live
+- Feature toggles the user specifically calls out for dial-based control
 
-**Key principle**: The coding agent decides what should be adjustable, but users have final control over values.
+**Key principle**: Follow the user’s direction—never invent dials on your own; create them only when requested, and let the user decide which values need adjustment.
 
 ### Design System Manifest
 
@@ -512,32 +509,34 @@ Reference these tokens in dial configs to provide users with design system-align
 
 **Smart defaults from the design system!** When you omit the `options` parameter in color and spacing dials, the SDK automatically pulls values from the design manifest. This reduces boilerplate and ensures consistency with your design system.
 
-**Color Dials** automatically use `designManifest.colors.accent` values when options aren't provided:
+**Color dials (design system defaults)**
 ```typescript
-// Manual options (explicit):
-const color1 = useDynamicColor('accent-1', {
-  label: 'Accent Color',
-  default: '#3e63dd',
-  options: ['#3e63dd', '#0090ff', '#147af3', '#2680eb'],
+import { useDynamicColor } from '@niteshift/dials';
+
+const badgeColor = useDynamicColor('hero-badge-color', {
+  label: 'Hero Badge Color',
+  group: 'Hero Section',
+  default: 'var(--primary-color)',
+  manifestCategory: 'primary', // pulls tokens from designManifest.colors.primary
+  allowCustom: true,
 });
 
-// Manifest defaults (automatic - same colors from design system):
-const color2 = useDynamicColor('accent-2', {
-  label: 'Accent Color',
-  default: '#3e63dd',
-  // options omitted - uses designManifest.colors.accent.values
-  manifestCategory: 'accent', // optional, defaults to 'accent'
-});
+return <Badge style={{ backgroundColor: badgeColor }}>Top Performer</Badge>;
 ```
 
-**Spacing Dials** automatically use `designManifest.spacing.values` when options aren't provided:
+**Spacing dials (design system defaults)**
 ```typescript
-// Manual options:
-const margin1 = useDynamicSpacing('margin-1', {
-  label: 'Margin',
-  default: '24px',
-  options: ['12px', '16px', '24px', '32px', '48px'],
+import { useDynamicSpacing } from '@niteshift/dials';
+
+const cardPadding = useDynamicSpacing('hero-card-padding', {
+  label: 'Hero Card Padding',
+  group: 'Hero Section',
+  default: 'var(--spacing-5)',
+  manifestCategory: 'spacing',
 });
+
+return <Card style={{ padding: cardPadding }}>{children}</Card>;
+```
 
 // Manifest defaults (automatic - uses full spacing scale):
 const margin2 = useDynamicSpacing('margin-2', {
