@@ -487,7 +487,62 @@ Only add dials when the user explicitly says they want “dials” (or otherwise
 - Layout variants or experimental sections the user wants to tune live
 - Feature toggles the user specifically calls out for dial-based control
 
-**Key principle**: Follow the user’s direction—never invent dials on your own; create them only when requested, and let the user decide which values need adjustment.
+**Key principle**: Follow the user's direction—never invent dials on your own; create them only when requested, and let the user decide which values need adjustment.
+
+### Critical: Preserving Original Appearance
+
+**⚠️ EXTREMELY IMPORTANT: When adding dials to existing code, the defaults MUST ALWAYS preserve the exact original appearance.**
+
+Before adding dials to any component:
+
+1. **Document the original values** - Record what props/styles existed before dials
+2. **Match defaults exactly** - Dial defaults must produce identical output to pre-dial code
+3. **Use empty string for "no prop"** - If original had no prop, use `default: ''` not `'inherit'` or a value
+4. **Conditionally spread props** - Only pass props when they have truthy values
+
+**Example - WRONG approach:**
+```typescript
+// Original code (before dials):
+<Text weight="bold">{label}</Text>  // No size prop!
+
+// ❌ WRONG - adds size prop that wasn't there:
+const labelSize = useDynamicVariant('label-size', {
+  default: '1',  // ❌ Original had NO size, this changes appearance!
+  options: ['0', '1', '2', '3'] as const,
+});
+<Text size={labelSize} weight="bold">{label}</Text>
+```
+
+**Example - CORRECT approach:**
+```typescript
+// Original code (before dials):
+<Text weight="bold">{label}</Text>  // No size prop!
+
+// ✅ CORRECT - empty string means "no change":
+const labelSize = useDynamicVariant('label-size', {
+  default: '',  // ✅ Empty string = no size prop = matches original
+  options: ['', '0', '1', '2', '3'] as const,  // First option is "default/none"
+});
+
+// ✅ CORRECT - only pass size if truthy:
+<Text
+  {...(labelSize && { size: labelSize })}
+  weight="bold"
+>
+  {label}
+</Text>
+```
+
+**Why this matters:**
+- Users expect dials at default = original appearance
+- Dials should enable exploration, not force changes
+- Breaking the original look confuses users and defeats the purpose
+
+**Testing your defaults:**
+1. Add dials with defaults
+2. View the page - should look IDENTICAL to before dials
+3. Reset All in dials overlay - should look IDENTICAL to before dials
+4. Only when adjusting dials should appearance change
 
 ### Design System Manifest
 
