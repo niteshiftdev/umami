@@ -1,8 +1,8 @@
 'use client';
 
 import { PageBody, Column, Bar, DataGrid } from '@umami/react-zen';
-import PageHeader from '@/components/PageHeader';
-import Panel from '@/components/Panel';
+import PageHeader from '@/components/common/PageHeader';
+import Panel from '@/components/common/Panel';
 import { formatNumber } from '@/lib/format';
 import styles from './page.module.css';
 
