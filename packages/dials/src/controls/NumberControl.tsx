@@ -38,46 +38,47 @@ export function NumberControl({ id, value, config, onChange, onReset }: NumberCo
       </div>
 
       <div className="control-body">
-        {/* Slider for range */}
         {hasRange && (
-          <div className="number-slider">
+          <>
+            {/* Slider */}
+            <div className="number-slider">
+              <input
+                type="range"
+                min={config.min}
+                max={config.max}
+                step={config.step || 1}
+                value={value}
+                onChange={handleSliderChange}
+                title={`${config.min} - ${config.max}`}
+              />
+            </div>
+            {/* Input */}
+            <div className="number-input">
+              <input
+                type="number"
+                value={value}
+                onChange={handleInputChange}
+                min={config.min}
+                max={config.max}
+                step={config.step || 1}
+              />
+              {config.unit && <span className="number-unit">{config.unit}</span>}
+            </div>
+          </>
+        )}
+        {!hasRange && (
+          <div className="number-input" style={{ gridColumn: '1 / -1' }}>
             <input
-              type="range"
+              type="number"
+              value={value}
+              onChange={handleInputChange}
               min={config.min}
               max={config.max}
               step={config.step || 1}
-              value={value}
-              onChange={handleSliderChange}
             />
-            <div className="slider-labels">
-              <span>
-                {config.min}
-                {config.unit}
-              </span>
-              <span className="slider-value">
-                {value}
-                {config.unit}
-              </span>
-              <span>
-                {config.max}
-                {config.unit}
-              </span>
-            </div>
+            {config.unit && <span className="number-unit">{config.unit}</span>}
           </div>
         )}
-
-        {/* Direct input */}
-        <div className="number-input">
-          <input
-            type="number"
-            value={value}
-            onChange={handleInputChange}
-            min={config.min}
-            max={config.max}
-            step={config.step || 1}
-          />
-          {config.unit && <span className="number-unit">{config.unit}</span>}
-        </div>
       </div>
     </div>
   );

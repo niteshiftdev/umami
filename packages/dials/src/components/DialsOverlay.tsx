@@ -202,32 +202,34 @@ export function DialsOverlay({
           ? bottomPosition
           : '20px',
         [position.includes('right') ? 'right' : 'left']: '20px',
-        width: '380px',
+        width: '280px',
         maxHeight: '80vh',
-        background: '#fff',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        background: '#181c20',
+        border: '1px solid #292d39',
+        borderRadius: '4px',
+        boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
         zIndex: 9999999, // Very high to be above everything
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
+        fontSize: '11px',
       }}
     >
       {/* Header */}
       <div
         style={{
-          padding: '16px',
-          borderBottom: '1px solid #eee',
+          padding: '10px 12px',
+          borderBottom: '1px solid #292d39',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
         <div>
-          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>🎛️ Design Dials</h3>
-          <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+          <h3 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#fefefe' }}>
+            🎛️ Design Dials
+          </h3>
+          <div style={{ fontSize: '10px', color: '#8c92a4', marginTop: '2px' }}>
             Shortcut: {shortcutLabel}
           </div>
         </div>
@@ -236,10 +238,11 @@ export function DialsOverlay({
           style={{
             background: 'none',
             border: 'none',
-            fontSize: '24px',
+            fontSize: '20px',
             cursor: 'pointer',
             padding: 0,
             lineHeight: 1,
+            color: '#8c92a4',
           }}
           title="Close (Shift+Cmd/Ctrl+D)"
         >
@@ -248,7 +251,7 @@ export function DialsOverlay({
       </div>
 
       {/* Search */}
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid #eee' }}>
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid #292d39' }}>
         <input
           type="search"
           placeholder="Search dials..."
@@ -256,10 +259,13 @@ export function DialsOverlay({
           onChange={e => setSearchTerm(e.target.value)}
           style={{
             width: '100%',
-            padding: '8px 12px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            fontSize: '14px',
+            padding: '6px 8px',
+            border: '1px solid transparent',
+            borderRadius: '2px',
+            fontSize: '11px',
+            background: '#373c4b',
+            color: '#fefefe',
+            outline: 'none',
           }}
         />
       </div>
@@ -269,29 +275,32 @@ export function DialsOverlay({
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '16px',
+          padding: '0',
         }}
       >
         {filteredDials.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#999', padding: '32px 16px' }}>
+          <div style={{ textAlign: 'center', color: '#8c92a4', padding: '32px 16px' }}>
             {searchTerm ? 'No dials match your search' : 'No dials registered yet'}
           </div>
         ) : (
           Array.from(groupedDials.entries()).map(([groupName, groupDials]) => (
-            <div key={groupName} style={{ marginBottom: '24px' }}>
+            <div key={groupName} style={{ marginBottom: '0' }}>
               <h4
                 style={{
-                  margin: '0 0 12px 0',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#666',
+                  margin: '0',
+                  padding: '8px 12px',
+                  fontSize: '10px',
+                  fontWeight: 500,
+                  color: '#535760',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
+                  background: '#292d39',
+                  borderBottom: '1px solid #373c4b',
                 }}
               >
                 {groupName}
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
                 {groupDials.map(dial => (
                   <div key={dial.id}>{renderControl(dial, handleChange, handleReset)}</div>
                 ))}

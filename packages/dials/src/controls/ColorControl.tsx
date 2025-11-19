@@ -2,7 +2,7 @@
  * Color control component for the overlay UI
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { ColorDialConfig } from '../types';
 import { designManifest } from '@/config/niteshift-manifest';
 
@@ -40,75 +40,111 @@ function getColorName(hex: string): string | null {
 }
 
 export function ColorControl({ id, value, config, onChange, onReset }: ColorControlProps) {
-  const [showCustom, setShowCustom] = useState(false);
-  const [customValue, setCustomValue] = useState(value);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+  const swatchRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
   const colorName = getColorName(value);
+
+  const handleSwatchClick = () => {
+    if (swatchRef.current) {
+      const rect = swatchRef.current.getBoundingClientRect();
+      setPickerPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+      });
+      setShowPicker(true);
+    }
+  };
 
   const handlePresetClick = (color: string) => {
     onChange(color);
-    setShowCustom(false);
   };
 
-  const handleCustomSubmit = () => {
-    onChange(customValue);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
   };
+
+  // Close picker when clicking outside
+  useEffect(() => {
+    if (!showPicker) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        pickerRef.current &&
+        !pickerRef.current.contains(e.target as Node) &&
+        swatchRef.current &&
+        !swatchRef.current.contains(e.target as Node)
+      ) {
+        setShowPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showPicker]);
 
   return (
     <div className="dial-control color-control">
       <div className="control-header">
-        <label htmlFor={id}>{config.label}</label>
-        {config.description && <span className="control-description">{config.description}</span>}
+        <label htmlFor={id} title={config.description}>
+          {config.label}
+        </label>
         <button className="reset-button" onClick={onReset} title="Reset to default">
           ↺
         </button>
       </div>
 
       <div className="control-body">
-        {/* Preset colors */}
-        {config.options && config.options.length > 0 && (
-          <div className="color-presets">
-            {config.options.map(color => {
-              const name = getColorName(color);
-              return (
-                <button
-                  key={color}
-                  className={`color-preset ${value === color ? 'active' : ''}`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => handlePresetClick(color)}
-                  title={name || color}
-                />
-              );
-            })}
-          </div>
-        )}
+        {/* Swatch */}
+        <div
+          ref={swatchRef}
+          className="color-swatch"
+          style={{ backgroundColor: value }}
+          onClick={handleSwatchClick}
+          title={colorName || value}
+        />
 
-        {/* Current value display */}
-        <div className="color-current">
-          <div className="color-swatch" style={{ backgroundColor: value }} />
-          <span className="color-value">{colorName || value}</span>
-        </div>
+        {/* Input */}
+        <input
+          type="text"
+          className="color-value-input"
+          value={colorName || value}
+          onChange={handleInputChange}
+          placeholder="#000000"
+        />
 
-        {/* Custom color input */}
-        {config.allowCustom && (
-          <div className="color-custom">
-            {!showCustom ? (
-              <button className="custom-toggle" onClick={() => setShowCustom(true)}>
-                Custom color
-              </button>
-            ) : (
-              <div className="custom-input">
-                <input
-                  type="text"
-                  value={customValue}
-                  onChange={e => setCustomValue(e.target.value)}
-                  placeholder="#000000"
-                  pattern="^#[0-9a-fA-F]{6}$"
-                />
-                <button onClick={handleCustomSubmit}>Apply</button>
-                <button onClick={() => setShowCustom(false)}>Cancel</button>
-              </div>
-            )}
-          </div>
+        {/* Popover picker */}
+        {showPicker && (
+          <>
+            <div className="color-picker-overlay" onClick={() => setShowPicker(false)} />
+            <div
+              ref={pickerRef}
+              className="color-picker-wrapper"
+              style={{
+                top: pickerPosition.top,
+                left: pickerPosition.left,
+              }}
+            >
+              {/* Preset colors */}
+              {config.options && config.options.length > 0 && (
+                <div className="color-presets">
+                  {config.options.map(color => {
+                    const name = getColorName(color);
+                    return (
+                      <div
+                        key={color}
+                        className={`color-preset ${value === color ? 'active' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handlePresetClick(color)}
+                        title={name || color}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

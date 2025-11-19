@@ -44,28 +44,20 @@ export function VariantControl({ id, value, config, onChange, onReset }: Variant
               step={1}
               value={currentIndex}
               onChange={handleSliderChange}
+              title={`${config.options[0]} - ${config.options[config.options.length - 1]}`}
             />
-            <div className="slider-labels">
-              <span>{config.options[0]}</span>
-              <span className="slider-value">{value}</span>
-              <span>{config.options[config.options.length - 1]}</span>
-            </div>
           </div>
         ) : (
-          <div className="variant-options">
+          <select className="variant-select" value={value} onChange={e => onChange(e.target.value)}>
             {config.options.map(option => {
               const label = config.optionLabels?.[option] || option;
               return (
-                <button
-                  key={option}
-                  className={`variant-option ${value === option ? 'active' : ''}`}
-                  onClick={() => onChange(option)}
-                >
+                <option key={option} value={option}>
                   {label}
-                </button>
+                </option>
               );
             })}
-          </div>
+          </select>
         )}
       </div>
     </div>
