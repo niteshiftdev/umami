@@ -22,6 +22,39 @@ export const TypographyContext = createContext<{
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
+  // Component Order Controls
+  const controlsOrder = useDynamicVariant('controls-order', {
+    label: 'Controls Position',
+    description: 'Display order for date/filter controls',
+    default: '1',
+    options: ['1', '2', '3', '4'] as const,
+    group: 'Component Order',
+  });
+
+  const metricsOrder = useDynamicVariant('metrics-order', {
+    label: 'Metrics Bar Position',
+    description: 'Display order for metrics bar (Visitors, Views, etc.)',
+    default: '2',
+    options: ['1', '2', '3', '4'] as const,
+    group: 'Component Order',
+  });
+
+  const chartOrder = useDynamicVariant('chart-order', {
+    label: 'Chart Position',
+    description: 'Display order for main chart',
+    default: '3',
+    options: ['1', '2', '3', '4'] as const,
+    group: 'Component Order',
+  });
+
+  const panelsOrder = useDynamicVariant('panels-order', {
+    label: 'Panels Position',
+    description: 'Display order for dashboard panels',
+    default: '4',
+    options: ['1', '2', '3', '4'] as const,
+    group: 'Component Order',
+  });
+
   // Metric Typography Controls
   const metricLabelSize = useDynamicVariant('metric-label-size', {
     label: 'Metric Label Size',
@@ -111,15 +144,37 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingColor,
   };
 
+  // Create components array with their order values
+  const components = [
+    {
+      order: parseInt(controlsOrder),
+      component: <WebsiteControls key="controls" websiteId={websiteId} />,
+    },
+    {
+      order: parseInt(metricsOrder),
+      component: <WebsiteMetricsBar key="metrics" websiteId={websiteId} showChange={true} />,
+    },
+    {
+      order: parseInt(chartOrder),
+      component: (
+        <Panel key="chart" minHeight="520px">
+          <WebsiteChart websiteId={websiteId} />
+        </Panel>
+      ),
+    },
+    {
+      order: parseInt(panelsOrder),
+      component: <WebsitePanels key="panels" websiteId={websiteId} />,
+    },
+  ];
+
+  // Sort components by order
+  const sortedComponents = components.sort((a, b) => a.order - b.order);
+
   return (
     <TypographyContext.Provider value={typographyConfig}>
       <Column gap>
-        <WebsiteControls websiteId={websiteId} />
-        <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-        <Panel minHeight="520px">
-          <WebsiteChart websiteId={websiteId} />
-        </Panel>
-        <WebsitePanels websiteId={websiteId} />
+        {sortedComponents.map(item => item.component)}
         <ExpandedViewModal websiteId={websiteId} />
       </Column>
     </TypographyContext.Provider>
