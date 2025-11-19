@@ -26,8 +26,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   const metricLabelSize = useDynamicVariant('metric-label-size', {
     label: 'Metric Label Size',
     description: 'Font size for metric labels (Visitors, Views, etc.)',
-    default: '1',
-    options: ['0', '1', '2', '3', '4'] as const,
+    default: '',
+    options: ['', '0', '1', '2', '3', '4'] as const,
     group: 'Typography - Metrics',
   });
 
@@ -58,17 +58,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   const metricLabelColor = useDynamicColor('metric-label-color', {
     label: 'Metric Label Color',
     description: 'Text color for metric labels',
-    default: 'inherit',
-    options: [
-      'inherit',
-      '#000000',
-      '#333333',
-      '#666666',
-      '#999999',
-      '#3e63dd',
-      '#30a46c',
-      '#e5484d',
-    ],
+    default: '',
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
     allowCustom: true,
     group: 'Typography - Metrics',
   });
@@ -76,17 +67,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   const metricValueColor = useDynamicColor('metric-value-color', {
     label: 'Metric Value Color',
     description: 'Text color for metric values',
-    default: 'inherit',
-    options: [
-      'inherit',
-      '#000000',
-      '#333333',
-      '#666666',
-      '#999999',
-      '#3e63dd',
-      '#30a46c',
-      '#e5484d',
-    ],
+    default: '',
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
     allowCustom: true,
     group: 'Typography - Metrics',
   });
@@ -111,17 +93,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   const sectionHeadingColor = useDynamicColor('section-heading-color', {
     label: 'Section Heading Color',
     description: 'Text color for section headings',
-    default: 'inherit',
-    options: [
-      'inherit',
-      '#000000',
-      '#333333',
-      '#666666',
-      '#999999',
-      '#3e63dd',
-      '#30a46c',
-      '#e5484d',
-    ],
+    default: '',
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
     allowCustom: true,
     group: 'Typography - Headings',
   });

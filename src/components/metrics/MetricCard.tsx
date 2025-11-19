@@ -52,10 +52,10 @@ export const MetricCard = ({
     >
       {showLabel && (
         <Text
-          size={labelSize}
+          {...(labelSize && { size: labelSize })}
           weight={labelWeight || 'bold'}
           wrap="nowrap"
-          style={{ color: labelColor }}
+          {...(labelColor && { style: { color: labelColor } })}
         >
           {label}
         </Text>
@@ -64,7 +64,7 @@ export const MetricCard = ({
         size={valueSize || '8'}
         weight={valueWeight || 'bold'}
         wrap="nowrap"
-        style={{ color: valueColor }}
+        {...(valueColor && { style: { color: valueColor } })}
       >
         <AnimatedDiv title={value?.toString()}>{props?.x?.to(x => formatValue(x))}</AnimatedDiv>
       </Text>
