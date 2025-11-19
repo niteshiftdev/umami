@@ -35,12 +35,16 @@ export function DialsOverlay({
   defaultVisible = true,
   position = 'bottom-left',
 }: DialsOverlayProps) {
-  // Load visibility state from localStorage
-  const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window === 'undefined') return defaultVisible;
+  // Load visibility state from localStorage (avoiding hydration mismatch)
+  const [isVisible, setIsVisible] = useState(defaultVisible);
+
+  // Load from localStorage after mount to avoid hydration issues
+  useEffect(() => {
     const stored = localStorage.getItem('niteshift-dials-visible');
-    return stored !== null ? stored === 'true' : defaultVisible;
-  });
+    if (stored !== null) {
+      setIsVisible(stored === 'true');
+    }
+  }, []);
   const [searchTerm, setSearchTerm] = useState('');
   const [dials, setDials] = useState<DialRegistration[]>([]);
   const [hasNextOverlay, setHasNextOverlay] = useState(false);
@@ -294,7 +298,7 @@ export function DialsOverlay({
                   padding: '8px 12px',
                   fontSize: '10px',
                   fontWeight: 500,
-                  color: '#535760',
+                  color: '#8c92a4',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
                   background: '#292d39',

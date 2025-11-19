@@ -8,7 +8,7 @@
   grid-template-columns: 1fr 140px;
   column-gap: 8px;
   min-height: 24px;
-  padding: 3px 8px;
+  padding: 6px 12px;
   background: #181c20;
   border-bottom: 1px solid #292d39;
   transition: background 0.15s;
@@ -444,4 +444,14 @@
 
 .slider-value {
   display: none; /* Removed for compactness */
+}
+
+/* Search input placeholder */
+input[type='search']::placeholder {
+  color: #6e6e6e;
+  opacity: 1;
+}
+
+input[type='search']:focus::placeholder {
+  color: #535760;
 }
