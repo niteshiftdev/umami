@@ -7,6 +7,7 @@ import { renderNumberLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { formatDate, DATE_FORMATS } from '@/lib/date';
 import { formatLongCurrency, formatLongNumber } from '@/lib/format';
+import { useChartTheme } from '@/app/(main)/ChartThemeProvider';
 
 const dateFormats = {
   millisecond: 'T',
@@ -46,7 +47,10 @@ export function BarChart({
   ...props
 }: BarChartProps) {
   const [tooltip, setTooltip] = useState(null);
-  const { theme } = useTheme();
+  const { theme: zenTheme } = useTheme();
+  const { theme: customTheme } = useChartTheme();
+  // Use custom theme if available, otherwise fall back to zen theme
+  const theme = customTheme !== 'default' ? customTheme : zenTheme;
   const { locale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 

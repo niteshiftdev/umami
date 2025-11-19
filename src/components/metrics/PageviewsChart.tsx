@@ -5,6 +5,7 @@ import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
+import { useChartTheme } from '@/app/(main)/ChartThemeProvider';
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
@@ -20,7 +21,10 @@ export interface PageviewsChartProps extends BarChartProps {
 
 export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
-  const { theme } = useTheme();
+  const { theme: zenTheme } = useTheme();
+  const { theme: customTheme } = useChartTheme();
+  // Use custom theme if available, otherwise fall back to zen theme
+  const theme = customTheme !== 'default' ? customTheme : zenTheme;
   const { locale, dateLocale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 

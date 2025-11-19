@@ -7,6 +7,7 @@ import { SideNav } from '@/app/(main)/SideNav';
 import { useLoginQuery, useConfig, useNavigation } from '@/components/hooks';
 import { MobileNav } from '@/app/(main)/MobileNav';
 import { useDynamicVariant } from '@niteshift/dials';
+import { ChartThemeProvider } from './ChartThemeProvider';
 
 export function App({ children }) {
   const { user, isLoading, error } = useLoginQuery();
@@ -561,7 +562,7 @@ export function App({ children }) {
           position="relative"
           style={{ backgroundColor: 'transparent' }}
         >
-          {children}
+          <ChartThemeProvider theme={theme}>{children}</ChartThemeProvider>
         </Column>
         <UpdateNotice user={user} config={config} />
         {process.env.NODE_ENV === 'production' && !pathname.includes('/share/') && (
