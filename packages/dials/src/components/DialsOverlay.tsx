@@ -206,7 +206,7 @@ export function DialsOverlay({
           ? bottomPosition
           : '20px',
         [position.includes('right') ? 'right' : 'left']: '20px',
-        width: '280px',
+        width: '320px',
         maxHeight: '80vh',
         background: '#181c20',
         border: '1px solid #292d39',
@@ -298,7 +298,7 @@ export function DialsOverlay({
                   padding: '8px 12px',
                   fontSize: '10px',
                   fontWeight: 500,
-                  color: '#8c92a4',
+                  color: '#b4b4b4',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
                   background: '#292d39',
@@ -344,7 +344,7 @@ export function DialsOverlay({
         >
           Reset All
         </button>
-        <div style={{ fontSize: '11px', color: '#8c92a4', display: 'flex', alignItems: 'center' }}>
+        <div style={{ fontSize: '11px', color: '#b4b4b4', display: 'flex', alignItems: 'center' }}>
           {dials.length} dial{dials.length !== 1 ? 's' : ''}
         </div>
       </div>

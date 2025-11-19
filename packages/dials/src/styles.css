@@ -29,7 +29,7 @@
 .control-header label {
   font-weight: 400;
   font-size: 11px;
-  color: #b4b4b4;
+  color: #d4d4d4;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -448,10 +448,10 @@
 
 /* Search input placeholder */
 input[type='search']::placeholder {
-  color: #6e6e6e;
+  color: #8c92a4;
   opacity: 1;
 }
 
 input[type='search']:focus::placeholder {
-  color: #535760;
+  color: #6e6e6e;
 }
