@@ -5,13 +5,14 @@
 /* Control base styles - Horizontal layout */
 .dial-control {
   display: grid;
-  grid-template-columns: auto 160px;
-  column-gap: 7px;
+  grid-template-columns: 1fr 140px;
+  column-gap: 8px;
   min-height: 24px;
   padding: 3px 8px;
   background: #181c20;
   border-bottom: 1px solid #292d39;
   transition: background 0.15s;
+  overflow: hidden;
 }
 
 .dial-control:hover {
@@ -28,7 +29,7 @@
 .control-header label {
   font-weight: 400;
   font-size: 11px;
-  color: #8c92a4;
+  color: #b4b4b4;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -69,6 +70,8 @@
   display: flex;
   align-items: center;
   min-height: 24px;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 /* Color control - Inline layout */
@@ -354,9 +357,10 @@
 /* Number control - Inline slider + input */
 .number-control .control-body {
   display: grid;
-  grid-template-columns: 1fr 45px;
+  grid-template-columns: 1fr 42px;
   gap: 6px;
   width: 100%;
+  max-width: 100%;
 }
 
 .number-slider {

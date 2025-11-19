@@ -225,12 +225,15 @@ export function DialsOverlay({
           justifyContent: 'space-between',
         }}
       >
-        <div>
-          <h3 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#fefefe' }}>
-            🎛️ Design Dials
-          </h3>
-          <div style={{ fontSize: '10px', color: '#8c92a4', marginTop: '2px' }}>
-            Shortcut: {shortcutLabel}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Gauge size={16} color="#8c92a4" />
+          <div>
+            <h3 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#fefefe' }}>
+              Design Dials
+            </h3>
+            <div style={{ fontSize: '10px', color: '#8c92a4', marginTop: '2px' }}>
+              {shortcutLabel}
+            </div>
           </div>
         </div>
         <button
@@ -313,28 +316,31 @@ export function DialsOverlay({
       {/* Footer */}
       <div
         style={{
-          padding: '12px 16px',
-          borderTop: '1px solid #eee',
+          padding: '8px 12px',
+          borderTop: '1px solid #292d39',
           display: 'flex',
           gap: '8px',
           justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         <button
           onClick={handleResetAll}
           disabled={dials.length === 0}
           style={{
-            padding: '8px 16px',
-            background: 'none',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
+            padding: '4px 12px',
+            background: '#373c4b',
+            border: '1px solid transparent',
+            borderRadius: '2px',
             cursor: dials.length > 0 ? 'pointer' : 'not-allowed',
-            fontSize: '13px',
+            fontSize: '11px',
+            color: dials.length > 0 ? '#fefefe' : '#535760',
+            transition: 'border-color 0.15s',
           }}
         >
           Reset All
         </button>
-        <div style={{ fontSize: '12px', color: '#999', display: 'flex', alignItems: 'center' }}>
+        <div style={{ fontSize: '11px', color: '#8c92a4', display: 'flex', alignItems: 'center' }}>
           {dials.length} dial{dials.length !== 1 ? 's' : ''}
         </div>
       </div>
