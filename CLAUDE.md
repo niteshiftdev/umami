@@ -466,6 +466,20 @@ export default function MyPage() {
 
 **New capability for design prototyping!** The Dials SDK allows you to expose design parameters as runtime-adjustable "dials" that users can tweak via an overlay UI. This gives designers and PMs fine-grained control without requiring code changes.
 
+### Setup and Installation
+
+The Dials SDK is located in `packages/dials/` and is automatically built when you run `pnpm install` via a postinstall script. This ensures the SDK is always up-to-date with your changes.
+
+**Key files:**
+- `packages/dials/src/` - SDK source code
+- `packages/dials/dist/` - Built package (gitignored, auto-generated)
+- `src/config/niteshift-manifest.ts` - Umami's design system manifest
+
+**No manual build needed!** The SDK rebuilds automatically on install. If you make changes to the SDK source, run:
+```bash
+pnpm --filter @niteshift/dials build
+```
+
 ### When to Use Dials
 
 Use dials when:
@@ -493,6 +507,52 @@ The design system manifest is defined in `src/config/niteshift-manifest.ts` as a
 - Hot reload compatible
 
 Reference these tokens in dial configs to provide users with design system-aligned options.
+
+### Manifest-Powered Defaults
+
+**Smart defaults from the design system!** When you omit the `options` parameter in color and spacing dials, the SDK automatically pulls values from the design manifest. This reduces boilerplate and ensures consistency with your design system.
+
+**Color Dials** automatically use `designManifest.colors.accent` values when options aren't provided:
+```typescript
+// Manual options (explicit):
+const color1 = useDynamicColor('accent-1', {
+  label: 'Accent Color',
+  default: '#3e63dd',
+  options: ['#3e63dd', '#0090ff', '#147af3', '#2680eb'],
+});
+
+// Manifest defaults (automatic - same colors from design system):
+const color2 = useDynamicColor('accent-2', {
+  label: 'Accent Color',
+  default: '#3e63dd',
+  // options omitted - uses designManifest.colors.accent.values
+  manifestCategory: 'accent', // optional, defaults to 'accent'
+});
+```
+
+**Spacing Dials** automatically use `designManifest.spacing.values` when options aren't provided:
+```typescript
+// Manual options:
+const margin1 = useDynamicSpacing('margin-1', {
+  label: 'Margin',
+  default: '24px',
+  options: ['12px', '16px', '24px', '32px', '48px'],
+});
+
+// Manifest defaults (automatic - uses full spacing scale):
+const margin2 = useDynamicSpacing('margin-2', {
+  label: 'Margin',
+  default: '24px',
+  // options omitted - uses designManifest.spacing.values (4px to 128px)
+});
+```
+
+**When to use manifest defaults:**
+- ✅ You want design system consistency
+- ✅ You're prototyping and want quick setup
+- ✅ The default color category (accent) or spacing scale fits your needs
+- ❌ You need a specific subset of values
+- ❌ You're using custom values outside the design system
 
 ### Available Dial Types
 
@@ -652,17 +712,18 @@ const icons = { inbox: <Inbox />, folder: <Folder />, archive: <Archive />, aler
 ### Communicating with Users
 
 After creating dials, tell the user:
-> "I've made [X, Y, Z] adjustable via design dials. Press **Cmd/Ctrl+K** to open the dials panel and fine-tune these values. You can select from design system options or enter custom values."
+> "I've made [X, Y, Z] adjustable via design dials. Press **Shift+Cmd/Ctrl+D** to open the dials panel and fine-tune these values. You can select from design system options or enter custom values."
 
 ### Accessing the Overlay
 
-- **Keyboard shortcut**: `Cmd/Ctrl+K` toggles the dials overlay
-- **Location**: Bottom-right floating panel
+- **Keyboard shortcut**: `Shift+Cmd/Ctrl+D` toggles the dials overlay
+- **Location**: Bottom-left floating panel
+- **Persistence**: Visibility state and dial values persist across reloads (localStorage)
 - **Features**:
   - Search/filter dials
   - Grouped by component/section
   - Reset individual dials or all at once
-  - Values persist across hot reloads (localStorage)
+  - Keyboard shortcut hint shown in overlay header
 
 ### Examples from Umami
 

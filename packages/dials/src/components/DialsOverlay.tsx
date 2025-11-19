@@ -35,14 +35,24 @@ export interface DialsOverlayProps {
  */
 export function DialsOverlay({
   defaultVisible = true,
-  toggleKey = 'k',
+  toggleKey = 'd',
   position = 'bottom-left',
 }: DialsOverlayProps) {
-  const [isVisible, setIsVisible] = useState(defaultVisible);
+  // Load visibility state from localStorage
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === 'undefined') return defaultVisible;
+    const stored = localStorage.getItem('niteshift-dials-visible');
+    return stored !== null ? stored === 'true' : defaultVisible;
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [dials, setDials] = useState<DialRegistration[]>([]);
   const [hasNextOverlay, setHasNextOverlay] = useState(false);
   const registry = getDialRegistry();
+
+  // Persist visibility state to localStorage
+  useEffect(() => {
+    localStorage.setItem('niteshift-dials-visible', String(isVisible));
+  }, [isVisible]);
 
   // Detect Next.js error overlay
   useEffect(() => {
@@ -79,10 +89,10 @@ export function DialsOverlay({
     return unsubscribe;
   }, [registry]);
 
-  // Keyboard shortcut to toggle visibility
+  // Keyboard shortcut to toggle visibility (Shift+Cmd/Ctrl+D)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === toggleKey) {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === toggleKey.toUpperCase()) {
         e.preventDefault();
         setIsVisible(prev => !prev);
       }
@@ -141,7 +151,7 @@ export function DialsOverlay({
       <button
         className="dials-toggle-button"
         onClick={() => setIsVisible(true)}
-        title={`Show Dials (${toggleKey === 'k' ? 'Cmd/Ctrl+K' : toggleKey})`}
+        title="Show Dials (Shift+Cmd/Ctrl+D)"
         style={{
           position: 'fixed',
           [position.includes('bottom') ? 'bottom' : 'top']: position.includes('bottom')
@@ -199,7 +209,12 @@ export function DialsOverlay({
           justifyContent: 'space-between',
         }}
       >
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>🎛️ Design Dials</h3>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>🎛️ Design Dials</h3>
+          <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+            Press <kbd style={{ padding: '2px 4px', background: '#f0f0f0', borderRadius: '3px', fontFamily: 'monospace' }}>Shift+⌘+D</kbd> to toggle
+          </div>
+        </div>
         <button
           onClick={() => setIsVisible(false)}
           style={{
@@ -210,7 +225,7 @@ export function DialsOverlay({
             padding: 0,
             lineHeight: 1,
           }}
-          title="Close"
+          title="Close (Shift+Cmd/Ctrl+D)"
         >
           ×
         </button>

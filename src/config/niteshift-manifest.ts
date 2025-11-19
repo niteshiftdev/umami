@@ -6,7 +6,9 @@
  * color, spacing, typography, and other design parameters.
  */
 
-export const designManifest = {
+import type { DesignManifest } from '@niteshift/dials';
+
+export const designManifest: DesignManifest = {
   name: 'Umami Design System',
   version: '1.0.0',
   colors: {
@@ -193,9 +195,4 @@ export const designManifest = {
     ],
     labels: ['Extra Small', 'Small', 'Medium', 'Large', 'Extra Large', '2XL'],
   },
-} as const;
-
-/**
- * Type-safe design manifest type
- */
-export type DesignManifest = typeof designManifest;
+};

@@ -45,6 +45,7 @@
     "change-password": "node scripts/change-password.js",
     "lint": "next lint --quiet",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
+    "postinstall": "pnpm --filter @niteshift/dials build",
     "postbuild": "node scripts/postbuild.js",
     "test": "jest",
     "cypress-open": "cypress open cypress run",
