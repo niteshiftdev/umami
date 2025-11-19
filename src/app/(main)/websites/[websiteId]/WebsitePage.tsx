@@ -25,6 +25,8 @@ export const TypographyContext = createContext<{
   panelPadding?: Spacing;
   chartMinHeight?: string;
   gridGap?: Spacing;
+  // Chart color controls
+  chartPrimaryColor?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -138,6 +140,33 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Spacing & Layout',
   });
 
+  // Chart Color Controls
+  const chartPrimaryColor = useDynamicColor('chart-primary-color', {
+    label: 'Bar Chart Color',
+    description: 'Primary color for bar charts (Views & Visitors bars)',
+    default: '',
+    options: [
+      '', // Default (theme color: #2680eb)
+      '#2680eb', // Original Blue (Adobe Spectrum)
+      '#9256d9', // Purple (from CHART_COLORS)
+      '#44b556', // Green (from CHART_COLORS)
+      '#e68619', // Orange (from CHART_COLORS)
+      '#e34850', // Red (from CHART_COLORS)
+      '#01bad7', // Cyan (from CHART_COLORS)
+      '#6734bc', // Deep Purple (from CHART_COLORS)
+      '#ec1562', // Pink (from CHART_COLORS)
+      '#0d9488', // Teal (complementary)
+      '#8b5cf6', // Violet (complementary)
+      '#f59e0b', // Amber (complementary)
+      '#10b981', // Emerald (complementary)
+      '#ef4444', // Bright Red (complementary)
+      '#06b6d4', // Sky Blue (complementary)
+      '#a855f7', // Purple (complementary)
+    ],
+    allowCustom: true,
+    group: 'Chart Colors',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -152,6 +181,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     panelPadding,
     chartMinHeight,
     gridGap,
+    chartPrimaryColor,
   };
 
   return (

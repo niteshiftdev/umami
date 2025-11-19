@@ -16,13 +16,14 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  primaryColorOverride?: string;
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PageviewsChart({ data, unit, minDate, maxDate, primaryColorOverride, ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
-  const { colors } = useMemo(() => getThemeColors(theme), [theme]);
+  const { colors } = useMemo(() => getThemeColors(theme, primaryColorOverride), [theme, primaryColorOverride]);
 
   const chartData: any = useMemo(() => {
     if (!data) return;
