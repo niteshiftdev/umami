@@ -15,8 +15,6 @@ import type { DialRegistration } from '../types';
 export interface DialsOverlayProps {
   /** Initial visibility state */
   defaultVisible?: boolean;
-  /** Keyboard shortcut to toggle (default: 'k') */
-  toggleKey?: string;
   /** Position of the overlay */
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
 }
@@ -35,7 +33,6 @@ export interface DialsOverlayProps {
  */
 export function DialsOverlay({
   defaultVisible = true,
-  toggleKey = 'd',
   position = 'bottom-left',
 }: DialsOverlayProps) {
   // Load visibility state from localStorage
@@ -47,6 +44,8 @@ export function DialsOverlay({
   const [searchTerm, setSearchTerm] = useState('');
   const [dials, setDials] = useState<DialRegistration[]>([]);
   const [hasNextOverlay, setHasNextOverlay] = useState(false);
+  const [isMacLike, setIsMacLike] = useState(false);
+  const [shortcutLabel, setShortcutLabel] = useState('Ctrl+D (macOS) / Ctrl+Alt+D (Win/Linux)');
   const registry = getDialRegistry();
 
   // Persist visibility state to localStorage
@@ -89,10 +88,27 @@ export function DialsOverlay({
     return unsubscribe;
   }, [registry]);
 
-  // Keyboard shortcut to toggle visibility (Shift+Cmd/Ctrl+D)
+  // Detect platform to configure shortcut labels
+  useEffect(() => {
+    if (typeof navigator === 'undefined') return;
+    const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+    setIsMacLike(isMac);
+  }, []);
+
+  useEffect(() => {
+    setShortcutLabel(isMacLike ? 'Ctrl+D (macOS)' : 'Ctrl+Alt+D (Windows/Linux)');
+  }, [isMacLike]);
+
+  // Keyboard shortcut to toggle visibility
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === toggleKey.toUpperCase()) {
+      const key = e.key.toLowerCase();
+      if (key !== 'd') return;
+
+      const macCombo = isMacLike && e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey;
+      const otherCombo = !isMacLike && e.ctrlKey && e.altKey && !e.metaKey && !e.shiftKey;
+
+      if (macCombo || otherCombo) {
         e.preventDefault();
         setIsVisible(prev => !prev);
       }
@@ -100,7 +116,7 @@ export function DialsOverlay({
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [toggleKey]);
+  }, [isMacLike]);
 
   // Filter and group dials
   const filteredDials = useMemo(() => {
@@ -151,7 +167,7 @@ export function DialsOverlay({
       <button
         className="dials-toggle-button"
         onClick={() => setIsVisible(true)}
-        title="Show Dials (Shift+Cmd/Ctrl+D)"
+        title={`Show Dials (${shortcutLabel})`}
         style={{
           position: 'fixed',
           [position.includes('bottom') ? 'bottom' : 'top']: position.includes('bottom')
@@ -212,7 +228,7 @@ export function DialsOverlay({
         <div>
           <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>🎛️ Design Dials</h3>
           <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
-            Press <kbd style={{ padding: '2px 4px', background: '#f0f0f0', borderRadius: '3px', fontFamily: 'monospace' }}>Shift+⌘+D</kbd> to toggle
+            Shortcut: {shortcutLabel}
           </div>
         </div>
         <button

@@ -711,11 +711,11 @@ const icons = { inbox: <Inbox />, folder: <Folder />, archive: <Archive />, aler
 ### Communicating with Users
 
 After creating dials, tell the user:
-> "I've made [X, Y, Z] adjustable via design dials. Press **Shift+Cmd/Ctrl+D** to open the dials panel and fine-tune these values. You can select from design system options or enter custom values."
+> "I've made [X, Y, Z] adjustable via design dials. Press **Ctrl+D** on macOS (use the Control key, not Command) or **Ctrl+Alt+D** on Windows/Linux to open the panel and fine-tune these values. You can select from design system options or enter custom values."
 
 ### Accessing the Overlay
 
-- **Keyboard shortcut**: `Shift+Cmd/Ctrl+D` toggles the dials overlay
+- **Keyboard shortcut**: `Ctrl+D` on macOS, `Ctrl+Alt+D` on Windows/Linux toggles the dials overlay
 - **Location**: Bottom-left floating panel
 - **Persistence**: Visibility state and dial values persist across reloads (localStorage)
 - **Features**:
