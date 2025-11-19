@@ -22,38 +22,31 @@ export const TypographyContext = createContext<{
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
-  // Component Order Controls
-  const controlsOrder = useDynamicVariant('controls-order', {
-    label: 'Controls Position',
-    description: 'Display order for date/filter controls',
-    default: '1',
-    options: ['1', '2', '3', '4'] as const,
+  // Page Layout Preset
+  const pageLayout = useDynamicVariant('page-layout', {
+    label: 'Page Layout',
+    description: 'Choose different arrangements of page components',
+    default: 'default',
+    options: [
+      'default',
+      'metrics-first',
+      'chart-first',
+      'panels-first',
+      'minimal',
+    ] as const,
     group: 'Component Order',
   });
 
-  const metricsOrder = useDynamicVariant('metrics-order', {
-    label: 'Metrics Bar Position',
-    description: 'Display order for metrics bar (Visitors, Views, etc.)',
-    default: '2',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Component Order',
-  });
+  // Define order based on selected layout
+  const layoutPresets = {
+    default: { controls: 1, metrics: 2, chart: 3, panels: 4 },
+    'metrics-first': { metrics: 1, controls: 2, chart: 3, panels: 4 },
+    'chart-first': { controls: 1, chart: 2, metrics: 3, panels: 4 },
+    'panels-first': { controls: 1, panels: 2, metrics: 3, chart: 4 },
+    minimal: { controls: 1, chart: 2, panels: 3, metrics: 4 },
+  };
 
-  const chartOrder = useDynamicVariant('chart-order', {
-    label: 'Chart Position',
-    description: 'Display order for main chart',
-    default: '3',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Component Order',
-  });
-
-  const panelsOrder = useDynamicVariant('panels-order', {
-    label: 'Panels Position',
-    description: 'Display order for dashboard panels',
-    default: '4',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Component Order',
-  });
+  const currentLayout = layoutPresets[pageLayout];
 
   // Metric Typography Controls
   const metricLabelSize = useDynamicVariant('metric-label-size', {
@@ -144,18 +137,18 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingColor,
   };
 
-  // Create components array with their order values
+  // Create components array with their order values from preset
   const components = [
     {
-      order: parseInt(controlsOrder),
+      order: currentLayout.controls,
       component: <WebsiteControls key="controls" websiteId={websiteId} />,
     },
     {
-      order: parseInt(metricsOrder),
+      order: currentLayout.metrics,
       component: <WebsiteMetricsBar key="metrics" websiteId={websiteId} showChange={true} />,
     },
     {
-      order: parseInt(chartOrder),
+      order: currentLayout.chart,
       component: (
         <Panel key="chart" minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
@@ -163,7 +156,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
       ),
     },
     {
-      order: parseInt(panelsOrder),
+      order: currentLayout.panels,
       component: <WebsitePanels key="panels" websiteId={websiteId} />,
     },
   ];

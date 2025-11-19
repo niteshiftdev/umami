@@ -15,38 +15,47 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   const { pathname } = useNavigation();
   const typography = useContext(TypographyContext);
 
-  // Panel Row Order Controls
-  const pagesSourcesOrder = useDynamicVariant('pages-sources-order', {
-    label: 'Pages/Sources Row Position',
-    description: 'Display order for Pages and Sources panels',
-    default: '1',
-    options: ['1', '2', '3', '4'] as const,
+  // Panel Layout Preset
+  const panelLayout = useDynamicVariant('panel-layout', {
+    label: 'Panel Layout',
+    description: 'Choose different arrangements of dashboard panels',
+    default: 'default',
+    options: [
+      'default',
+      'location-first',
+      'map-first',
+      'sources-first',
+      'traffic-focused',
+    ] as const,
     group: 'Panel Order',
   });
 
-  const environmentLocationOrder = useDynamicVariant('environment-location-order', {
-    label: 'Environment/Location Row Position',
-    description: 'Display order for Environment and Location panels',
-    default: '2',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Panel Order',
-  });
+  // Define panel order based on selected layout
+  const panelPresets = {
+    default: { pagesSources: 1, environmentLocation: 2, worldMapTraffic: 3, events: 4 },
+    'location-first': {
+      environmentLocation: 1,
+      pagesSources: 2,
+      worldMapTraffic: 3,
+      events: 4,
+    },
+    'map-first': { worldMapTraffic: 1, pagesSources: 2, environmentLocation: 3, events: 4 },
+    'sources-first': {
+      pagesSources: 1,
+      worldMapTraffic: 2,
+      environmentLocation: 3,
+      events: 4,
+    },
+    'traffic-focused': {
+      worldMapTraffic: 1,
+      environmentLocation: 2,
+      pagesSources: 3,
+      events: 4,
+    },
+  };
 
-  const worldMapTrafficOrder = useDynamicVariant('worldmap-traffic-order', {
-    label: 'WorldMap/Traffic Row Position',
-    description: 'Display order for WorldMap and Traffic panels',
-    default: '3',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Panel Order',
-  });
+  const currentPanelLayout = panelPresets[panelLayout];
 
-  const eventsOrder = useDynamicVariant('events-order', {
-    label: 'Events Row Position',
-    description: 'Display order for Events panel (share page only)',
-    default: '4',
-    options: ['1', '2', '3', '4'] as const,
-    group: 'Panel Order',
-  });
   const tableProps = {
     websiteId,
     limit: 10,
@@ -69,10 +78,10 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
     color: typography.sectionHeadingColor,
   };
 
-  // Create panel rows array with their order values
+  // Create panel rows array with their order values from preset
   const panelRows = [
     {
-      order: parseInt(pagesSourcesOrder),
+      order: currentPanelLayout.pagesSources,
       component: (
         <GridRow key="pages-sources" layout="two" {...rowProps}>
           <Panel>
@@ -125,7 +134,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       ),
     },
     {
-      order: parseInt(environmentLocationOrder),
+      order: currentPanelLayout.environmentLocation,
       component: (
         <GridRow key="environment-location" layout="two" {...rowProps}>
           <Panel>
@@ -183,7 +192,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       ),
     },
     {
-      order: parseInt(worldMapTrafficOrder),
+      order: currentPanelLayout.worldMapTraffic,
       component: (
         <GridRow key="worldmap-traffic" layout="two-one" {...rowProps}>
           <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
@@ -205,7 +214,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   // Add Events row conditionally
   if (isSharePage) {
     panelRows.push({
-      order: parseInt(eventsOrder),
+      order: currentPanelLayout.events,
       component: (
         <GridRow key="events" layout="two-one" {...rowProps}>
           <Panel>
