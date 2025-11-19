@@ -1,8 +1,9 @@
 'use client';
 
-import { PageBody, Column, DataGrid } from '@umami/react-zen';
-import PageHeader from '@/components/common/PageHeader';
-import Panel from '@/components/common/Panel';
+import { Column, DataTable, DataColumn } from '@umami/react-zen';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Panel } from '@/components/common/Panel';
+import { PageBody } from '@/components/common/PageBody';
 import { formatNumber } from '@/lib/format';
 import styles from './page.module.css';
 
@@ -129,15 +130,20 @@ export default function SaaSDashboard() {
 
       <Column size="two">
         <Panel title="Feature Adoption" subtitle="Usage across core features">
-          <DataGrid
-            columns={[
-              { key: 'feature', label: 'Feature', width: '30%' },
-              { key: 'users', label: 'Users', render: (value) => formatNumber(value), width: '20%' },
-              { key: 'adoption', label: 'Adoption %', render: (value) => `${value}%`, width: '25%' },
-              { key: 'dau', label: 'Daily Active', render: (value) => formatNumber(value), width: '25%' },
-            ]}
-            data={featureAdoption}
-          />
+          <DataTable data={featureAdoption}>
+            <DataColumn id="feature" label="Feature">
+              {(row: any) => row.feature}
+            </DataColumn>
+            <DataColumn id="users" label="Users">
+              {(row: any) => formatNumber(row.users)}
+            </DataColumn>
+            <DataColumn id="adoption" label="Adoption %">
+              {(row: any) => `${row.adoption}%`}
+            </DataColumn>
+            <DataColumn id="dau" label="Daily Active">
+              {(row: any) => formatNumber(row.dau)}
+            </DataColumn>
+          </DataTable>
         </Panel>
 
         <Panel title="Onboarding Funnel" subtitle="User journey to activation">
@@ -158,16 +164,23 @@ export default function SaaSDashboard() {
 
       <Column size="full">
         <Panel title="Metrics by Customer Segment" subtitle="Performance varies by user tier">
-          <DataGrid
-            columns={[
-              { key: 'segment', label: 'Segment', width: '20%' },
-              { key: 'users', label: 'User Count', render: (value) => formatNumber(value), width: '20%' },
-              { key: 'retention', label: 'Retention %', render: (value) => `${value}%`, width: '20%' },
-              { key: 'engagement', label: 'Avg Sessions/Day', render: (value) => value.toFixed(1), width: '20%' },
-              { key: 'churn', label: 'Churn Rate %', render: (value) => `${value}%`, width: '20%' },
-            ]}
-            data={segmentMetrics}
-          />
+          <DataTable data={segmentMetrics}>
+            <DataColumn id="segment" label="Segment">
+              {(row: any) => row.segment}
+            </DataColumn>
+            <DataColumn id="users" label="User Count">
+              {(row: any) => formatNumber(row.users)}
+            </DataColumn>
+            <DataColumn id="retention" label="Retention %">
+              {(row: any) => `${row.retention}%`}
+            </DataColumn>
+            <DataColumn id="engagement" label="Avg Sessions/Day">
+              {(row: any) => row.engagement.toFixed(1)}
+            </DataColumn>
+            <DataColumn id="churn" label="Churn Rate %">
+              {(row: any) => `${row.churn}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
     </PageBody>

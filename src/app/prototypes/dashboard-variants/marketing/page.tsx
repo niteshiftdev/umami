@@ -1,8 +1,9 @@
 'use client';
 
-import { PageBody, Column, DataGrid } from '@umami/react-zen';
-import PageHeader from '@/components/common/PageHeader';
-import Panel from '@/components/common/Panel';
+import { Column, DataTable, DataColumn } from '@umami/react-zen';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Panel } from '@/components/common/Panel';
+import { PageBody } from '@/components/common/PageBody';
 import { formatNumber } from '@/lib/format';
 import styles from './page.module.css';
 
@@ -60,7 +61,7 @@ export default function MarketingDashboard() {
         <Panel title="Total Ad Spend" subtitle="Across all channels">
           <div className={styles.metricLarge}>
             <div className={styles.value}>${formatNumber(summaryMetrics.spend)}</div>
-            <div className={`${styles.change} ${summaryMetrics.spendChange > 0 ? styles.neutral : styles.neutral}`}>
+            <div className={`${styles.change} ${styles.neutral}`}>
               {summaryMetrics.spendChange > 0 ? '↑' : '↓'} {Math.abs(summaryMetrics.spendChange)}% vs last month
             </div>
           </div>
@@ -96,58 +97,84 @@ export default function MarketingDashboard() {
 
       <Column size="full">
         <Panel title="Campaign Performance" subtitle="Detailed metrics for all active campaigns">
-          <DataGrid
-            columns={[
-              { key: 'name', label: 'Campaign Name', width: '25%' },
-              { key: 'spend', label: 'Spend', render: (value) => `$${formatNumber(value)}`, width: '12%' },
-              { key: 'impressions', label: 'Impressions', render: (value) => formatNumber(value), width: '15%' },
-              { key: 'ctr', label: 'CTR %', render: (value) => `${value}%`, width: '10%' },
-              { key: 'conversions', label: 'Conversions', render: (value) => formatNumber(value), width: '12%' },
-              { key: 'roi', label: 'ROI %', render: (value) => `${value}%`, width: '10%' },
-            ]}
-            data={campaignPerformance}
-          />
+          <DataTable data={campaignPerformance}>
+            <DataColumn id="name" label="Campaign Name">
+              {(row: any) => row.name}
+            </DataColumn>
+            <DataColumn id="spend" label="Spend">
+              {(row: any) => `$${formatNumber(row.spend)}`}
+            </DataColumn>
+            <DataColumn id="impressions" label="Impressions">
+              {(row: any) => formatNumber(row.impressions)}
+            </DataColumn>
+            <DataColumn id="ctr" label="CTR %">
+              {(row: any) => `${row.ctr}%`}
+            </DataColumn>
+            <DataColumn id="conversions" label="Conversions">
+              {(row: any) => formatNumber(row.conversions)}
+            </DataColumn>
+            <DataColumn id="roi" label="ROI %">
+              {(row: any) => `${row.roi}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
       <Column size="two">
         <Panel title="Channel Attribution Model" subtitle="First-touch vs last-touch vs linear">
-          <DataGrid
-            columns={[
-              { key: 'channel', label: 'Channel', width: '25%' },
-              { key: 'firstTouch', label: 'First Touch %', render: (value) => `${value}%`, width: '25%' },
-              { key: 'lastTouch', label: 'Last Touch %', render: (value) => `${value}%`, width: '25%' },
-              { key: 'contribution', label: 'Contribution %', render: (value) => `${value}%`, width: '25%' },
-            ]}
-            data={channelAttribution}
-          />
+          <DataTable data={channelAttribution}>
+            <DataColumn id="channel" label="Channel">
+              {(row: any) => row.channel}
+            </DataColumn>
+            <DataColumn id="firstTouch" label="First Touch %">
+              {(row: any) => `${row.firstTouch}%`}
+            </DataColumn>
+            <DataColumn id="lastTouch" label="Last Touch %">
+              {(row: any) => `${row.lastTouch}%`}
+            </DataColumn>
+            <DataColumn id="contribution" label="Contribution %">
+              {(row: any) => `${row.contribution}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
 
         <Panel title="Daily Campaign Metrics" subtitle="Real-time performance tracking">
-          <DataGrid
-            columns={[
-              { key: 'date', label: 'Date', width: '20%' },
-              { key: 'spend', label: 'Spend', render: (value) => `$${formatNumber(value)}`, width: '25%' },
-              { key: 'leads', label: 'Leads', render: (value) => formatNumber(value), width: '25%' },
-              { key: 'cost', label: 'Cost/Lead', render: (value) => `$${value.toFixed(2)}`, width: '30%' },
-            ]}
-            data={dailySpend}
-          />
+          <DataTable data={dailySpend}>
+            <DataColumn id="date" label="Date">
+              {(row: any) => row.date}
+            </DataColumn>
+            <DataColumn id="spend" label="Spend">
+              {(row: any) => `$${formatNumber(row.spend)}`}
+            </DataColumn>
+            <DataColumn id="leads" label="Leads">
+              {(row: any) => formatNumber(row.leads)}
+            </DataColumn>
+            <DataColumn id="cost" label="Cost/Lead">
+              {(row: any) => `$${row.cost.toFixed(2)}`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
       <Column size="full">
         <Panel title="Performance by Audience Segment" subtitle="Efficiency varies by audience targeting">
-          <DataGrid
-            columns={[
-              { key: 'segment', label: 'Audience Segment', width: '25%' },
-              { key: 'spend', label: 'Spend', render: (value) => `$${formatNumber(value)}`, width: '20%' },
-              { key: 'leads', label: 'Leads Generated', render: (value) => formatNumber(value), width: '20%' },
-              { key: 'cpa', label: 'Cost per Lead', render: (value) => `$${value.toFixed(2)}`, width: '18%' },
-              { key: 'conversionRate', label: 'Conversion %', render: (value) => `${value}%`, width: '17%' },
-            ]}
-            data={audienceSegments}
-          />
+          <DataTable data={audienceSegments}>
+            <DataColumn id="segment" label="Audience Segment">
+              {(row: any) => row.segment}
+            </DataColumn>
+            <DataColumn id="spend" label="Spend">
+              {(row: any) => `$${formatNumber(row.spend)}`}
+            </DataColumn>
+            <DataColumn id="leads" label="Leads Generated">
+              {(row: any) => formatNumber(row.leads)}
+            </DataColumn>
+            <DataColumn id="cpa" label="Cost per Lead">
+              {(row: any) => `$${row.cpa.toFixed(2)}`}
+            </DataColumn>
+            <DataColumn id="conversionRate" label="Conversion %">
+              {(row: any) => `${row.conversionRate}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
     </PageBody>

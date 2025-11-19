@@ -1,8 +1,9 @@
 'use client';
 
-import { PageBody, Column, Bar, DataGrid } from '@umami/react-zen';
-import PageHeader from '@/components/common/PageHeader';
-import Panel from '@/components/common/Panel';
+import { Column, DataTable, DataColumn } from '@umami/react-zen';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Panel } from '@/components/common/Panel';
+import { PageBody } from '@/components/common/PageBody';
 import { formatNumber } from '@/lib/format';
 import styles from './page.module.css';
 
@@ -93,15 +94,20 @@ export default function EcommerceDashboard() {
 
       <Column size="full">
         <Panel title="Top Products by Revenue" subtitle="Last 30 days">
-          <DataGrid
-            columns={[
-              { key: 'name', label: 'Product Name', width: '40%' },
-              { key: 'revenue', label: 'Revenue', render: (value) => `$${formatNumber(value)}`, width: '20%' },
-              { key: 'units', label: 'Units Sold', render: (value) => formatNumber(value), width: '20%' },
-              { key: 'conversion', label: 'Conversion %', render: (value) => `${value}%`, width: '20%' },
-            ]}
-            data={topProducts}
-          />
+          <DataTable data={topProducts}>
+            <DataColumn id="name" label="Product Name">
+              {(row: any) => row.name}
+            </DataColumn>
+            <DataColumn id="revenue" label="Revenue">
+              {(row: any) => `$${formatNumber(row.revenue)}`}
+            </DataColumn>
+            <DataColumn id="units" label="Units Sold">
+              {(row: any) => formatNumber(row.units)}
+            </DataColumn>
+            <DataColumn id="conversion" label="Conversion %">
+              {(row: any) => `${row.conversion}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
@@ -120,44 +126,36 @@ export default function EcommerceDashboard() {
         </Panel>
 
         <Panel title="Cart Abandonment by Device" subtitle="Completion rates by device type">
-          <DataGrid
-            columns={[
-              { key: 'device', label: 'Device', width: '33%' },
-              { key: 'abandoned', label: 'Abandoned', render: (value) => formatNumber(value), width: '22%' },
-              { key: 'completed', label: 'Completed', render: (value) => formatNumber(value), width: '22%' },
-              { key: 'rate', label: 'Abandon %', render: (value) => `${value}%`, width: '22%' },
-            ]}
-            data={cartAbandonmentByDevice}
-          />
+          <DataTable data={cartAbandonmentByDevice}>
+            <DataColumn id="device" label="Device">
+              {(row: any) => row.device}
+            </DataColumn>
+            <DataColumn id="abandoned" label="Abandoned">
+              {(row: any) => formatNumber(row.abandoned)}
+            </DataColumn>
+            <DataColumn id="completed" label="Completed">
+              {(row: any) => formatNumber(row.completed)}
+            </DataColumn>
+            <DataColumn id="rate" label="Abandon %">
+              {(row: any) => `${row.rate}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
       <Column size="full">
         <Panel title="Revenue by Marketing Source" subtitle="Performance by traffic source">
-          <DataGrid
-            columns={[
-              { key: 'source', label: 'Traffic Source', width: '30%' },
-              { key: 'revenue', label: 'Revenue', render: (value) => `$${formatNumber(value)}`, width: '25%' },
-              { key: 'contribution', label: 'Contribution %', render: (value) => `${value}%`, width: '25%' },
-              {
-                key: 'bar',
-                label: 'Distribution',
-                width: '20%',
-                render: (_, row) => (
-                  <div style={{ width: '100%', background: '#e0e0e0', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div
-                      style={{
-                        width: `${row.contribution}%`,
-                        background: '#3498db',
-                        height: '100%',
-                      }}
-                    />
-                  </div>
-                ),
-              },
-            ]}
-            data={revenueBySource}
-          />
+          <DataTable data={revenueBySource}>
+            <DataColumn id="source" label="Traffic Source">
+              {(row: any) => row.source}
+            </DataColumn>
+            <DataColumn id="revenue" label="Revenue">
+              {(row: any) => `$${formatNumber(row.revenue)}`}
+            </DataColumn>
+            <DataColumn id="contribution" label="Contribution %">
+              {(row: any) => `${row.contribution}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
     </PageBody>

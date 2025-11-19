@@ -1,8 +1,9 @@
 'use client';
 
-import { PageBody, Column, DataGrid } from '@umami/react-zen';
-import PageHeader from '@/components/common/PageHeader';
-import Panel from '@/components/common/Panel';
+import { Column, DataTable, DataColumn } from '@umami/react-zen';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Panel } from '@/components/common/Panel';
+import { PageBody } from '@/components/common/PageBody';
 import { formatNumber } from '@/lib/format';
 import styles from './page.module.css';
 
@@ -94,57 +95,81 @@ export default function ContentPublisherDashboard() {
 
       <Column size="full">
         <Panel title="Top Performing Content" subtitle="Articles driving the most engagement">
-          <DataGrid
-            columns={[
-              { key: 'title', label: 'Article Title', width: '40%' },
-              { key: 'views', label: 'Views', render: (value) => formatNumber(value), width: '15%' },
-              { key: 'engagement', label: 'Engagement Score', render: (value) => value.toFixed(1), width: '15%' },
-              { key: 'shares', label: 'Social Shares', render: (value) => formatNumber(value), width: '15%' },
-              { key: 'minutes', label: 'Avg Time (min)', render: (value) => value.toFixed(1), width: '15%' },
-            ]}
-            data={topContent}
-          />
+          <DataTable data={topContent}>
+            <DataColumn id="title" label="Article Title">
+              {(row: any) => row.title}
+            </DataColumn>
+            <DataColumn id="views" label="Views">
+              {(row: any) => formatNumber(row.views)}
+            </DataColumn>
+            <DataColumn id="engagement" label="Engagement Score">
+              {(row: any) => row.engagement.toFixed(1)}
+            </DataColumn>
+            <DataColumn id="shares" label="Social Shares">
+              {(row: any) => formatNumber(row.shares)}
+            </DataColumn>
+            <DataColumn id="minutes" label="Avg Time (min)">
+              {(row: any) => row.minutes.toFixed(1)}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
       <Column size="two">
         <Panel title="Top Countries" subtitle="Audience geographic distribution">
-          <DataGrid
-            columns={[
-              { key: 'location', label: 'Country', width: '35%' },
-              { key: 'users', label: 'Users', render: (value) => formatNumber(value), width: '22%' },
-              { key: 'pageviews', label: 'Pageviews', render: (value) => formatNumber(value), width: '22%' },
-              { key: 'bounceRate', label: 'Bounce %', render: (value) => `${value}%`, width: '21%' },
-            ]}
-            data={audienceDemographics}
-          />
+          <DataTable data={audienceDemographics}>
+            <DataColumn id="location" label="Country">
+              {(row: any) => row.location}
+            </DataColumn>
+            <DataColumn id="users" label="Users">
+              {(row: any) => formatNumber(row.users)}
+            </DataColumn>
+            <DataColumn id="pageviews" label="Pageviews">
+              {(row: any) => formatNumber(row.pageviews)}
+            </DataColumn>
+            <DataColumn id="bounceRate" label="Bounce %">
+              {(row: any) => `${row.bounceRate}%`}
+            </DataColumn>
+          </DataTable>
         </Panel>
 
         <Panel title="Traffic by Source" subtitle="Where your audience comes from">
-          <DataGrid
-            columns={[
-              { key: 'source', label: 'Source', width: '25%' },
-              { key: 'users', label: 'Users', render: (value) => formatNumber(value), width: '18%' },
-              { key: 'sessions', label: 'Sessions', render: (value) => formatNumber(value), width: '18%' },
-              { key: 'bounceRate', label: 'Bounce %', render: (value) => `${value}%`, width: '18%' },
-              { key: 'avgSession', label: 'Avg Duration', width: '21%' },
-            ]}
-            data={trafficSources}
-          />
+          <DataTable data={trafficSources}>
+            <DataColumn id="source" label="Source">
+              {(row: any) => row.source}
+            </DataColumn>
+            <DataColumn id="users" label="Users">
+              {(row: any) => formatNumber(row.users)}
+            </DataColumn>
+            <DataColumn id="sessions" label="Sessions">
+              {(row: any) => formatNumber(row.sessions)}
+            </DataColumn>
+            <DataColumn id="bounceRate" label="Bounce %">
+              {(row: any) => `${row.bounceRate}%`}
+            </DataColumn>
+            <DataColumn id="avgSession" label="Avg Duration">
+              {(row: any) => row.avgSession}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
 
       <Column size="full">
         <Panel title="Content Publishing Trends" subtitle="Output and performance over time">
-          <DataGrid
-            columns={[
-              { key: 'week', label: 'Period', width: '20%' },
-              { key: 'articles', label: 'Articles Published', render: (value) => formatNumber(value), width: '20%' },
-              { key: 'views', label: 'Total Views', render: (value) => formatNumber(value), width: '30%' },
-              { key: 'avgEngagement', label: 'Avg Engagement', render: (value) => value.toFixed(1), width: '30%' },
-            ]}
-            data={contentPerformanceTrend}
-          />
+          <DataTable data={contentPerformanceTrend}>
+            <DataColumn id="week" label="Period">
+              {(row: any) => row.week}
+            </DataColumn>
+            <DataColumn id="articles" label="Articles Published">
+              {(row: any) => formatNumber(row.articles)}
+            </DataColumn>
+            <DataColumn id="views" label="Total Views">
+              {(row: any) => formatNumber(row.views)}
+            </DataColumn>
+            <DataColumn id="avgEngagement" label="Avg Engagement">
+              {(row: any) => row.avgEngagement.toFixed(1)}
+            </DataColumn>
+          </DataTable>
         </Panel>
       </Column>
     </PageBody>
