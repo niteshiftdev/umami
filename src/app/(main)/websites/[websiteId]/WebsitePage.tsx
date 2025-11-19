@@ -8,6 +8,7 @@ import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
+import type { Spacing } from '@umami/react-zen';
 
 export const TypographyContext = createContext<{
   metricLabelSize?: string;
@@ -19,6 +20,11 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
+  // Spacing controls
+  mainGap?: Spacing;
+  panelPadding?: Spacing;
+  chartMinHeight?: string;
+  gridGap?: Spacing;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -99,6 +105,39 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Spacing & Layout Controls
+  const mainGap = useDynamicVariant('main-gap', {
+    label: 'Main Column Gap',
+    description: 'Vertical spacing between main sections (controls, metrics, chart, panels)',
+    default: '3',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const,
+    group: 'Spacing & Layout',
+  });
+
+  const panelPadding = useDynamicVariant('panel-padding', {
+    label: 'Panel Padding',
+    description: 'Inner padding for all panels',
+    default: '',
+    options: ['', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const,
+    group: 'Spacing & Layout',
+  });
+
+  const chartMinHeight = useDynamicVariant('chart-min-height', {
+    label: 'Chart Min Height',
+    description: 'Minimum height for the main chart panel',
+    default: '520px',
+    options: ['300px', '400px', '520px', '600px', '700px', '800px'] as const,
+    group: 'Spacing & Layout',
+  });
+
+  const gridGap = useDynamicVariant('grid-gap', {
+    label: 'Grid Gap',
+    description: 'Spacing between panels in the metrics grid',
+    default: '3',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const,
+    group: 'Spacing & Layout',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -109,14 +148,18 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
+    mainGap,
+    panelPadding,
+    chartMinHeight,
+    gridGap,
   };
 
   return (
     <TypographyContext.Provider value={typographyConfig}>
-      <Column gap>
+      <Column gap={mainGap as Spacing}>
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-        <Panel minHeight="520px">
+        <Panel minHeight={chartMinHeight} padding={panelPadding as Spacing}>
           <WebsiteChart websiteId={websiteId} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
