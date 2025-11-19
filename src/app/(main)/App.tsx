@@ -279,9 +279,175 @@ export function App({ children }) {
         color: currentTheme.text,
         minHeight: '100vh',
         position: 'relative',
-      }}
+        '--theme-background': currentTheme.background,
+        '--theme-text': currentTheme.text,
+        '--theme-primary': currentTheme.primary || '#3e63dd',
+        '--theme-secondary': currentTheme.secondary || '#30a46c',
+        '--theme-accent': currentTheme.accent || '#f7768e',
+      } as React.CSSProperties}
     >
       <BackgroundAnimation />
+      <style jsx global>{`
+        ${
+          theme !== 'default'
+            ? `
+          /* Force theme colors on all elements */
+          * {
+            border-color: ${currentTheme.text}22 !important;
+          }
+
+          /* Apply theme to body and root */
+          body {
+            background-color: ${currentTheme.background} !important;
+            color: ${currentTheme.text} !important;
+          }
+
+          /* Apply theme to all containers with backgrounds */
+          div[style*='background'],
+          section[style*='background'],
+          article[style*='background'] {
+            background-color: ${currentTheme.background} !important;
+          }
+
+          /* Apply theme to @umami/react-zen Column/Row components */
+          [class*='Column'],
+          [class*='Row'],
+          [class*='Grid'] {
+            background-color: ${currentTheme.background};
+          }
+
+          /* Sidebar specific */
+          nav,
+          aside,
+          [role='navigation'],
+          [class*='Sidebar'] {
+            background-color: ${currentTheme.background} !important;
+            color: ${currentTheme.text} !important;
+          }
+
+          /* Sidebar items */
+          [class*='SidebarItem'],
+          [class*='SidebarHeader'],
+          [class*='SidebarSection'] {
+            color: ${currentTheme.text} !important;
+          }
+
+          [class*='SidebarItem']:hover {
+            background-color: ${currentTheme.primary}22 !important;
+          }
+
+          [class*='SidebarItem'][class*='selected'] {
+            background-color: ${currentTheme.primary}33 !important;
+            color: ${currentTheme.primary} !important;
+          }
+
+          /* All text elements */
+          h1, h2, h3, h4, h5, h6,
+          p, span, div, label, a,
+          button, input, textarea, select {
+            color: ${currentTheme.text};
+          }
+
+          /* Links */
+          a {
+            color: ${currentTheme.primary};
+          }
+
+          a:hover {
+            color: ${currentTheme.secondary};
+          }
+
+          /* Buttons */
+          button {
+            color: ${currentTheme.text};
+          }
+
+          button[class*='primary'] {
+            background-color: ${currentTheme.primary} !important;
+            color: ${currentTheme.background} !important;
+          }
+
+          /* Charts - target SVG and canvas elements */
+          canvas {
+            background-color: transparent !important;
+          }
+
+          svg {
+            background-color: transparent !important;
+          }
+
+          svg text {
+            fill: ${currentTheme.text} !important;
+          }
+
+          svg line,
+          svg path {
+            stroke: ${currentTheme.text}44 !important;
+          }
+
+          /* Chart containers */
+          [class*='Chart'],
+          [class*='chart'] {
+            background-color: transparent !important;
+            color: ${currentTheme.text} !important;
+          }
+
+          /* Recharts specific */
+          .recharts-wrapper {
+            background-color: transparent !important;
+          }
+
+          .recharts-surface {
+            background-color: transparent !important;
+          }
+
+          .recharts-cartesian-axis-tick text,
+          .recharts-text {
+            fill: ${currentTheme.text} !important;
+          }
+
+          .recharts-legend-item-text {
+            color: ${currentTheme.text} !important;
+          }
+
+          /* Ensure panels are transparent or themed */
+          [class*='Panel'],
+          [role='region'] {
+            background-color: ${currentTheme.background}dd !important;
+            backdrop-filter: blur(10px);
+          }
+
+          /* Table styling */
+          table {
+            color: ${currentTheme.text};
+          }
+
+          table th {
+            color: ${currentTheme.text}dd;
+          }
+
+          table tr:hover {
+            background-color: ${currentTheme.primary}11;
+          }
+
+          /* Input elements */
+          input,
+          select,
+          textarea {
+            background-color: ${currentTheme.background}cc !important;
+            border-color: ${currentTheme.text}33 !important;
+            color: ${currentTheme.text} !important;
+          }
+
+          input:focus,
+          select:focus,
+          textarea:focus {
+            border-color: ${currentTheme.primary} !important;
+          }
+        `
+            : ''
+        }
+      `}</style>
       <style jsx>{`
         @keyframes gradientWave {
           0%,
@@ -367,15 +533,34 @@ export function App({ children }) {
         rows={{ xs: 'auto 1fr', lg: '1fr' }}
         height={{ xs: 'auto', lg: '100vh' }}
         width="100%"
-        style={{ position: 'relative', zIndex: 1 }}
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          backgroundColor: 'transparent',
+        }}
       >
-        <Row display={{ xs: 'flex', lg: 'none' }} alignItems="center" gap padding="3">
+        <Row
+          display={{ xs: 'flex', lg: 'none' }}
+          alignItems="center"
+          gap
+          padding="3"
+          style={{ backgroundColor: 'transparent' }}
+        >
           <MobileNav />
         </Row>
-        <Column display={{ xs: 'none', lg: 'flex' }}>
+        <Column
+          display={{ xs: 'none', lg: 'flex' }}
+          style={{ backgroundColor: 'transparent' }}
+        >
           <SideNav />
         </Column>
-        <Column alignItems="center" overflowY="auto" overflowX="hidden" position="relative">
+        <Column
+          alignItems="center"
+          overflowY="auto"
+          overflowX="hidden"
+          position="relative"
+          style={{ backgroundColor: 'transparent' }}
+        >
           {children}
         </Column>
         <UpdateNotice user={user} config={config} />
