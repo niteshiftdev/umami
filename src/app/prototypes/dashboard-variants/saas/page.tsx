@@ -55,7 +55,7 @@ export default function SaaSDashboard() {
 
   return (
     <PageBody>
-      <PageHeader title="SaaS Product Analytics Dashboard" subtitle="User engagement, retention, and growth metrics" />
+      <PageHeader title="SaaS Product Analytics Dashboard" description="User engagement, retention, and growth metrics" />
 
       <Column size="two">
         <Panel title="Active Users (Daily)" subtitle="Users active today">

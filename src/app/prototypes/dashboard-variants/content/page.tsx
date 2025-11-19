@@ -53,7 +53,7 @@ export default function ContentPublisherDashboard() {
 
   return (
     <PageBody>
-      <PageHeader title="Content Publisher Analytics Dashboard" subtitle="Audience engagement and content performance" />
+      <PageHeader title="Content Publisher Analytics Dashboard" description="Audience engagement and content performance" />
 
       <Column size="two">
         <Panel title="Pageviews" subtitle="Total content views">

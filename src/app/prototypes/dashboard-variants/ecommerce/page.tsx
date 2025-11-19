@@ -52,7 +52,7 @@ export default function EcommerceDashboard() {
 
   return (
     <PageBody>
-      <PageHeader title="E-Commerce Analytics Dashboard" subtitle="Product sales and conversion performance" />
+      <PageHeader title="E-Commerce Analytics Dashboard" description="Product sales and conversion performance" />
 
       <Column size="two">
         <Panel title="Revenue" subtitle="Total sales this month">

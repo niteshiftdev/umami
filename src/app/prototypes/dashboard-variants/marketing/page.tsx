@@ -55,7 +55,7 @@ export default function MarketingDashboard() {
 
   return (
     <PageBody>
-      <PageHeader title="Marketing Analytics Dashboard" subtitle="Campaign performance and ROI tracking" />
+      <PageHeader title="Marketing Analytics Dashboard" description="Campaign performance and ROI tracking" />
 
       <Column size="two">
         <Panel title="Total Ad Spend" subtitle="Across all channels">
