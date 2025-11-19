@@ -35,6 +35,24 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
     color: typography.sectionHeadingColor,
   };
 
+  const tabStyle = {
+    fontSize:
+      typography.tabTextSize === '1'
+        ? '12px'
+        : typography.tabTextSize === '3'
+          ? '16px'
+          : '14px',
+    fontWeight:
+      typography.tabTextWeight === 'normal'
+        ? 400
+        : typography.tabTextWeight === 'medium'
+          ? 500
+          : typography.tabTextWeight === 'semibold'
+            ? 600
+            : 700,
+    color: typography.tabTextColor,
+  };
+
   return (
     <Grid gap="3">
       <GridRow layout="two" {...rowProps}>
@@ -44,9 +62,15 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Heading>
           <Tabs>
             <TabList>
-              <Tab id="path">{formatMessage(labels.path)}</Tab>
-              <Tab id="entry">{formatMessage(labels.entry)}</Tab>
-              <Tab id="exit">{formatMessage(labels.exit)}</Tab>
+              <Tab id="path" style={tabStyle}>
+                {formatMessage(labels.path)}
+              </Tab>
+              <Tab id="entry" style={tabStyle}>
+                {formatMessage(labels.entry)}
+              </Tab>
+              <Tab id="exit" style={tabStyle}>
+                {formatMessage(labels.exit)}
+              </Tab>
             </TabList>
             <TabPanel id="path">
               <MetricsTable type="path" title={formatMessage(labels.path)} {...tableProps} />
@@ -65,8 +89,12 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Heading>
           <Tabs>
             <TabList>
-              <Tab id="referrer">{formatMessage(labels.referrers)}</Tab>
-              <Tab id="channel">{formatMessage(labels.channels)}</Tab>
+              <Tab id="referrer" style={tabStyle}>
+                {formatMessage(labels.referrers)}
+              </Tab>
+              <Tab id="channel" style={tabStyle}>
+                {formatMessage(labels.channels)}
+              </Tab>
             </TabList>
             <TabPanel id="referrer">
               <MetricsTable
@@ -89,9 +117,15 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Heading>
           <Tabs>
             <TabList>
-              <Tab id="browser">{formatMessage(labels.browsers)}</Tab>
-              <Tab id="os">{formatMessage(labels.os)}</Tab>
-              <Tab id="device">{formatMessage(labels.devices)}</Tab>
+              <Tab id="browser" style={tabStyle}>
+                {formatMessage(labels.browsers)}
+              </Tab>
+              <Tab id="os" style={tabStyle}>
+                {formatMessage(labels.os)}
+              </Tab>
+              <Tab id="device" style={tabStyle}>
+                {formatMessage(labels.devices)}
+              </Tab>
             </TabList>
             <TabPanel id="browser">
               <MetricsTable type="browser" title={formatMessage(labels.browser)} {...tableProps} />
@@ -111,9 +145,15 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Heading>
           <Tabs>
             <TabList>
-              <Tab id="country">{formatMessage(labels.countries)}</Tab>
-              <Tab id="region">{formatMessage(labels.regions)}</Tab>
-              <Tab id="city">{formatMessage(labels.cities)}</Tab>
+              <Tab id="country" style={tabStyle}>
+                {formatMessage(labels.countries)}
+              </Tab>
+              <Tab id="region" style={tabStyle}>
+                {formatMessage(labels.regions)}
+              </Tab>
+              <Tab id="city" style={tabStyle}>
+                {formatMessage(labels.cities)}
+              </Tab>
             </TabList>
             <TabPanel id="country">
               <MetricsTable type="country" title={formatMessage(labels.country)} {...tableProps} />
