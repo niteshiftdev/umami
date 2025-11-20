@@ -117,7 +117,9 @@ export function PageviewsChart({
       if (!onBarClick) return;
       const value = raw?.d || raw?.x;
       if (!value) return;
-      onBarClick(new Date(value));
+      const timestamp = typeof value === 'string' ? new Date(value) : new Date(value);
+      if (Number.isNaN(timestamp.getTime())) return;
+      onBarClick(timestamp);
     },
     [onBarClick],
   );
