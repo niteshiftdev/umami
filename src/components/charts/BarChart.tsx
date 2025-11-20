@@ -30,7 +30,11 @@ export interface BarChartProps extends ChartProps {
   YAxisType?: string;
   minDate?: Date;
   maxDate?: Date;
-  annotations?: { timestamp: string | number | Date; color?: string; title?: string }[];
+  annotationGroups?: Record<
+    string,
+    { color?: string; items: { title: string; description?: string | null }[] }
+  >;
+  onBarClick?: (payload: { label: string; raw: any }) => void;
 }
 
 export function BarChart({
@@ -44,7 +48,8 @@ export function BarChart({
   minDate,
   maxDate,
   currency,
-  annotations,
+  annotationGroups,
+  onBarClick,
   ...props
 }: BarChartProps) {
   const [tooltip, setTooltip] = useState(null);
@@ -52,10 +57,19 @@ export function BarChart({
   const { locale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
+  const annotationMarks = useMemo(() => {
+    if (!annotationGroups) return [];
+    return Object.entries(annotationGroups).map(([label, group]) => ({
+      label,
+      color: group.color,
+      count: group.items.length,
+    }));
+  }, [annotationGroups]);
+
   const chartOptions: any = useMemo(() => {
     return {
       __id: new Date().getTime(),
-      annotationMarks: annotations,
+      annotationMarks,
       scales: {
         x: {
           type: XAxisType,
@@ -97,10 +111,12 @@ export function BarChart({
         },
       },
     };
-  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotations]);
+  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks]);
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;
+    const label = dataPoints?.[0]?.label;
+    const group = label ? annotationGroups?.[label] : undefined;
 
     setTooltip(
       opacity
@@ -114,6 +130,7 @@ export function BarChart({
             value: currency
               ? formatLongCurrency(dataPoints[0].raw.y, currency)
               : `${formatLongNumber(dataPoints[0].raw.y)} ${dataPoints[0].dataset.label}`,
+            annotations: group?.items,
           }
         : null,
     );
@@ -127,6 +144,16 @@ export function BarChart({
         chartData={chartData}
         chartOptions={chartOptions}
         onTooltip={handleTooltip}
+        onElementClick={({ elements, chart: chartInstance }) => {
+          if (!onBarClick || !elements.length) return;
+          const { datasetIndex, index } = elements[0];
+          const label = chartInstance.data.labels?.[index];
+          const dataset = chartInstance.data.datasets?.[datasetIndex];
+          const raw = dataset?.data?.[index];
+          if (label !== undefined) {
+            onBarClick({ label: label as string, raw });
+          }
+        }}
       />
       {tooltip && <ChartTooltip {...tooltip} />}
     </>

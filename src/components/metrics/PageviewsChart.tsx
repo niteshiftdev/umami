@@ -4,7 +4,8 @@ import { BarChart, BarChartProps } from '@/components/charts/BarChart';
 import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
-import { generateTimeSeries } from '@/lib/date';
+import { generateTimeSeries, formatDate, DATE_FORMATS } from '@/lib/date';
+import type { WebsiteAnnotation } from '@/components/hooks/queries/useWebsiteAnnotationsQuery';
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
@@ -16,7 +17,8 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
-  annotations?: { timestamp: string | number | Date; color?: string; title?: string }[];
+  annotations?: WebsiteAnnotation[];
+  onBarClick?: (timestamp: Date) => void;
 }
 
 export function PageviewsChart({
@@ -25,6 +27,7 @@ export function PageviewsChart({
   minDate,
   maxDate,
   annotations,
+  onBarClick,
   ...props
 }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
@@ -92,6 +95,33 @@ export function PageviewsChart({
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
+  const annotationGroups = useMemo(() => {
+    if (!annotations || annotations.length === 0) return undefined;
+    const fmt = DATE_FORMATS[unit] || DATE_FORMATS.day;
+    const groups: Record<
+      string,
+      { color?: string; items: { title: string; description?: string | null }[] }
+    > = {};
+    annotations.forEach(annotation => {
+      const key = formatDate(annotation.timestamp, fmt, locale);
+      if (!groups[key]) {
+        groups[key] = { color: annotation.color, items: [] };
+      }
+      groups[key].items.push({ title: annotation.title, description: annotation.description });
+    });
+    return groups;
+  }, [annotations, unit, locale]);
+
+  const handleBarClick = useCallback(
+    ({ raw }: { raw: any }) => {
+      if (!onBarClick) return;
+      const value = raw?.d || raw?.x;
+      if (!value) return;
+      onBarClick(new Date(value));
+    },
+    [onBarClick],
+  );
+
   return (
     <BarChart
       {...props}
@@ -99,7 +129,8 @@ export function PageviewsChart({
       unit={unit}
       minDate={minDate}
       maxDate={maxDate}
-      annotations={annotations}
+      annotationGroups={annotationGroups}
+      onBarClick={handleBarClick}
       renderXLabel={renderXLabel}
       height="400px"
     />
