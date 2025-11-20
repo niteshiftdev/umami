@@ -16,9 +16,10 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  chartType?: 'bar' | 'line';
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar', ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
@@ -31,22 +32,24 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
       __id: new Date().getTime(),
       datasets: [
         {
-          type: 'bar',
+          type: chartType,
           label: formatMessage(labels.visitors),
           data: generateTimeSeries(data.sessions, minDate, maxDate, unit, dateLocale),
-          borderWidth: 1,
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
+          borderWidth: chartType === 'line' ? 2 : 1,
+          barPercentage: chartType === 'bar' ? 0.9 : undefined,
+          categoryPercentage: chartType === 'bar' ? 0.9 : undefined,
+          tension: chartType === 'line' ? 0.4 : undefined,
           ...colors.chart.visitors,
           order: 3,
         },
         {
-          type: 'bar',
+          type: chartType,
           label: formatMessage(labels.views),
           data: generateTimeSeries(data.pageviews, minDate, maxDate, unit, dateLocale),
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
-          borderWidth: 1,
+          barPercentage: chartType === 'bar' ? 0.9 : undefined,
+          categoryPercentage: chartType === 'bar' ? 0.9 : undefined,
+          borderWidth: chartType === 'line' ? 2 : 1,
+          tension: chartType === 'line' ? 0.4 : undefined,
           ...colors.chart.views,
           order: 4,
         },
@@ -80,7 +83,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           : []),
       ],
     };
-  }, [data, locale]);
+  }, [data, locale, chartType]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 

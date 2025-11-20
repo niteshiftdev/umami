@@ -160,6 +160,15 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Layout - Padding',
   });
 
+  // Chart Type Control
+  const chartType = useDynamicVariant('chart-type', {
+    label: 'Chart Type',
+    description: 'Toggle between bar chart and line chart for pageviews',
+    default: 'bar',
+    options: ['bar', 'line'] as const,
+    group: 'Chart Display',
+  });
+
   const paddingConfig = {
     pageBodyPaddingX,
     pageBodyPaddingBottom,
@@ -175,7 +184,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
           <WebsiteControls websiteId={websiteId} />
           <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
           <Panel minHeight="520px" paddingX={panelPaddingX} paddingY={panelPaddingY}>
-            <WebsiteChart websiteId={websiteId} />
+            <WebsiteChart websiteId={websiteId} chartType={chartType} />
           </Panel>
           <WebsitePanels websiteId={websiteId} />
           <ExpandedViewModal websiteId={websiteId} />
