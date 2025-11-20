@@ -13,11 +13,11 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     <Column gap>
       <WebsiteControls websiteId={websiteId} />
       <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-      <Panel paddingX="0" paddingY="0" minHeight="400px">
-        <WorldMap websiteId={websiteId} />
-      </Panel>
       <Panel minHeight="520px">
         <WebsiteChart websiteId={websiteId} />
+      </Panel>
+      <Panel paddingX="0" paddingY="0" minHeight="400px">
+        <WorldMap websiteId={websiteId} />
       </Panel>
       <WebsitePanels websiteId={websiteId} />
       <ExpandedViewModal websiteId={websiteId} />
