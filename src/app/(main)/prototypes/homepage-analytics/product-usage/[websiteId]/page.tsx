@@ -84,7 +84,7 @@ export default function ProductUsagePage({ params }: { params: { websiteId: stri
         </GridRow>
 
         {/* Feature Usage Breakdown */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Top Features by Usage" subtitle="Last 30 days">
             <MetricsTable data={featureUsageData} />
           </Panel>
@@ -94,7 +94,7 @@ export default function ProductUsagePage({ params }: { params: { websiteId: stri
         </GridRow>
 
         {/* User Segments */}
-        <GridRow columns="two-one">
+        <GridRow layout="two-one">
           <Panel title="User Engagement Segments" subtitle="Based on daily activity">
             <MetricsTable data={userSegmentData} />
           </Panel>
@@ -135,7 +135,7 @@ export default function ProductUsagePage({ params }: { params: { websiteId: stri
         </GridRow>
 
         {/* Engagement Patterns */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Weekly Engagement Patterns" subtitle="Activity heatmap by hour and day">
             <WeeklyTraffic />
           </Panel>

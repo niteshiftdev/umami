@@ -108,7 +108,7 @@ export default function MarketingAttributionPage({ params }: { params: { website
         </GridRow>
 
         {/* Traffic Sources & Campaigns */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Traffic Sources" subtitle="Visits by marketing channel (last 30 days)">
             <MetricsTable data={trafficSourceData} />
           </Panel>
@@ -118,7 +118,7 @@ export default function MarketingAttributionPage({ params }: { params: { website
         </GridRow>
 
         {/* Landing Pages & UTM Tracking */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Top Landing Pages" subtitle="Conversion rate by entry page">
             <MetricsTable data={landingPageData} />
           </Panel>
@@ -128,7 +128,7 @@ export default function MarketingAttributionPage({ params }: { params: { website
         </GridRow>
 
         {/* Multi-touch Attribution */}
-        <GridRow columns="two-one">
+        <GridRow layout="two-one">
           <Panel title="Conversion Path Analysis" subtitle="Most common multi-touch journeys">
             <MetricsTable data={conversionPathData} />
           </Panel>
@@ -158,7 +158,7 @@ export default function MarketingAttributionPage({ params }: { params: { website
         </GridRow>
 
         {/* Marketing Trends */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Traffic Trends by Source" subtitle="30-day traffic patterns">
             <PageviewsChart websiteId={params.websiteId} />
           </Panel>

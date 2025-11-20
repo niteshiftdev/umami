@@ -116,7 +116,7 @@ export default function RevenueIntelligencePage({ params }: { params: { websiteI
         </GridRow>
 
         {/* Revenue Breakdown */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Revenue by Customer Segment" subtitle="Annual recurring revenue">
             <MetricsTable data={segmentRevenueData} />
           </Panel>
@@ -126,7 +126,7 @@ export default function RevenueIntelligencePage({ params }: { params: { websiteI
         </GridRow>
 
         {/* Growth & Risk */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Expansion Opportunities" subtitle="Potential upsell revenue">
             <MetricsTable data={expansionOpportunities} />
           </Panel>
@@ -136,7 +136,7 @@ export default function RevenueIntelligencePage({ params }: { params: { websiteI
         </GridRow>
 
         {/* Product & Pipeline */}
-        <GridRow columns="two-one">
+        <GridRow layout="two-one">
           <Panel title="Revenue by Product Line" subtitle="ARR breakdown">
             <MetricsTable data={productRevenueData} />
           </Panel>
@@ -166,7 +166,7 @@ export default function RevenueIntelligencePage({ params }: { params: { websiteI
         </GridRow>
 
         {/* Pipeline & Health */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Sales Pipeline" subtitle="Current quarter opportunity value">
             <MetricsTable data={pipelineHealthData} />
           </Panel>

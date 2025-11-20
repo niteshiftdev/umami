@@ -116,7 +116,7 @@ export default function ExecutiveHybridPage({ params }: { params: { websiteId: s
         </GridRow>
 
         {/* Business Health & Strategic Initiatives */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Business Health Scorecard" subtitle="Key performance indicators">
             <MetricsTable data={healthScorecardData} />
           </Panel>
@@ -126,7 +126,7 @@ export default function ExecutiveHybridPage({ params }: { params: { websiteId: s
         </GridRow>
 
         {/* Growth Analysis */}
-        <GridRow columns="two-one">
+        <GridRow layout="two-one">
           <Panel title="Revenue Growth Drivers" subtitle="Contribution to total revenue growth">
             <MetricsTable data={growthDriversData} />
           </Panel>
@@ -160,7 +160,7 @@ export default function ExecutiveHybridPage({ params }: { params: { websiteId: s
         </GridRow>
 
         {/* Customer Funnel & Risk/Opportunity */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="End-to-End Customer Funnel" subtitle="From visitor to engaged user">
             <MetricsTable data={funnelPerformanceData} />
           </Panel>
@@ -177,7 +177,7 @@ export default function ExecutiveHybridPage({ params }: { params: { websiteId: s
         </GridRow>
 
         {/* Trends */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Revenue & Growth Trends" subtitle="30-day performance">
             <EventsChart websiteId={params.websiteId} />
           </Panel>
@@ -187,7 +187,7 @@ export default function ExecutiveHybridPage({ params }: { params: { websiteId: s
         </GridRow>
 
         {/* Geographic & Competitive */}
-        <GridRow columns="two">
+        <GridRow layout="two">
           <Panel title="Geographic Expansion Status" subtitle="Revenue by market maturity">
             <MetricsTable data={geoExpansionData} />
           </Panel>
