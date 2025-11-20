@@ -98,27 +98,20 @@ fi
 # - build-tracker: bundles tracker script (needed for tracking functionality)
 # - build-geo: processes geographic data (needed for geo features)
 # We skip build-app (production Next.js build) since dev mode compiles on-the-fly
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Validating environment..."
-  if ! pnpm run check-env; then
-    log_error "Environment validation failed"
-    exit 1
-  fi
-  log "✓ Environment validated"
-else
-  log "Skipping check-env (prebaked fast path)"
-fi
 
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building database client..."
-  if ! pnpm run build-db; then
-    log_error "Database client build failed"
-    exit 1
-  fi
-  log "✓ Database client built"
-else
-  log "Skipping build-db (prebaked Prisma client detected)"
+log "Validating environment..."
+if ! pnpm run check-env; then
+  log_error "Environment validation failed"
+  exit 1
 fi
+log "✓ Environment validated"
+
+log "Building database client..."
+if ! pnpm run build-db; then
+  log_error "Database client build failed"
+  exit 1
+fi
+log "✓ Database client built"
 
 log "Checking database and applying migrations..."
 if ! pnpm run check-db; then
@@ -127,27 +120,19 @@ if ! pnpm run check-db; then
 fi
 log "✓ Database migrations applied"
 
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building tracker script..."
-  if ! pnpm run build-tracker; then
-    log_error "Tracker build failed"
-    exit 1
-  fi
-  log "✓ Tracker script built"
-else
-  log "Skipping tracker build (prebaked bundle detected)"
+log "Building tracker script..."
+if ! pnpm run build-tracker; then
+  log_error "Tracker build failed"
+  exit 1
 fi
+log "✓ Tracker script built"
 
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building geo database..."
-  if ! pnpm run build-geo; then
-    log_error "Geo build failed"
-    exit 1
-  fi
-  log "✓ Geo database built"
-else
-  log "Skipping geo build (prebaked GeoLite database detected)"
+log "Building geo database..."
+if ! pnpm run build-geo; then
+  log_error "Geo build failed"
+  exit 1
 fi
+log "✓ Geo database built"
 
 # 6. Start the dev server in the background
 log "Starting development server on port 3001 (with hot reload)..."
