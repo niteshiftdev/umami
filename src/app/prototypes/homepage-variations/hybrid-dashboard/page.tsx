@@ -103,17 +103,11 @@ export default function HybridDashboardPage() {
   // Unified funnel: Marketing -> Product -> Revenue
   const unifiedFunnelData = useMemo(() => {
     return {
+      labels: ['Website Visitors', 'Sign Ups', 'Active Users', 'Paying Customers', 'High-Value Accounts'],
       datasets: [
         {
-          type: 'bar',
           label: 'User Count',
-          data: [
-            { x: 'Website Visitors', y: 162847 },
-            { x: 'Sign Ups', y: 28934 },
-            { x: 'Active Users', y: 14287 },
-            { x: 'Paying Customers', y: 6834 },
-            { x: 'High-Value Accounts', y: 892 },
-          ],
+          data: [162847, 28934, 14287, 6834, 892],
           backgroundColor: CHART_COLORS[1],
           borderColor: CHART_COLORS[1],
           borderWidth: 1,
