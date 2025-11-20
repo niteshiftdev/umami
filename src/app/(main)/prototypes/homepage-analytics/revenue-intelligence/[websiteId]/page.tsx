@@ -1,12 +1,12 @@
 'use client';
 import { useMessages } from '@/components/hooks';
-import PageHeader from '@/components/layout/PageHeader';
-import PageBody from '@/components/layout/PageBody';
-import GridRow from '@/components/layout/GridRow';
-import Panel from '@/components/common/Panel';
-import MetricCard from '@/components/metrics/MetricCard';
-import MetricsTable from '@/components/metrics/MetricsTable';
-import EventsChart from '@/components/metrics/EventsChart';
+import { PageHeader } from '@/components/common/PageHeader';
+import { PageBody } from '@/components/common/PageBody';
+import { GridRow } from '@/components/common/GridRow';
+import { Panel } from '@/components/common/Panel';
+import { MetricCard } from '@/components/metrics/MetricCard';
+import { MetricsTable } from '@/components/metrics/MetricsTable';
+import { EventsChart } from '@/components/metrics/EventsChart';
 
 export default function RevenueIntelligencePage({ params }: { params: { websiteId: string } }) {
   const { formatMessage, labels } = useMessages();

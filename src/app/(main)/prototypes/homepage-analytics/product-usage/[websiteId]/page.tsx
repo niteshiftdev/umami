@@ -1,14 +1,14 @@
 'use client';
 import { useMessages } from '@/components/hooks';
-import PageHeader from '@/components/layout/PageHeader';
-import PageBody from '@/components/layout/PageBody';
-import GridRow from '@/components/layout/GridRow';
-import Panel from '@/components/common/Panel';
-import MetricCard from '@/components/metrics/MetricCard';
-import MetricsTable from '@/components/metrics/MetricsTable';
-import EventsChart from '@/components/metrics/EventsChart';
-import WeeklyTraffic from '@/components/metrics/WeeklyTraffic';
-import WorldMap from '@/components/metrics/WorldMap';
+import { PageHeader } from '@/components/common/PageHeader';
+import { PageBody } from '@/components/common/PageBody';
+import { GridRow } from '@/components/common/GridRow';
+import { Panel } from '@/components/common/Panel';
+import { MetricCard } from '@/components/metrics/MetricCard';
+import { MetricsTable } from '@/components/metrics/MetricsTable';
+import { EventsChart } from '@/components/metrics/EventsChart';
+import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
+import { WorldMap } from '@/components/metrics/WorldMap';
 
 export default function ProductUsagePage({ params }: { params: { websiteId: string } }) {
   const { formatMessage, labels } = useMessages();
