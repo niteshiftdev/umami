@@ -93,11 +93,11 @@ fi
 # 5. Build only what's needed for dev (skip production Next.js build)
 # For dev mode we need:
 # - check-env: validates environment variables
-# - build-db: generates Prisma client and builds database
-# - check-db: verifies database connection and applies migrations
+# - build-db: generates Prisma client
 # - build-tracker: bundles tracker script (needed for tracking functionality)
 # - build-geo: processes geographic data (needed for geo features)
 # We skip build-app (production Next.js build) since dev mode compiles on-the-fly
+# Note: Database migrations are handled separately outside this script
 
 log "Validating environment..."
 if ! pnpm run check-env; then
@@ -112,13 +112,6 @@ if ! pnpm run build-db; then
   exit 1
 fi
 log "✓ Database client built"
-
-log "Checking database and applying migrations..."
-if ! pnpm run check-db; then
-  log_error "Database check failed"
-  exit 1
-fi
-log "✓ Database migrations applied"
 
 log "Building tracker script..."
 if ! pnpm run build-tracker; then
