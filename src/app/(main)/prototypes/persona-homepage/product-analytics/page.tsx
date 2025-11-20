@@ -22,6 +22,10 @@ export default function ProductAnalyticsHomepage() {
     return Math.floor(base + Math.sin(index * 0.5) * variance + (index % 7 === 0 || index % 7 === 6 ? variance * 0.5 : 0));
   };
 
+  // Calculate date range for charts
+  const minDate = new Date(last30Days[0]);
+  const maxDate = new Date(last30Days[last30Days.length - 1]);
+
   // User engagement metrics
   const dailyActiveUsers = last30Days.map((date, i) => ({
     x: date,
@@ -130,6 +134,8 @@ export default function ProductAnalyticsHomepage() {
               ],
             }}
             unit="day"
+            minDate={minDate}
+            maxDate={maxDate}
             height={280}
           />
         </Panel>
@@ -148,6 +154,8 @@ export default function ProductAnalyticsHomepage() {
               ],
             }}
             unit="day"
+            minDate={minDate}
+            maxDate={maxDate}
             height={280}
           />
         </Panel>

@@ -23,6 +23,10 @@ export default function MarketingAttributionHomepage() {
     return Math.floor(base + Math.sin(index * 0.5) * variance + (index % 7 === 0 || index % 7 === 6 ? variance * 0.5 : 0));
   };
 
+  // Calculate date range for charts
+  const minDate = new Date(last30Days[0]);
+  const maxDate = new Date(last30Days[last30Days.length - 1]);
+
   // Traffic sources over time
   const organicTraffic = last30Days.map((date, i) => ({
     x: date,
@@ -176,6 +180,8 @@ export default function MarketingAttributionHomepage() {
           }}
           unit="day"
           stacked={true}
+          minDate={minDate}
+          maxDate={maxDate}
           height={320}
         />
       </Panel>

@@ -25,6 +25,10 @@ export default function RevenueOperationsHomepage() {
     return Math.floor(base + Math.sin(index * 0.5) * variance + index * (variance / 6));
   };
 
+  // Calculate date range for charts (convert YYYY-MM strings back to dates)
+  const minDate = new Date(last12Months[0] + '-01');
+  const maxDate = new Date(last12Months[last12Months.length - 1] + '-01');
+
   // Monthly Recurring Revenue (MRR) trend
   const mrrData = last12Months.map((date, i) => ({
     x: date,
@@ -163,6 +167,8 @@ export default function RevenueOperationsHomepage() {
               ],
             }}
             unit="month"
+            minDate={minDate}
+            maxDate={maxDate}
             height={280}
             renderYLabel={(value) => `$${(parseInt(value) / 1000).toFixed(0)}k`}
           />
@@ -197,6 +203,8 @@ export default function RevenueOperationsHomepage() {
             }}
             unit="month"
             stacked={true}
+            minDate={minDate}
+            maxDate={maxDate}
             height={280}
             renderYLabel={(value) => `$${(parseInt(value) / 1000).toFixed(0)}k`}
           />
