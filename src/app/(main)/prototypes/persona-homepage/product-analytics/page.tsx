@@ -9,23 +9,28 @@ import { CHART_COLORS } from '@/lib/constants';
 import { formatNumber } from '@/lib/format';
 
 export default function ProductAnalyticsHomepage() {
-  // Generate realistic product analytics data
+  // Generate realistic product analytics data with proper date formatting
   const today = new Date();
   const last30Days = Array.from({ length: 30 }, (_, i) => {
     const date = new Date(today);
     date.setDate(date.getDate() - (29 - i));
-    return date;
+    return date.toISOString().split('T')[0];
   });
 
+  // Generate deterministic data based on index for consistency
+  const generateValue = (base: number, variance: number, index: number) => {
+    return Math.floor(base + Math.sin(index * 0.5) * variance + (index % 7 === 0 || index % 7 === 6 ? variance * 0.5 : 0));
+  };
+
   // User engagement metrics
-  const dailyActiveUsers = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(12000 + Math.random() * 3000 + Math.sin(date.getDay() / 7 * Math.PI) * 2000),
+  const dailyActiveUsers = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(12000, 2000, i),
   }));
 
-  const sessionDuration = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(180 + Math.random() * 60 + Math.sin(date.getDay() / 7 * Math.PI) * 30),
+  const sessionDuration = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(180, 40, i),
   }));
 
   // Feature adoption data
@@ -47,15 +52,6 @@ export default function ProductAnalyticsHomepage() {
     { name: 'Week 3', value: 6500, change: -1300, color: CHART_COLORS[2] },
     { name: 'Week 4', value: 5900, change: -600, color: CHART_COLORS[3] },
     { name: 'Week 8', value: 5200, change: -700, color: CHART_COLORS[4] },
-  ];
-
-  // User behavior flow - top paths
-  const userFlowData = [
-    { x: 'Homepage', y: 15420, z: 100 },
-    { x: 'Dashboard', y: 12350, z: 80 },
-    { x: 'Reports', y: 8920, z: 58 },
-    { x: 'Settings', y: 4280, z: 28 },
-    { x: 'Profile', y: 3150, z: 20 },
   ];
 
   // Funnel conversion data

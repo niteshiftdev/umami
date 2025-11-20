@@ -4,35 +4,40 @@ import { Panel } from '@/components/common/Panel';
 import { MetricCard } from '@/components/metrics/MetricCard';
 import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
-import { MetricsTable } from '@/components/metrics/MetricsTable';
+import { ListTable } from '@/components/metrics/ListTable';
 import { CHART_COLORS } from '@/lib/constants';
 import { formatNumber } from '@/lib/format';
 
 export default function RevenueOperationsHomepage() {
-  // Generate realistic revenue operations data
+  // Generate realistic revenue operations data with proper date formatting
   const today = new Date();
   const last12Months = Array.from({ length: 12 }, (_, i) => {
     const date = new Date(today);
     date.setMonth(date.getMonth() - (11 - i));
-    return date;
+    // Format as YYYY-MM for month unit
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
   });
+
+  // Generate deterministic data based on index for consistency
+  const generateValue = (base: number, variance: number, index: number) => {
+    return Math.floor(base + Math.sin(index * 0.5) * variance + index * (variance / 6));
+  };
 
   // Monthly Recurring Revenue (MRR) trend
   const mrrData = last12Months.map((date, i) => ({
-    x: date.getTime(),
-    y: Math.floor(450000 + i * 18000 + Math.random() * 8000),
+    x: date,
+    y: generateValue(450000, 20000, i),
   }));
 
   // New vs Expansion vs Churn
   const revenueBreakdown = last12Months.map((date, i) => {
-    const newRevenue = Math.floor(45000 + Math.random() * 12000);
-    const expansionRevenue = Math.floor(18000 + Math.random() * 8000);
-    const churnRevenue = Math.floor(-8000 - Math.random() * 4000);
     return {
-      date: date.getTime(),
-      new: newRevenue,
-      expansion: expansionRevenue,
-      churn: churnRevenue,
+      date: date,
+      new: generateValue(45000, 8000, i),
+      expansion: generateValue(18000, 4000, i),
+      churn: -generateValue(8000, 2000, i),
     };
   });
 

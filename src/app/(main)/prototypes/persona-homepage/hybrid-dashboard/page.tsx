@@ -9,28 +9,33 @@ import { CHART_COLORS } from '@/lib/constants';
 import { formatNumber } from '@/lib/format';
 
 export default function HybridDashboardHomepage() {
-  // Generate comprehensive business intelligence data
+  // Generate comprehensive business intelligence data with proper date formatting
   const today = new Date();
   const last30Days = Array.from({ length: 30 }, (_, i) => {
     const date = new Date(today);
     date.setDate(date.getDate() - (29 - i));
-    return date;
+    return date.toISOString().split('T')[0];
   });
 
+  // Generate deterministic data based on index for consistency
+  const generateValue = (base: number, variance: number, index: number) => {
+    return Math.floor(base + Math.sin(index * 0.5) * variance + (index % 7 === 0 || index % 7 === 6 ? variance * 0.5 : 0));
+  };
+
   // Combined revenue and engagement metrics
-  const revenueData = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(18000 + Math.random() * 4000 + Math.sin(date.getDay() / 7 * Math.PI) * 2000),
+  const revenueData = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(18000, 3000, i),
   }));
 
-  const activeUsersData = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(8500 + Math.random() * 1500 + Math.sin(date.getDay() / 7 * Math.PI) * 1000),
+  const activeUsersData = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(8500, 1200, i),
   }));
 
-  const conversionsData = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(280 + Math.random() * 80 + Math.sin(date.getDay() / 7 * Math.PI) * 40),
+  const conversionsData = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(280, 60, i),
   }));
 
   // Business health metrics

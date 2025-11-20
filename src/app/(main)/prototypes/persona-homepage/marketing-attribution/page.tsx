@@ -9,33 +9,39 @@ import { CHART_COLORS } from '@/lib/constants';
 import { formatNumber } from '@/lib/format';
 
 export default function MarketingAttributionHomepage() {
-  // Generate realistic marketing attribution data
+  // Generate realistic marketing attribution data with proper date formatting
   const today = new Date();
   const last30Days = Array.from({ length: 30 }, (_, i) => {
     const date = new Date(today);
     date.setDate(date.getDate() - (29 - i));
-    return date;
+    // Format as YYYY-MM-DD for day unit
+    return date.toISOString().split('T')[0];
   });
 
+  // Generate deterministic data based on index for consistency
+  const generateValue = (base: number, variance: number, index: number) => {
+    return Math.floor(base + Math.sin(index * 0.5) * variance + (index % 7 === 0 || index % 7 === 6 ? variance * 0.5 : 0));
+  };
+
   // Traffic sources over time
-  const organicTraffic = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(4500 + Math.random() * 800 + Math.sin(date.getDay() / 7 * Math.PI) * 600),
+  const organicTraffic = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(4500, 800, i),
   }));
 
-  const paidTraffic = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(2800 + Math.random() * 500 + Math.sin(date.getDay() / 7 * Math.PI) * 400),
+  const paidTraffic = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(2800, 500, i),
   }));
 
-  const socialTraffic = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(1900 + Math.random() * 400 + Math.sin(date.getDay() / 7 * Math.PI) * 300),
+  const socialTraffic = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(1900, 400, i),
   }));
 
-  const referralTraffic = last30Days.map(date => ({
-    x: date.getTime(),
-    y: Math.floor(1200 + Math.random() * 300 + Math.sin(date.getDay() / 7 * Math.PI) * 200),
+  const referralTraffic = last30Days.map((date, i) => ({
+    x: date,
+    y: generateValue(1200, 300, i),
   }));
 
   // Campaign performance
