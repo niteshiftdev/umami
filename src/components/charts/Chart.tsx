@@ -6,6 +6,60 @@ import { DEFAULT_ANIMATION_DURATION } from '@/lib/constants';
 
 ChartJS.defaults.font.family = 'Inter';
 
+type AnnotationMark = {
+  timestamp: number | string | Date;
+  color?: string;
+  title?: string;
+};
+
+declare module 'chart.js' {
+  interface ChartOptions {
+    annotationMarks?: AnnotationMark[];
+  }
+}
+
+const annotationPlugin = {
+  id: 'annotationPlugin',
+  afterDraw: (chart: ChartJS) => {
+    const annotations = chart?.options?.annotationMarks;
+    if (!annotations?.length) return;
+
+    const xScale = chart.scales?.x;
+    const { top, bottom } = chart.chartArea;
+    const ctx = chart.ctx;
+
+    annotations.forEach(annotation => {
+      const xPixel = xScale?.getPixelForValue(annotation.timestamp as any);
+      if (xPixel === undefined || Number.isNaN(xPixel)) return;
+
+      const color = annotation.color || '#f97316';
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(xPixel, top);
+      ctx.lineTo(xPixel, bottom);
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(xPixel, top + 8, 4, 0, 2 * Math.PI);
+      ctx.fill();
+
+      if (annotation.title) {
+        ctx.font = '10px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#111';
+        ctx.fillText(annotation.title, xPixel, top + 24);
+      }
+
+      ctx.restore();
+    });
+  },
+};
+
+ChartJS.register(annotationPlugin);
+
 export interface ChartProps extends BoxProps {
   type?: 'bar' | 'bubble' | 'doughnut' | 'pie' | 'line' | 'polarArea' | 'radar' | 'scatter';
   chartData?: ChartData & { focusLabel?: string };

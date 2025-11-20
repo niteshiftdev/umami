@@ -16,9 +16,17 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  annotations?: { timestamp: string | number | Date; color?: string; title?: string }[];
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PageviewsChart({
+  data,
+  unit,
+  minDate,
+  maxDate,
+  annotations,
+  ...props
+}: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
@@ -91,6 +99,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
       unit={unit}
       minDate={minDate}
       maxDate={maxDate}
+      annotations={annotations}
       renderXLabel={renderXLabel}
       height="400px"
     />

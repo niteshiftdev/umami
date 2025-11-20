@@ -30,6 +30,7 @@ export interface BarChartProps extends ChartProps {
   YAxisType?: string;
   minDate?: Date;
   maxDate?: Date;
+  annotations?: { timestamp: string | number | Date; color?: string; title?: string }[];
 }
 
 export function BarChart({
@@ -43,6 +44,7 @@ export function BarChart({
   minDate,
   maxDate,
   currency,
+  annotations,
   ...props
 }: BarChartProps) {
   const [tooltip, setTooltip] = useState(null);
@@ -53,6 +55,7 @@ export function BarChart({
   const chartOptions: any = useMemo(() => {
     return {
       __id: new Date().getTime(),
+      annotationMarks: annotations,
       scales: {
         x: {
           type: XAxisType,
@@ -94,7 +97,7 @@ export function BarChart({
         },
       },
     };
-  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel]);
+  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotations]);
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;

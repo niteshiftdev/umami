@@ -27,6 +27,7 @@ model User {
   pixels    Pixel[]    @relation("user")
   teams     TeamUser[]
   reports   Report[]
+  annotations Annotation[]
 
   @@map("user")
 }
@@ -84,6 +85,7 @@ model Website {
   revenue     Revenue[]
   segments    Segment[]
   sessionData SessionData[]
+  annotations Annotation[]
 
   @@index([userId])
   @@index([teamId])
@@ -184,6 +186,24 @@ model SessionData {
   @@index([sessionId, createdAt])
   @@index([websiteId, createdAt, dataKey])
   @@map("session_data")
+}
+
+model Annotation {
+  id          String   @id @unique @map("annotation_id") @default(uuid()) @db.Uuid
+  websiteId   String   @map("website_id") @db.Uuid
+  createdBy   String   @map("created_by") @db.Uuid
+  timestamp   DateTime @db.Timestamptz(6)
+  title       String   @db.VarChar(200)
+  description String?  @db.VarChar(1000)
+  color       String?  @db.VarChar(20)
+  icon        String?  @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  website Website @relation(fields: [websiteId], references: [id])
+  user    User    @relation(fields: [createdBy], references: [id])
+
+  @@index([websiteId, timestamp])
+  @@map("annotation")
 }
 
 model Team {

@@ -153,6 +153,9 @@ export const labels = defineMessages({
   laptop: { id: 'label.laptop', defaultMessage: 'Laptop' },
   tablet: { id: 'label.tablet', defaultMessage: 'Tablet' },
   mobile: { id: 'label.mobile', defaultMessage: 'Mobile' },
+  annotation: { id: 'label.annotation', defaultMessage: 'Annotation' },
+  annotations: { id: 'label.annotations', defaultMessage: 'Annotations' },
+  addAnnotation: { id: 'label.add-annotation', defaultMessage: 'Add annotation' },
   toggleCharts: { id: 'label.toggle-charts', defaultMessage: 'Toggle charts' },
   editDashboard: { id: 'label.edit-dashboard', defaultMessage: 'Edit dashboard' },
   title: { id: 'label.title', defaultMessage: 'Title' },
@@ -371,6 +374,7 @@ export const messages = defineMessages({
   noUsers: { id: 'message.no-users', defaultMessage: 'There are no users.' },
   userDeleted: { id: 'message.user-deleted', defaultMessage: 'User deleted.' },
   noDataAvailable: { id: 'message.no-data-available', defaultMessage: 'No data available.' },
+  noAnnotations: { id: 'message.no-annotations', defaultMessage: 'No annotations yet.' },
   nothingSelected: { id: 'message.nothing-selected', defaultMessage: 'Nothing selected.' },
   confirmReset: {
     id: 'message.confirm-reset',
