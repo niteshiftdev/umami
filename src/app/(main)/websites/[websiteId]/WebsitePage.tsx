@@ -6,7 +6,7 @@ import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
-import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
+import { useDynamicVariant, useDynamicColor, useDynamicNumber } from '@niteshift/dials';
 import { createContext } from 'react';
 
 export const TypographyContext = createContext<{
@@ -99,6 +99,40 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Padding Controls
+  const paddingX = useDynamicNumber('main-padding-x', {
+    label: 'Horizontal Padding',
+    description: 'Left and right padding for main content area (in pixels)',
+    default: 24,
+    min: 0,
+    max: 100,
+    step: 4,
+    unit: 'px',
+    group: 'Layout - Padding',
+  });
+
+  const paddingY = useDynamicNumber('main-padding-y', {
+    label: 'Vertical Padding',
+    description: 'Top and bottom padding for main content area (in pixels)',
+    default: 24,
+    min: 0,
+    max: 100,
+    step: 4,
+    unit: 'px',
+    group: 'Layout - Padding',
+  });
+
+  const gapSize = useDynamicNumber('main-gap-size', {
+    label: 'Section Gap',
+    description: 'Spacing between content sections (in pixels)',
+    default: 16,
+    min: 0,
+    max: 60,
+    step: 4,
+    unit: 'px',
+    group: 'Layout - Padding',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -113,7 +147,12 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
 
   return (
     <TypographyContext.Provider value={typographyConfig}>
-      <Column gap>
+      <Column
+        gap
+        paddingX={paddingX}
+        paddingY={paddingY}
+        style={{ gap: `${gapSize}px` }}
+      >
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
