@@ -107,7 +107,9 @@ export default function FocusedInsightsVisualization() {
     <Column
       padding="lg"
       gap="lg"
-      style={{ maxWidth: 1400, margin: '0 auto' }}
+      width="100%"
+      maxWidth="1400px"
+      margin="0 auto"
     >
       {/* Header with Controls */}
       <Row justifyContent="space-between" alignItems="flex-start">

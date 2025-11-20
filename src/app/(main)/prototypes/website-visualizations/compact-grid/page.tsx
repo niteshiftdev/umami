@@ -120,7 +120,7 @@ const CompactChartCard = ({ title, children, spanCol = false }: any) => (
 
 export default function CompactGridVisualization() {
   return (
-    <Column padding="md" gap="md">
+    <Column padding="lg" gap="md" width="100%" maxWidth="1400px" margin="0 auto">
       <Column gap="xs">
         <Heading level={1} style={{ fontSize: 24 }}>
           Analytics Dashboard

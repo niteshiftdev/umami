@@ -99,7 +99,7 @@ const ChartCard = ({ title, children }: any) => (
 
 export default function ModernCardsVisualization() {
   return (
-    <Column padding="lg" gap="lg">
+    <Column padding="lg" gap="lg" width="100%" maxWidth="1400px" margin="0 auto">
       <Column gap="sm">
         <Heading level={1}>Website Analytics - Modern Cards View</Heading>
         <Text size="sm" style={{ color: 'var(--color-text-secondary)' }}>
