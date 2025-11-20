@@ -25,16 +25,19 @@ export default function HybridDashboardHomepage() {
   // Combined revenue and engagement metrics
   const revenueData = last30Days.map((date, i) => ({
     x: date,
+    d: date, // Include d property for tooltip
     y: generateValue(18000, 3000, i),
   }));
 
   const activeUsersData = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(8500, 1200, i),
   }));
 
   const conversionsData = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(280, 60, i),
   }));
 

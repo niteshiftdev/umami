@@ -28,13 +28,15 @@ export default function RevenueOperationsHomepage() {
   // Monthly Recurring Revenue (MRR) trend
   const mrrData = last12Months.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(450000, 20000, i),
   }));
 
   // New vs Expansion vs Churn
   const revenueBreakdown = last12Months.map((date, i) => {
     return {
-      date: date,
+      x: date,
+      d: date,
       new: generateValue(45000, 8000, i),
       expansion: generateValue(18000, 4000, i),
       churn: -generateValue(8000, 2000, i),
@@ -172,21 +174,21 @@ export default function RevenueOperationsHomepage() {
               datasets: [
                 {
                   label: 'New Revenue',
-                  data: revenueBreakdown.map(d => ({ x: d.date, y: d.new })),
+                  data: revenueBreakdown.map(d => ({ x: d.x, d: d.d, y: d.new })),
                   backgroundColor: CHART_COLORS[2],
                   borderColor: CHART_COLORS[2],
                   borderWidth: 1,
                 },
                 {
                   label: 'Expansion',
-                  data: revenueBreakdown.map(d => ({ x: d.date, y: d.expansion })),
+                  data: revenueBreakdown.map(d => ({ x: d.x, d: d.d, y: d.expansion })),
                   backgroundColor: CHART_COLORS[0],
                   borderColor: CHART_COLORS[0],
                   borderWidth: 1,
                 },
                 {
                   label: 'Churn',
-                  data: revenueBreakdown.map(d => ({ x: d.date, y: d.churn })),
+                  data: revenueBreakdown.map(d => ({ x: d.x, d: d.d, y: d.churn })),
                   backgroundColor: CHART_COLORS[4],
                   borderColor: CHART_COLORS[4],
                   borderWidth: 1,

@@ -25,11 +25,13 @@ export default function ProductAnalyticsHomepage() {
   // User engagement metrics
   const dailyActiveUsers = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(12000, 2000, i),
   }));
 
   const sessionDuration = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(180, 40, i),
   }));
 

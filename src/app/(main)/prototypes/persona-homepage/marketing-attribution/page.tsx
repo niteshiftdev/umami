@@ -26,21 +26,25 @@ export default function MarketingAttributionHomepage() {
   // Traffic sources over time
   const organicTraffic = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(4500, 800, i),
   }));
 
   const paidTraffic = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(2800, 500, i),
   }));
 
   const socialTraffic = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(1900, 400, i),
   }));
 
   const referralTraffic = last30Days.map((date, i) => ({
     x: date,
+    d: date,
     y: generateValue(1200, 300, i),
   }));
 
