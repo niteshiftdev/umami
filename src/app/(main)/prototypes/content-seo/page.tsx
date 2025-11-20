@@ -209,42 +209,53 @@ export default function ContentSEO() {
       {/* Top Content */}
       <Panel title="Top Performing Content">
         <LoadingPanel data={topPages} isLoading={false} error={null}>
-          <Column gap="2">
+          <Column gap="0">
             {topPages.map((page, idx) => (
               <Box
                 key={page.url}
-                padding="3"
-                borderRadius="2"
-                style={{ background: 'var(--color-background)' }}
+                padding={{ xs: '2', lg: '3' }}
+                borderRadius="0"
+                style={{
+                  background: idx % 2 === 0 ? 'var(--color-background)' : 'transparent',
+                  borderBottom: '1px solid var(--color-border)',
+                  ':last-child': { borderBottom: 'none' },
+                }}
               >
-                <Row justifyContent="space-between" alignItems="start" margin="0 0 12px 0">
-                  <Column gap="1" style={{ flex: 1 }}>
+                <Row justifyContent="space-between" alignItems="center" gap="3">
+                  <Column gap="1" style={{ flex: 2, minWidth: 0 }}>
                     <Row gap="2" alignItems="center">
-                      <Text weight={500} size="sm">
+                      <Text weight={500} size="sm" style={{ wordBreak: 'break-word' }}>
                         {page.url}
                       </Text>
                       <Badge size="sm" color={page.traffic === 'organic' ? 'success' : 'default'}>
                         {page.traffic}
                       </Badge>
                     </Row>
+                  </Column>
+                  <Column gap="1" style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
                     <Text size="xs" color="muted">
-                      {page.views.toLocaleString()} views • {page.avgTime} avg time
+                      {page.views.toLocaleString()}
+                    </Text>
+                    <Text size="xs" weight={500}>
+                      views
                     </Text>
                   </Column>
-                </Row>
-
-                <Grid columns="repeat(2, 1fr)" gap="2">
-                  <Column gap="1">
+                  <Column gap="1" style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
                     <Text size="xs" color="muted">
-                      Bounce Rate
+                      {page.avgTime}
                     </Text>
-                    <Box style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Text size="xs" weight={500}>
+                      avg time
+                    </Text>
+                  </Column>
+                  <Column gap="1" style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
+                    <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
                       <Box
-                        height="4px"
+                        height="3px"
                         backgroundColor="1"
                         borderRadius="full"
                         overflow="hidden"
-                        style={{ flex: 1 }}
+                        style={{ width: '40px' }}
                       >
                         <Box
                           height="100%"
@@ -252,20 +263,15 @@ export default function ContentSEO() {
                           width={`${page.bounceRate}%`}
                         />
                       </Box>
-                      <Text weight={500} size="sm">
+                      <Text weight={500} size="xs" style={{ minWidth: '32px', textAlign: 'right' }}>
                         {page.bounceRate}%
                       </Text>
                     </Box>
-                  </Column>
-                  <Column gap="1">
                     <Text size="xs" color="muted">
-                      Organic Share
-                    </Text>
-                    <Text weight={500} size="sm">
-                      {Math.round(Math.random() * 100)}% of traffic
+                      bounce rate
                     </Text>
                   </Column>
-                </Grid>
+                </Row>
               </Box>
             ))}
           </Column>
