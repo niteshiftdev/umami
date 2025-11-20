@@ -7,9 +7,9 @@ import { DEFAULT_ANIMATION_DURATION } from '@/lib/constants';
 ChartJS.defaults.font.family = 'Inter';
 
 type AnnotationMark = {
-  timestamp: number | string | Date;
+  label: string;
   color?: string;
-  title?: string;
+  count?: number;
 };
 
 declare module 'chart.js' {
@@ -18,39 +18,74 @@ declare module 'chart.js' {
   }
 }
 
+function withAlpha(color: string, alpha: number) {
+  if (typeof document === 'undefined') return color;
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return color;
+  ctx.fillStyle = color;
+  const parsed = ctx.fillStyle;
+  if (parsed.startsWith('#')) {
+    const hex = parsed.slice(1);
+    const normalizedHex =
+      hex.length === 3
+        ? hex
+            .split('')
+            .map(c => c + c)
+            .join('')
+        : hex;
+    const bigint = parseInt(normalizedHex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  return parsed;
+}
+
 const annotationPlugin = {
   id: 'annotationPlugin',
   afterDraw: (chart: ChartJS) => {
     const annotations = chart?.options?.annotationMarks;
     if (!annotations?.length) return;
 
-    const xScale = chart.scales?.x;
-    const { top, bottom } = chart.chartArea;
+    const baseMeta = chart.getDatasetMeta(0);
+    const bars = baseMeta?.data || [];
+    const labels = chart.data.labels || [];
+
+    const labelMap = new Map<string, any>();
+    bars.forEach((bar, index) => {
+      const label = labels[index];
+      if (label !== undefined) {
+        labelMap.set(label as string, bar);
+      }
+    });
+
+    if (labelMap.size === 0) return;
+
     const ctx = chart.ctx;
+    const { top, bottom } = chart.chartArea;
 
     annotations.forEach(annotation => {
-      const xPixel = xScale?.getPixelForValue(annotation.timestamp as any);
-      if (xPixel === undefined || Number.isNaN(xPixel)) return;
-
+      const bar = labelMap.get(annotation.label);
+      if (!bar) return;
+      const props = bar.getProps(['x', 'width'], true);
+      const x = props.x;
+      const width = props.width || bar.width || 0;
       const color = annotation.color || '#f97316';
       ctx.save();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(xPixel, top);
-      ctx.lineTo(xPixel, bottom);
-      ctx.stroke();
+      ctx.fillStyle = withAlpha(color, 0.15);
+      ctx.fillRect(x - width / 2, top, width, bottom - top);
 
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(xPixel, top + 8, 4, 0, 2 * Math.PI);
+      ctx.arc(x, top + 8, 4, 0, 2 * Math.PI);
       ctx.fill();
 
-      if (annotation.title) {
+      if (annotation.count && annotation.count > 1) {
         ctx.font = '10px Inter';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#111';
-        ctx.fillText(annotation.title, xPixel, top + 24);
+        ctx.fillText(`×${annotation.count}`, x, top + 24);
       }
 
       ctx.restore();
@@ -67,6 +102,7 @@ export interface ChartProps extends BoxProps {
   updateMode?: UpdateMode;
   animationDuration?: number;
   onTooltip?: (model: any) => void;
+  onElementClick?: (params: { elements: any[]; chart: ChartJS; event: MouseEvent }) => void;
 }
 
 export function Chart({
@@ -75,6 +111,7 @@ export function Chart({
   animationDuration = DEFAULT_ANIMATION_DURATION,
   updateMode,
   onTooltip,
+  onElementClick,
   chartOptions,
   ...props
 }: ChartProps) {
@@ -167,6 +204,31 @@ export function Chart({
       setLegendItems(chart.current.legend.legendItems);
     }
   }, [chartData, options, updateMode]);
+
+  useEffect(() => {
+    if (!canvas.current || !chart.current || !onElementClick) return;
+
+    const handleClick = (event: MouseEvent) => {
+      if (event.button !== 0) return;
+      const elements = chart.current?.getElementsAtEventForMode(
+        event,
+        'nearest',
+        { intersect: true },
+        false,
+      );
+
+      if (elements && elements.length) {
+        onElementClick({ elements, chart: chart.current, event });
+      }
+    };
+
+    const canvasEl: HTMLCanvasElement = canvas.current;
+    canvasEl.addEventListener('click', handleClick);
+
+    return () => {
+      canvasEl.removeEventListener('click', handleClick);
+    };
+  }, [onElementClick]);
 
   return (
     <Column gap="6">

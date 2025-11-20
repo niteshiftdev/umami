@@ -1,6 +1,7 @@
 import { LoadingPanel } from '@/components/common/LoadingPanel';
 import { AnnotationAddButton } from './annotations/AnnotationAddButton';
 import { AnnotationList } from './annotations/AnnotationList';
+import { AnnotationForm } from './annotations/AnnotationForm';
 import {
   useDateRange,
   useMessages,
@@ -11,7 +12,7 @@ import {
 import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
 import { PageviewsChart } from '@/components/metrics/PageviewsChart';
 import { useMemo, useState } from 'react';
-import { Column, Row, Text, useToast } from '@umami/react-zen';
+import { Column, Row, Text, useToast, Modal, Dialog } from '@umami/react-zen';
 
 export function WebsiteChart({
   websiteId,
@@ -34,6 +35,8 @@ export function WebsiteChart({
   const { del, useMutation } = useApi();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { pageviews, sessions, compare } = (data || {}) as any;
+  const annotationList = annotations || [];
+  const [editorTimestamp, setEditorTimestamp] = useState<Date | null>(null);
 
   const chartData = useMemo(() => {
     if (data) {
@@ -62,16 +65,6 @@ export function WebsiteChart({
     return { pageviews: [], sessions: [] };
   }, [data, startDate, endDate, unit]);
 
-  const annotationMarks = useMemo(
-    () =>
-      (annotations || []).map(annotation => ({
-        timestamp: annotation.timestamp,
-        color: annotation.color,
-        title: annotation.title,
-      })),
-    [annotations],
-  );
-
   const deleteMutation = useMutation({
     mutationFn: (annotationId: string) => del(`/websites/${websiteId}/annotations/${annotationId}`),
   });
@@ -99,19 +92,33 @@ export function WebsiteChart({
           minDate={startDate}
           maxDate={endDate}
           unit={unit}
-          annotations={annotationMarks}
+          annotations={annotationList}
+          onBarClick={setEditorTimestamp}
         />
         <Row justifyContent="space-between" alignItems="center">
           <Text fontWeight="600">{formatMessage(labels.annotations)}</Text>
           <AnnotationAddButton websiteId={websiteId} />
         </Row>
         <AnnotationList
-          annotations={annotations || []}
+          annotations={annotationList}
           isLoading={annotationsLoading}
           deletingId={deletingId}
           onDelete={handleDelete}
         />
       </Column>
+      <Modal
+        isOpen={!!editorTimestamp}
+        onOpenChange={isOpen => !isOpen && setEditorTimestamp(null)}
+      >
+        <Dialog title={formatMessage(labels.addAnnotation)} style={{ width: 420 }}>
+          <AnnotationForm
+            websiteId={websiteId}
+            defaultTimestamp={editorTimestamp ?? undefined}
+            onSuccess={() => setEditorTimestamp(null)}
+            onCancel={() => setEditorTimestamp(null)}
+          />
+        </Dialog>
+      </Modal>
     </LoadingPanel>
   );
 }
