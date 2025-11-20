@@ -82,9 +82,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
             </TabPanel>
           </Tabs>
         </Panel>
-      </GridRow>
 
-      <GridRow layout="two" {...rowProps}>
         <Panel>
           <Heading size="2">{formatMessage(labels.traffic)}</Heading>
           <Row border="bottom" marginBottom="4" />
