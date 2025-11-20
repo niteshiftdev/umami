@@ -30,6 +30,11 @@ export interface BarChartProps extends ChartProps {
   YAxisType?: string;
   minDate?: Date;
   maxDate?: Date;
+  annotationGroups?: Record<
+    string,
+    { color?: string; items: { title: string; description?: string | null }[] }
+  >;
+  onBarClick?: (payload: { label: string; raw: any }) => void;
 }
 
 export function BarChart({
@@ -43,6 +48,8 @@ export function BarChart({
   minDate,
   maxDate,
   currency,
+  annotationGroups,
+  onBarClick,
   ...props
 }: BarChartProps) {
   const [tooltip, setTooltip] = useState(null);
@@ -50,9 +57,19 @@ export function BarChart({
   const { locale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
+  const annotationMarks = useMemo(() => {
+    if (!annotationGroups) return [];
+    return Object.entries(annotationGroups).map(([label, group]) => ({
+      label,
+      color: group.color,
+      count: group.items.length,
+    }));
+  }, [annotationGroups]);
+
   const chartOptions: any = useMemo(() => {
     return {
       __id: new Date().getTime(),
+      annotationMarks,
       scales: {
         x: {
           type: XAxisType,
@@ -94,10 +111,13 @@ export function BarChart({
         },
       },
     };
-  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel]);
+  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks]);
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;
+    const rawValue = dataPoints?.[0]?.raw?.d || dataPoints?.[0]?.raw?.x;
+    const key = rawValue ? formatDate(rawValue, DATE_FORMATS[unit], locale) : undefined;
+    const group = key ? annotationGroups?.[key] : undefined;
 
     setTooltip(
       opacity
@@ -111,6 +131,7 @@ export function BarChart({
             value: currency
               ? formatLongCurrency(dataPoints[0].raw.y, currency)
               : `${formatLongNumber(dataPoints[0].raw.y)} ${dataPoints[0].dataset.label}`,
+            annotations: group?.items,
           }
         : null,
     );
@@ -124,6 +145,23 @@ export function BarChart({
         chartData={chartData}
         chartOptions={chartOptions}
         onTooltip={handleTooltip}
+        onElementClick={({ event, chart: chartInstance }) => {
+          if (!onBarClick) return;
+          const elements = chartInstance.getElementsAtEventForMode(
+            event,
+            'index',
+            { intersect: false, axis: 'x' },
+            false,
+          );
+          if (!onBarClick || !elements.length) return;
+          const { datasetIndex, index } = elements[0];
+          const dataset = chartInstance.data.datasets?.[datasetIndex];
+          const rawPoint = dataset?.data?.[index];
+          const labelValue = typeof rawPoint === 'object' ? (rawPoint?.x ?? rawPoint?.d) : rawPoint;
+          if (labelValue !== undefined) {
+            onBarClick({ label: String(labelValue), raw: rawPoint });
+          }
+        }}
       />
       {tooltip && <ChartTooltip {...tooltip} />}
     </>

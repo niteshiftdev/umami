@@ -1,8 +1,18 @@
 import { LoadingPanel } from '@/components/common/LoadingPanel';
-import { useDateRange } from '@/components/hooks';
+import { AnnotationAddButton } from './annotations/AnnotationAddButton';
+import { AnnotationList } from './annotations/AnnotationList';
+import { AnnotationForm } from './annotations/AnnotationForm';
+import {
+  useDateRange,
+  useMessages,
+  useModified,
+  useApi,
+  useWebsiteAnnotationsQuery,
+} from '@/components/hooks';
 import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
 import { PageviewsChart } from '@/components/metrics/PageviewsChart';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { Column, Row, Text, useToast, Modal, Dialog } from '@umami/react-zen';
 
 export function WebsiteChart({
   websiteId,
@@ -13,11 +23,20 @@ export function WebsiteChart({
 }) {
   const { dateRange, dateCompare } = useDateRange();
   const { startDate, endDate, unit, value } = dateRange;
+  const { formatMessage, labels, messages } = useMessages();
   const { data, isLoading, isFetching, error } = useWebsitePageviewsQuery({
     websiteId,
     compare: compareMode ? dateCompare?.compare : undefined,
   });
+  const { data: annotations, isLoading: annotationsLoading } =
+    useWebsiteAnnotationsQuery(websiteId);
+  const { touch } = useModified();
+  const { toast } = useToast();
+  const { del, useMutation } = useApi();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { pageviews, sessions, compare } = (data || {}) as any;
+  const annotationList = annotations || [];
+  const [editorTimestamp, setEditorTimestamp] = useState<Date | null>(null);
 
   const chartData = useMemo(() => {
     if (data) {
@@ -46,15 +65,60 @@ export function WebsiteChart({
     return { pageviews: [], sessions: [] };
   }, [data, startDate, endDate, unit]);
 
+  const deleteMutation = useMutation({
+    mutationFn: (annotationId: string) => del(`/websites/${websiteId}/annotations/${annotationId}`),
+  });
+
+  const handleDelete = async (annotationId: string) => {
+    setDeletingId(annotationId);
+    try {
+      await deleteMutation.mutateAsync(annotationId, {
+        onSuccess: () => {
+          touch('annotations');
+          toast(formatMessage(messages.saved));
+        },
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <LoadingPanel data={data} isFetching={isFetching} isLoading={isLoading} error={error}>
-      <PageviewsChart
-        key={value}
-        data={chartData}
-        minDate={startDate}
-        maxDate={endDate}
-        unit={unit}
-      />
+      <Column gap="4">
+        <PageviewsChart
+          key={value}
+          data={chartData}
+          minDate={startDate}
+          maxDate={endDate}
+          unit={unit}
+          annotations={annotationList}
+          onBarClick={setEditorTimestamp}
+        />
+        <Row justifyContent="space-between" alignItems="center">
+          <Text fontWeight="600">{formatMessage(labels.annotations)}</Text>
+          <AnnotationAddButton websiteId={websiteId} />
+        </Row>
+        <AnnotationList
+          annotations={annotationList}
+          isLoading={annotationsLoading}
+          deletingId={deletingId}
+          onDelete={handleDelete}
+        />
+      </Column>
+      <Modal
+        isOpen={!!editorTimestamp}
+        onOpenChange={isOpen => !isOpen && setEditorTimestamp(null)}
+      >
+        <Dialog title={formatMessage(labels.addAnnotation)} style={{ width: 420 }}>
+          <AnnotationForm
+            websiteId={websiteId}
+            defaultTimestamp={editorTimestamp ?? undefined}
+            onSuccess={() => setEditorTimestamp(null)}
+            onCancel={() => setEditorTimestamp(null)}
+          />
+        </Dialog>
+      </Modal>
     </LoadingPanel>
   );
 }
