@@ -1,16 +1,19 @@
-import { Grid, Column, Row, Heading, Text, Button } from '@umami/react-zen';
-import { LineChart, BarChart, DoughnutChart } from 'react-chartjs-2';
-import { FiChevronRight, FiDownloadCloud, FiFilter } from 'react-icons/fi';
+'use client';
 
-const mockMainMetric = {
+import { Grid, Column, Row, Heading, Text } from '@umami/react-zen';
+import { Chart } from '@/components/charts/Chart';
+import { CHART_COLORS } from '@/lib/constants';
+
+const mockMainMetricData = {
   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   datasets: [
     {
+      type: 'line',
       label: 'Visitors',
       data: [1200, 1900, 1500, 2200, 1800, 2500, 2100],
       fill: true,
-      borderColor: '#2680eb',
-      backgroundColor: 'rgba(38, 128, 235, 0.08)',
+      borderColor: CHART_COLORS[0],
+      backgroundColor: `${CHART_COLORS[0]}15`,
       tension: 0.4,
       pointRadius: 0,
       borderWidth: 2,
@@ -18,12 +21,14 @@ const mockMainMetric = {
   ],
 };
 
-const mockConversionFunnel = {
+const mockConversionFunnelData = {
   labels: ['Page Views', 'Sign Ups', 'Purchases', 'Subscriptions'],
   datasets: [
     {
+      type: 'bar',
       data: [45230, 8945, 3421, 1234],
-      backgroundColor: ['#2680eb', '#44b556', '#e68619', '#9256d9'],
+      backgroundColor: CHART_COLORS.slice(0, 4),
+      borderRadius: 0,
     },
   ],
 };
@@ -112,14 +117,6 @@ export default function FocusedInsightsVisualization() {
             Last 30 days • Updated 2 minutes ago
           </Text>
         </Column>
-        <Row gap="sm">
-          <Button style={{ background: 'var(--color-background-secondary)', border: '1px solid var(--color-border)' }}>
-            <FiFilter size={16} />
-          </Button>
-          <Button style={{ background: 'var(--color-background-secondary)', border: '1px solid var(--color-border)' }}>
-            <FiDownloadCloud size={16} />
-          </Button>
-        </Row>
       </Row>
 
       {/* Main Chart - Full Width */}
@@ -155,15 +152,7 @@ export default function FocusedInsightsVisualization() {
           </Text>
         </Row>
         <div style={{ height: 300, position: 'relative' }}>
-          <LineChart
-            data={mockMainMetric}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: { y: { beginAtZero: true, grid: { color: 'var(--color-border)' } } },
-            }}
-          />
+          <Chart type="line" chartData={mockMainMetricData} height="100%" />
         </div>
       </Column>
 
@@ -200,16 +189,7 @@ export default function FocusedInsightsVisualization() {
             </Text>
           </Column>
           <div style={{ height: 280, position: 'relative' }}>
-            <BarChart
-              data={mockConversionFunnel}
-              options={{
-                indexAxis: 'y' as const,
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true } },
-              }}
-            />
+            <Chart type="bar" chartData={mockConversionFunnelData} height="100%" />
           </div>
           <Row
             justifyContent="space-between"
@@ -225,9 +205,6 @@ export default function FocusedInsightsVisualization() {
                 2.7%
               </Heading>
             </Column>
-            <Button style={{ background: 'transparent', color: '#2680eb', gap: '4px' }}>
-              View Details <FiChevronRight size={14} />
-            </Button>
           </Row>
         </Column>
 

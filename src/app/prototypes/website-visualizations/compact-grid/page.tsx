@@ -1,48 +1,59 @@
-import { Grid, Column, Row, Heading, Text } from '@umami/react-zen';
-import { AreaChart, BarChart, RadarChart } from 'react-chartjs-2';
+'use client';
 
-const mockVisitorTrend = {
+import { Grid, Column, Row, Heading, Text } from '@umami/react-zen';
+import { Chart } from '@/components/charts/Chart';
+import { CHART_COLORS } from '@/lib/constants';
+
+const mockVisitorTrendData = {
   labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
   datasets: [
     {
+      type: 'line',
       label: 'Visitors',
       data: [8234, 9125, 8945, 10234],
       fill: true,
-      borderColor: '#2680eb',
-      backgroundColor: 'rgba(38, 128, 235, 0.15)',
+      borderColor: CHART_COLORS[0],
+      backgroundColor: `${CHART_COLORS[0]}25`,
       tension: 0.4,
+      borderWidth: 2,
     },
     {
+      type: 'line',
       label: 'Previous Month',
       data: [7234, 7890, 8123, 8456],
       fill: true,
-      borderColor: '#d9d9d9',
-      backgroundColor: 'rgba(217, 217, 217, 0.1)',
+      borderColor: '#999',
+      backgroundColor: '#99999915',
       borderDash: [5, 5],
       tension: 0.4,
+      borderWidth: 2,
     },
   ],
 };
 
-const mockEngagementMetrics = {
+const mockEngagementMetricsData = {
   labels: ['Bounce Rate', 'Conversion', 'Engagement', 'Retention', 'Growth'],
   datasets: [
     {
+      type: 'radar',
       label: 'Current Period',
       data: [42, 2.8, 68, 72, 15],
       fill: true,
-      backgroundColor: 'rgba(38, 128, 235, 0.2)',
-      borderColor: '#2680eb',
-      pointBackgroundColor: '#2680eb',
+      backgroundColor: `${CHART_COLORS[0]}20`,
+      borderColor: CHART_COLORS[0],
+      pointBackgroundColor: CHART_COLORS[0],
+      borderWidth: 2,
     },
     {
+      type: 'radar',
       label: 'Previous Period',
       data: [45, 2.3, 65, 68, 10],
       fill: true,
-      backgroundColor: 'rgba(217, 217, 217, 0.1)',
-      borderColor: '#d9d9d9',
-      pointBackgroundColor: '#d9d9d9',
+      backgroundColor: '#99999910',
+      borderColor: '#999',
+      pointBackgroundColor: '#999',
       borderDash: [5, 5],
+      borderWidth: 2,
     },
   ],
 };
@@ -133,29 +144,11 @@ export default function CompactGridVisualization() {
         gap="md"
       >
         <CompactChartCard title="Visitor Trend (Monthly)" spanCol={false}>
-          <AreaChart
-            data={mockVisitorTrend}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: true, position: 'top' as const },
-              },
-              scales: { y: { beginAtZero: true } },
-            }}
-          />
+          <Chart type="line" chartData={mockVisitorTrendData} height="100%" />
         </CompactChartCard>
 
         <CompactChartCard title="Performance Metrics" spanCol={false}>
-          <RadarChart
-            data={mockEngagementMetrics}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { position: 'bottom' as const } },
-              scales: { r: { beginAtZero: true, max: 100 } },
-            }}
-          />
+          <Chart type="radar" chartData={mockEngagementMetricsData} height="100%" />
         </CompactChartCard>
       </Grid>
 
