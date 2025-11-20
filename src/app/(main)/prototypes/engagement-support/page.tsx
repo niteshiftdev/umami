@@ -1,6 +1,37 @@
 'use client';
 
-import { Column, Row, Grid, Heading, Text, Box, Badge } from '@umami/react-zen';
+import { Column, Row, Grid, Heading, Text, Box } from '@umami/react-zen';
+
+// Custom Badge component since @umami/react-zen doesn't export Badge
+const Badge = ({ children, color = 'default', size = 'md' }: any) => (
+  <Box
+    padding={size === 'sm' ? '1' : '2'}
+    borderRadius="2"
+    style={{
+      background:
+        color === 'success'
+          ? '#44b55620'
+          : color === 'danger'
+            ? '#e3485020'
+            : color === 'warning'
+              ? '#FFA50020'
+              : '#2680eb20',
+      color:
+        color === 'success'
+          ? '#44b556'
+          : color === 'danger'
+            ? '#e34850'
+            : color === 'warning'
+              ? '#FFA500'
+              : '#2680eb',
+      fontSize: size === 'sm' ? '11px' : '12px',
+      fontWeight: 500,
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {children}
+  </Box>
+);
 import { Panel } from '@/components/common/Panel';
 import { PageBody } from '@/components/common/PageBody';
 import { LoadingPanel } from '@/components/common/LoadingPanel';
