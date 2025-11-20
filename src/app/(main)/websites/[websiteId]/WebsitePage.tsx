@@ -21,6 +21,14 @@ export const TypographyContext = createContext<{
   sectionHeadingColor?: string;
 }>({});
 
+export const PaddingContext = createContext<{
+  pageBodyPaddingX?: string;
+  pageBodyPaddingBottom?: string;
+  panelPaddingX?: string;
+  panelPaddingY?: string;
+  mainColumnGap?: string;
+}>({});
+
 export function WebsitePage({ websiteId }: { websiteId: string }) {
   // Metric Typography Controls
   const metricLabelSize = useDynamicVariant('metric-label-size', {
@@ -111,17 +119,68 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingColor,
   };
 
+  // Padding Controls
+  const pageBodyPaddingX = useDynamicVariant('page-body-padding-x', {
+    label: 'Page Body Horizontal Padding',
+    description: 'Horizontal padding for main content area (left/right)',
+    default: '3',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Layout - Padding',
+  });
+
+  const pageBodyPaddingBottom = useDynamicVariant('page-body-padding-bottom', {
+    label: 'Page Body Bottom Padding',
+    description: 'Bottom padding for main content area',
+    default: '6',
+    options: ['0', '2', '4', '6', '8', '10', '12'] as const,
+    group: 'Layout - Padding',
+  });
+
+  const panelPaddingX = useDynamicVariant('panel-padding-x', {
+    label: 'Panel Horizontal Padding',
+    description: 'Horizontal padding for card/panel components (left/right)',
+    default: '3',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Layout - Padding',
+  });
+
+  const panelPaddingY = useDynamicVariant('panel-padding-y', {
+    label: 'Panel Vertical Padding',
+    description: 'Vertical padding for card/panel components (top/bottom)',
+    default: '6',
+    options: ['0', '2', '4', '6', '8', '10', '12'] as const,
+    group: 'Layout - Padding',
+  });
+
+  const mainColumnGap = useDynamicVariant('main-column-gap', {
+    label: 'Main Content Gap',
+    description: 'Gap/spacing between main content sections',
+    default: '3',
+    options: ['0', '1', '2', '3', '4', '5', '6'] as const,
+    group: 'Layout - Padding',
+  });
+
+  const paddingConfig = {
+    pageBodyPaddingX,
+    pageBodyPaddingBottom,
+    panelPaddingX,
+    panelPaddingY,
+    mainColumnGap,
+  };
+
   return (
-    <TypographyContext.Provider value={typographyConfig}>
-      <Column gap>
-        <WebsiteControls websiteId={websiteId} />
-        <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-        <Panel minHeight="520px">
-          <WebsiteChart websiteId={websiteId} />
-        </Panel>
-        <WebsitePanels websiteId={websiteId} />
-        <ExpandedViewModal websiteId={websiteId} />
-      </Column>
-    </TypographyContext.Provider>
+    <PaddingContext.Provider value={paddingConfig}>
+      <TypographyContext.Provider value={typographyConfig}>
+        <Column gap={mainColumnGap}>
+          <WebsiteControls websiteId={websiteId} />
+          <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
+          <Panel minHeight="520px" paddingX={panelPaddingX} paddingY={panelPaddingY}>
+            <WebsiteChart websiteId={websiteId} />
+          </Panel>
+          <WebsitePanels websiteId={websiteId} />
+          <ExpandedViewModal websiteId={websiteId} />
+        </Column>
+      </TypographyContext.Provider>
+    </PaddingContext.Provider>
   );
 }
