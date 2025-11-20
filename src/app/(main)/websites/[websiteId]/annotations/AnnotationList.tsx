@@ -3,8 +3,7 @@
 import { Column, Row, Text, Button, Icon, Spinner } from '@umami/react-zen';
 import { useLocale, useMessages } from '@/components/hooks';
 import type { WebsiteAnnotation } from '@/components/hooks/queries/useWebsiteAnnotationsQuery';
-import { formatDate } from '@/lib/date';
-import { DATE_FORMATS } from '@/lib/constants';
+import { formatDate, DATE_FORMATS } from '@/lib/date';
 import { Trash2, Flag } from '@/components/icons';
 
 interface AnnotationListProps {
