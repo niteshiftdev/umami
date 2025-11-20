@@ -115,8 +115,9 @@ export function BarChart({
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;
-    const label = dataPoints?.[0]?.label;
-    const group = label ? annotationGroups?.[label] : undefined;
+    const rawValue = dataPoints?.[0]?.raw?.d || dataPoints?.[0]?.raw?.x;
+    const key = rawValue ? formatDate(rawValue, DATE_FORMATS[unit], locale) : undefined;
+    const group = key ? annotationGroups?.[key] : undefined;
 
     setTooltip(
       opacity
