@@ -3,8 +3,6 @@ import { Panel } from '@/components/common/Panel';
 import { useMessages, useNavigation } from '@/components/hooks';
 import { EventsChart } from '@/components/metrics/EventsChart';
 import { MetricsTable } from '@/components/metrics/MetricsTable';
-import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
-import { WorldMap } from '@/components/metrics/WorldMap';
 import { Grid, Heading, Row, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
 
 export function WebsitePanels({ websiteId }: { websiteId: string }) {
@@ -102,18 +100,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               <MetricsTable type="city" title={formatMessage(labels.city)} {...tableProps} />
             </TabPanel>
           </Tabs>
-        </Panel>
-      </GridRow>
-
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
-        <Panel>
-          <Heading size="2">{formatMessage(labels.traffic)}</Heading>
-          <Row border="bottom" marginBottom="4" />
-          <WeeklyTraffic websiteId={websiteId} />
         </Panel>
       </GridRow>
       {isSharePage && (
