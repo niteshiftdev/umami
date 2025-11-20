@@ -145,7 +145,14 @@ export function BarChart({
         chartData={chartData}
         chartOptions={chartOptions}
         onTooltip={handleTooltip}
-        onElementClick={({ elements, chart: chartInstance }) => {
+        onElementClick={({ event, chart: chartInstance }) => {
+          if (!onBarClick) return;
+          const elements = chartInstance.getElementsAtEventForMode(
+            event,
+            'index',
+            { intersect: false, axis: 'x' },
+            false,
+          );
           if (!onBarClick || !elements.length) return;
           const { datasetIndex, index } = elements[0];
           const dataset = chartInstance.data.datasets?.[datasetIndex];

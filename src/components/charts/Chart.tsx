@@ -139,13 +139,18 @@ export function Chart({
           duration: 0,
         },
       },
+      interaction: {
+        mode: 'index',
+        axis: 'x',
+        intersect: false,
+      },
       plugins: {
         legend: {
           display: false,
         },
         tooltip: {
           enabled: false,
-          intersect: true,
+          intersect: false,
           external: onTooltip,
         },
       },
