@@ -147,11 +147,11 @@ export function BarChart({
         onElementClick={({ elements, chart: chartInstance }) => {
           if (!onBarClick || !elements.length) return;
           const { datasetIndex, index } = elements[0];
-          const label = chartInstance.data.labels?.[index];
           const dataset = chartInstance.data.datasets?.[datasetIndex];
-          const raw = dataset?.data?.[index];
-          if (label !== undefined) {
-            onBarClick({ label: label as string, raw });
+          const rawPoint = dataset?.data?.[index];
+          const labelValue = typeof rawPoint === 'object' ? (rawPoint?.x ?? rawPoint?.d) : rawPoint;
+          if (labelValue !== undefined) {
+            onBarClick({ label: String(labelValue), raw: rawPoint });
           }
         }}
       />

@@ -344,19 +344,21 @@ export function generateTimeSeries(
   let current = start(minDate);
   const end = start(maxDate);
 
-  const timeseries: string[] = [];
+  const buckets: { label: string; date: Date }[] = [];
 
   while (isBefore(current, end) || isEqual(current, end)) {
-    timeseries.push(formatDate(current, fmt, locale));
-    current = add(current, 1);
+    const bucketDate = current;
+    buckets.push({ label: formatDate(bucketDate, fmt, locale), date: bucketDate });
+    current = add(bucketDate, 1);
   }
 
   const lookup = new Map(data.map(({ x, y, d }) => [formatDate(x, fmt, locale), { x, y, d }]));
 
-  return timeseries.map(t => {
-    const { x, y, d } = lookup.get(t) || {};
+  return buckets.map(({ label, date }) => {
+    const point = lookup.get(label) || {};
+    const dateValue = point?.d ?? point?.x ?? date;
 
-    return { x: t, d: d ?? x, y: y ?? null };
+    return { x: label, d: dateValue, y: point?.y ?? null };
   });
 }
 
