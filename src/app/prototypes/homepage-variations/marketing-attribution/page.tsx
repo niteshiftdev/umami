@@ -90,17 +90,11 @@ export default function MarketingAttributionPage() {
   // Conversion funnel data
   const conversionFunnelData = useMemo(() => {
     return {
+      labels: ['Landing Page', 'Product View', 'Add to Cart', 'Checkout', 'Purchase'],
       datasets: [
         {
-          type: 'bar',
           label: 'Users in Stage',
-          data: [
-            { x: 'Landing Page', y: 45820 },
-            { x: 'Product View', y: 28934 },
-            { x: 'Add to Cart', y: 12456 },
-            { x: 'Checkout', y: 8721 },
-            { x: 'Purchase', y: 6834 },
-          ],
+          data: [45820, 28934, 12456, 8721, 6834],
           backgroundColor: CHART_COLORS[0],
           borderColor: CHART_COLORS[0],
           borderWidth: 1,

@@ -77,17 +77,11 @@ export default function RevenueOperationsPage() {
   // Sales Pipeline by Stage
   const pipelineData = useMemo(() => {
     return {
+      labels: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closing'],
       datasets: [
         {
-          type: 'bar',
           label: 'Pipeline Value',
-          data: [
-            { x: 'Prospecting', y: 2850000 },
-            { x: 'Qualification', y: 1920000 },
-            { x: 'Proposal', y: 1345000 },
-            { x: 'Negotiation', y: 892000 },
-            { x: 'Closing', y: 567000 },
-          ],
+          data: [2850000, 1920000, 1345000, 892000, 567000],
           backgroundColor: CHART_COLORS[0],
           borderColor: CHART_COLORS[0],
           borderWidth: 1,
