@@ -18,7 +18,7 @@ export function WebsiteAddButton({ teamId, onSave }: { teamId: string; onSave?: 
   return (
     <DialogButton
       icon={<Plus />}
-      label={formatMessage(labels.addWebsite)}
+      label="🚀 Summon a Website"
       variant="primary"
       width="400px"
     >
