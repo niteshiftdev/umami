@@ -149,19 +149,19 @@ export default function EngagementSupport() {
       {/* Key Metrics */}
       <Grid columns={{ xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }} gap="2">
         {[
-          { label: 'Open Tickets', value: '156', subtext: '↓ 12% from last week', trend: 'down' },
-          { label: 'Avg Resolution', value: '3.2h', subtext: '↓ 0.4h from last week', trend: 'down' },
-          { label: 'Customer CSAT', value: '4.6/5', subtext: '↑ 0.2 from last week', trend: 'up' },
-          { label: 'First Response', value: '18m', subtext: '↓ 3m from last week', trend: 'down' },
+          { label: 'Open Tickets', value: '156', subtext: 'Down 12% from last week', trend: 'down' },
+          { label: 'Avg Resolution', value: '3.2h', subtext: 'Down 0.4h from last week', trend: 'down' },
+          { label: 'Customer CSAT', value: '4.6/5', subtext: 'Up 0.2 from last week', trend: 'up' },
+          { label: 'First Response', value: '18m', subtext: 'Down 3m from last week', trend: 'down' },
         ].map((metric, idx) => (
           <Box
             key={metric.label}
             padding="3"
             borderRadius="2"
             style={{
-              border: `2px solid ${metric.trend === 'up' ? '#44b556' : '#2680eb'}30`,
-              borderLeft: `4px solid ${metric.trend === 'up' ? '#44b556' : '#2680eb'}`,
-              background: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-border)',
+              borderLeft: `3px solid ${metric.trend === 'up' ? '#44b556' : '#2680eb'}`,
+              background: 'var(--color-background)',
             }}
           >
             <Text size="sm" color="muted">
@@ -347,7 +347,7 @@ export default function EngagementSupport() {
                     style={{ background: CHART_COLORS[idx % CHART_COLORS.length] + '20', textAlign: 'center' }}
                   >
                     <Heading level={4} style={{ margin: 0 }}>
-                      ⭐ {agent.satisfaction}
+                      {agent.satisfaction}★
                     </Heading>
                   </Box>
                 </Row>

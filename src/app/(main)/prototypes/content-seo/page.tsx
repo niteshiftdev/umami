@@ -112,35 +112,32 @@ export default function ContentSEO() {
       {/* Key Metrics */}
       <Grid columns={{ xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }} gap="2">
         {[
-          { label: 'Organic Traffic', value: '8,123', subtext: '+18.5% vs last month', icon: '📊' },
-          { label: 'Keywords Ranking', value: '1,234', subtext: '+156 new keywords', icon: '🎯' },
-          { label: 'Top 3 Rankings', value: '156', subtext: '+23 this month', icon: '🥇' },
-          { label: 'Avg Position', value: '4.2', subtext: '↑ improved 0.3', icon: '📈' },
+          { label: 'Organic Traffic', value: '8,123', subtext: '+18.5% vs last month' },
+          { label: 'Keywords Ranking', value: '1,234', subtext: '+156 new keywords' },
+          { label: 'Top 3 Rankings', value: '156', subtext: '+23 this month' },
+          { label: 'Avg Position', value: '4.2', subtext: 'Improved 0.3' },
         ].map((metric, idx) => (
           <Box
             key={metric.label}
             padding="3"
             borderRadius="2"
             style={{
-              border: `2px solid ${CHART_COLORS[idx]}30`,
-              borderLeft: `4px solid ${CHART_COLORS[idx]}`,
+              border: `1px solid var(--color-border)`,
+              borderLeft: `3px solid ${CHART_COLORS[idx]}`,
               background: 'var(--color-background-secondary)',
             }}
           >
-            <Row justifyContent="space-between" alignItems="start" gap="2">
-              <Column gap="1">
-                <Text size="sm" color="muted">
-                  {metric.label}
-                </Text>
-                <Heading level={2} style={{ margin: '8px 0' }}>
-                  {metric.value}
-                </Heading>
-                <Text size="xs" color="muted">
-                  {metric.subtext}
-                </Text>
-              </Column>
-              <Text style={{ fontSize: '24px' }}>{metric.icon}</Text>
-            </Row>
+            <Column gap="1">
+              <Text size="sm" color="muted">
+                {metric.label}
+              </Text>
+              <Heading level={2} style={{ margin: '8px 0' }}>
+                {metric.value}
+              </Heading>
+              <Text size="xs" color="muted">
+                {metric.subtext}
+              </Text>
+            </Column>
           </Box>
         ))}
       </Grid>
@@ -174,11 +171,19 @@ export default function ContentSEO() {
                     <Column gap="1" style={{ flex: 1 }}>
                       <Row gap="2" alignItems="center">
                         <Text weight={500}>{kw.keyword}</Text>
-                        <Badge size="sm" color={kw.trend === 'up' ? 'success' : kw.trend === 'down' ? 'danger' : 'default'}>
-                          {kw.trend === 'up' && '↑'}
-                          {kw.trend === 'down' && '↓'}
-                          {kw.trend === 'stable' && '→'}
-                        </Badge>
+                        <Text
+                          size="xs"
+                          style={{
+                            color:
+                              kw.trend === 'up'
+                                ? '#44b556'
+                                : kw.trend === 'down'
+                                  ? '#e34850'
+                                  : 'var(--color-text-secondary)',
+                          }}
+                        >
+                          {kw.trend === 'up' ? 'Trending up' : kw.trend === 'down' ? 'Trending down' : 'Stable'}
+                        </Text>
                       </Row>
                       <Text size="xs" color="muted">
                         Volume: {kw.volume.toLocaleString()} • Search traffic

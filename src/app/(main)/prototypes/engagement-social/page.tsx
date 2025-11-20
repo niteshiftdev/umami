@@ -110,12 +110,12 @@ export default function EngagementSocial() {
         {platformMetrics.map((platform) => (
           <Box
             key={platform.platform}
-            padding="4"
+            padding="3"
             borderRadius="2"
             style={{
-              border: `2px solid ${platform.color}30`,
-              borderLeft: `4px solid ${platform.color}`,
-              background: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-border)',
+              borderLeft: `3px solid ${platform.color}`,
+              background: 'var(--color-background)',
             }}
           >
             <Row justifyContent="space-between" alignItems="start" gap="2">

@@ -122,9 +122,9 @@ export default function ProductUsage() {
             padding="3"
             borderRadius="2"
             style={{
-              border: `2px solid ${metric.color}30`,
-              borderLeft: `4px solid ${metric.color}`,
-              background: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-border)',
+              borderLeft: `3px solid ${metric.color}`,
+              background: 'var(--color-background)',
             }}
           >
             <Text size="sm" color="muted">
