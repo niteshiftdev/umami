@@ -2,9 +2,9 @@
  * Color control component for the overlay UI
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import type { ColorDialConfig } from '../types';
-import { designManifest } from '@/config/niteshift-manifest';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import type { ColorDialConfig, DesignManifest } from '../types';
+import { useDialsContext } from '../components/DialsProvider';
 
 export interface ColorControlProps {
   id: string;
@@ -14,29 +14,35 @@ export interface ColorControlProps {
   onReset: () => void;
 }
 
-// Helper to get color name from design system
-function getColorName(hex: string): string | null {
-  const normalizedHex = hex.toLowerCase();
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-  // Check accent colors
-  if (designManifest.colors.accent.values) {
-    for (const [name, color] of Object.entries(designManifest.colors.accent.values)) {
-      if (color.toLowerCase() === normalizedHex) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
-      }
+function buildColorLookup(manifest?: DesignManifest | null) {
+  const lookup: Record<string, string> = {};
+  if (!manifest?.colors) return lookup;
+
+  for (const [groupKey, group] of Object.entries(manifest.colors)) {
+    const values = group.values;
+    if (!values) continue;
+
+    if (Array.isArray(values)) {
+      values.forEach((hex, index) => {
+        lookup[hex.toLowerCase()] = `${capitalize(group.label || groupKey)} ${index + 1}`;
+      });
+    } else {
+      Object.entries(values).forEach(([name, hex]) => {
+        lookup[hex.toLowerCase()] = name;
+      });
     }
   }
 
-  // Check semantic colors
-  if (designManifest.colors.semantic.values) {
-    for (const [name, color] of Object.entries(designManifest.colors.semantic.values)) {
-      if (color.toLowerCase() === normalizedHex) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
-      }
-    }
-  }
+  return lookup;
+}
 
-  return null;
+function getColorName(hex: string, lookup: Record<string, string>): string | null {
+  const normalizedHex = hex?.toLowerCase();
+  if (!normalizedHex) return null;
+  const name = lookup[normalizedHex];
+  return name ? capitalize(name) : null;
 }
 
 export function ColorControl({ id, value, config, onChange, onReset }: ColorControlProps) {
@@ -44,7 +50,9 @@ export function ColorControl({ id, value, config, onChange, onReset }: ColorCont
   const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
   const swatchRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
-  const colorName = getColorName(value);
+  const { manifest } = useDialsContext();
+  const colorLookup = useMemo(() => buildColorLookup(manifest), [manifest]);
+  const colorName = getColorName(value, colorLookup);
 
   const handleSwatchClick = () => {
     if (swatchRef.current) {
@@ -130,7 +138,7 @@ export function ColorControl({ id, value, config, onChange, onReset }: ColorCont
               {config.options && config.options.length > 0 && (
                 <div className="color-presets">
                   {config.options.map(color => {
-                    const name = getColorName(color);
+                    const name = getColorName(color, colorLookup);
                     return (
                       <div
                         key={color}
