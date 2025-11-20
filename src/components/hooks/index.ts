@@ -44,6 +44,7 @@ export * from './queries/useWebsiteEventsQuery';
 export * from './queries/useWebsiteEventsSeriesQuery';
 export * from './queries/useWebsiteExpandedMetricsQuery';
 export * from './queries/useWebsiteMetricsQuery';
+export * from './queries/useWebsiteAnnotationsQuery';
 export * from './queries/useWebsitePageviewsQuery';
 export * from './queries/useWebsiteQuery';
 export * from './queries/useWebsiteSegmentQuery';
