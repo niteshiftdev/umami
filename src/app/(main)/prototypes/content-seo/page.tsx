@@ -124,20 +124,25 @@ export default function ContentSEO() {
             style={{
               border: `1px solid var(--color-border)`,
               borderLeft: `3px solid ${CHART_COLORS[idx]}`,
-              background: 'var(--color-background-secondary)',
+              background: 'var(--color-background)',
             }}
           >
-            <Column gap="1">
-              <Text size="sm" color="muted">
-                {metric.label}
-              </Text>
-              <Heading level={2} style={{ margin: '8px 0' }}>
-                {metric.value}
-              </Heading>
-              <Text size="xs" color="muted">
+            <Row justifyContent="space-between" alignItems="start">
+              <Column gap="1" style={{ flex: 1 }}>
+                <Text size="sm" color="muted">
+                  {metric.label}
+                </Text>
+                <Heading level={2} style={{ margin: '8px 0' }}>
+                  {metric.value}
+                </Heading>
+              </Column>
+              <Badge
+                color={metric.subtext.includes('+') ? 'success' : metric.subtext.includes('-') ? 'danger' : 'default'}
+                size="sm"
+              >
                 {metric.subtext}
-              </Text>
-            </Column>
+              </Badge>
+            </Row>
           </Box>
         ))}
       </Grid>
@@ -171,19 +176,12 @@ export default function ContentSEO() {
                     <Column gap="1" style={{ flex: 1 }}>
                       <Row gap="2" alignItems="center">
                         <Text weight={500}>{kw.keyword}</Text>
-                        <Text
-                          size="xs"
-                          style={{
-                            color:
-                              kw.trend === 'up'
-                                ? '#44b556'
-                                : kw.trend === 'down'
-                                  ? '#e34850'
-                                  : 'var(--color-text-secondary)',
-                          }}
+                        <Badge
+                          color={kw.trend === 'up' ? 'success' : kw.trend === 'down' ? 'danger' : 'default'}
+                          size="sm"
                         >
                           {kw.trend === 'up' ? 'Trending up' : kw.trend === 'down' ? 'Trending down' : 'Stable'}
-                        </Text>
+                        </Badge>
                       </Row>
                       <Text size="xs" color="muted">
                         Volume: {kw.volume.toLocaleString()} • Search traffic
@@ -193,9 +191,12 @@ export default function ContentSEO() {
                       <Text weight={500} size="sm">
                         Position #{kw.position}
                       </Text>
-                      <Text size="xs" color="muted">
-                        CTR: {kw.ctr}%
-                      </Text>
+                      <Badge
+                        color={kw.change > 0 ? 'success' : kw.change < 0 ? 'danger' : 'default'}
+                        size="sm"
+                      >
+                        {kw.change > 0 ? '+' : ''}{kw.change > 0 ? `↑ ${kw.change}` : kw.change < 0 ? `↓ ${Math.abs(kw.change)}` : '→'}
+                      </Badge>
                     </Column>
                   </Row>
                 </Box>
