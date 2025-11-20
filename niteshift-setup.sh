@@ -120,16 +120,12 @@ else
   log "Skipping build-db (prebaked Prisma client detected)"
 fi
 
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Checking database and applying migrations..."
-  if ! pnpm run check-db; then
-    log_error "Database check failed"
-    exit 1
-  fi
-  log "✓ Database migrations applied"
-else
-  log "Skipping check-db (prebaked fast path)"
+log "Checking database and applying migrations..."
+if ! pnpm run check-db; then
+  log_error "Database check failed"
+  exit 1
 fi
+log "✓ Database migrations applied"
 
 if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
   log "Building tracker script..."
