@@ -50,13 +50,20 @@ const annotationPlugin = {
 
     const baseMeta = chart.getDatasetMeta(0);
     const bars = baseMeta?.data || [];
-    const labels = chart.data.labels || [];
+    const dataset = chart.data.datasets?.[baseMeta?.index ?? 0];
+    const rawData = (dataset?.data as any[]) || [];
+    const fallbackLabels = chart.data.labels || [];
 
-    const labelMap = new Map<string, any>();
+    const labelMap = new Map<string, { element: any; raw: any }>();
     bars.forEach((bar, index) => {
-      const label = labels[index];
-      if (label !== undefined) {
-        labelMap.set(label as string, bar);
+      const raw = rawData[index];
+      const fallbackLabel = fallbackLabels[index];
+      const labelValue =
+        typeof raw === 'object'
+          ? (raw?.x ?? raw?.label ?? raw?.d ?? fallbackLabel)
+          : (raw ?? fallbackLabel);
+      if (labelValue !== undefined) {
+        labelMap.set(String(labelValue), { element: bar, raw });
       }
     });
 
@@ -66,11 +73,11 @@ const annotationPlugin = {
     const { top, bottom } = chart.chartArea;
 
     annotations.forEach(annotation => {
-      const bar = labelMap.get(annotation.label);
-      if (!bar) return;
-      const props = bar.getProps(['x', 'width'], true);
+      const entry = labelMap.get(annotation.label);
+      if (!entry) return;
+      const props = entry.element.getProps(['x', 'width'], true);
       const x = props.x;
-      const width = props.width || bar.width || 0;
+      const width = props.width || entry.element.width || 0;
       const color = annotation.color || '#f97316';
       ctx.save();
       ctx.fillStyle = withAlpha(color, 0.15);
