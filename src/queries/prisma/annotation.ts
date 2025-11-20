@@ -8,7 +8,7 @@ interface AnnotationFilters {
 export function getWebsiteAnnotations(websiteId: string, filters: AnnotationFilters = {}) {
   const { startAt, endAt } = filters;
 
-  return prisma.annotation.findMany({
+  return prisma.client.annotation.findMany({
     where: {
       websiteId,
       timestamp: {
@@ -20,12 +20,14 @@ export function getWebsiteAnnotations(websiteId: string, filters: AnnotationFilt
   });
 }
 
-export function createAnnotation(data: Parameters<typeof prisma.annotation.create>[0]['data']) {
-  return prisma.annotation.create({ data });
+export function createAnnotation(
+  data: Parameters<typeof prisma.client.annotation.create>[0]['data'],
+) {
+  return prisma.client.annotation.create({ data });
 }
 
 export async function deleteAnnotation(annotationId: string, websiteId: string) {
-  const result = await prisma.annotation.deleteMany({
+  const result = await prisma.client.annotation.deleteMany({
     where: {
       id: annotationId,
       websiteId,
