@@ -31,7 +31,15 @@ export async function request(
     },
     body,
   }).then(async res => {
-    const data = await res.json();
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (err) {
+      // Ignore empty responses (204/205) where body is missing
+      if (res.status !== 204 && res.status !== 205) {
+        throw err;
+      }
+    }
 
     return {
       ok: res.ok,
