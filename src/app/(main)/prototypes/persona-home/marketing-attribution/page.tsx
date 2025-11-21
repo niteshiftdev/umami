@@ -10,6 +10,7 @@ import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useDynamicVariant, useDynamicBoolean, useDynamicNumber } from '@umami/dials';
 
 // Mock data generator for realistic marketing attribution metrics
 function generateMockData() {
@@ -125,6 +126,53 @@ function generateMockData() {
 export default function MarketingAttributionPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Dials for layout exploration
+  const layout = useDynamicVariant('ma-layout', {
+    label: 'Layout Style',
+    default: 'two-column',
+    options: ['single-column', 'two-column', 'three-column'] as const,
+    group: 'Layout',
+  });
+
+  const showChannelChart = useDynamicBoolean('ma-show-channels', {
+    label: 'Channel Traffic Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showAttributionChart = useDynamicBoolean('ma-show-attribution', {
+    label: 'Attribution Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showFunnelChart = useDynamicBoolean('ma-show-funnel', {
+    label: 'Conversion Funnel',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showRevenueChart = useDynamicBoolean('ma-show-revenue', {
+    label: 'Spend vs Revenue',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showCampaignTable = useDynamicBoolean('ma-show-campaigns', {
+    label: 'Campaign Performance Table',
+    default: true,
+    group: 'Tables',
+  });
+
+  const chartHeight = useDynamicNumber('ma-chart-height', {
+    label: 'Chart Height (px)',
+    default: 300,
+    min: 200,
+    max: 500,
+    step: 50,
+    group: 'Visualization',
+  });
+
   // Calculate date ranges
   const now = new Date();
   const dailyMinDate = new Date(now);
@@ -134,6 +182,8 @@ export default function MarketingAttributionPage() {
   const monthlyMinDate = new Date(now);
   monthlyMinDate.setMonth(monthlyMinDate.getMonth() - 12);
   const monthlyMaxDate = now;
+
+  const gridLayout = layout === 'single-column' ? 'one' : layout === 'three-column' ? 'three' : 'two';
 
   // Prepare stacked chart data for channel traffic
   const channelTrafficData = {
@@ -252,46 +302,59 @@ export default function MarketingAttributionPage() {
         </MetricsBar>
 
         {/* Traffic and Attribution */}
-        <GridRow layout="two">
-          <Panel title="Traffic by Channel (30 Days)" allowFullscreen>
-            <BarChart
-              chartData={channelTrafficData}
-              height={300}
-              unit="day"
-              stacked
-              minDate={dailyMinDate}
-              maxDate={dailyMaxDate}
-            />
-          </Panel>
-          <Panel title="First-Touch Attribution" allowFullscreen>
-            <PieChart chartData={attributionChartData} height={300} type="doughnut" />
-          </Panel>
-        </GridRow>
+        {(showChannelChart || showAttributionChart) && (
+          <GridRow layout={gridLayout}>
+            {showChannelChart && (
+              <Panel title="Traffic by Channel (30 Days)" allowFullscreen>
+                <BarChart
+                  chartData={channelTrafficData}
+                  height={chartHeight}
+                  unit="day"
+                  stacked
+                  minDate={dailyMinDate}
+                  maxDate={dailyMaxDate}
+                />
+              </Panel>
+            )}
+            {showAttributionChart && (
+              <Panel title="First-Touch Attribution" allowFullscreen>
+                <PieChart chartData={attributionChartData} height={chartHeight} type="doughnut" />
+              </Panel>
+            )}
+          </GridRow>
+        )}
 
         {/* Conversion Funnel and Performance */}
-        <GridRow layout="two">
-          <Panel title="Conversion Funnel" allowFullscreen>
-            <BarChart
-              chartData={funnelChartData}
-              height={300}
-              unit="day"
-              minDate={dailyMinDate}
-              maxDate={dailyMaxDate}
-            />
-          </Panel>
-          <Panel title="Spend vs Revenue (12 Months)" allowFullscreen>
-            <BarChart
-              chartData={spendRevenueChartData}
-              height={300}
-              unit="month"
-              minDate={monthlyMinDate}
-              maxDate={monthlyMaxDate}
-            />
-          </Panel>
-        </GridRow>
+        {(showFunnelChart || showRevenueChart) && (
+          <GridRow layout={gridLayout}>
+            {showFunnelChart && (
+              <Panel title="Conversion Funnel" allowFullscreen>
+                <BarChart
+                  chartData={funnelChartData}
+                  height={chartHeight}
+                  unit="day"
+                  minDate={dailyMinDate}
+                  maxDate={dailyMaxDate}
+                />
+              </Panel>
+            )}
+            {showRevenueChart && (
+              <Panel title="Spend vs Revenue (12 Months)" allowFullscreen>
+                <BarChart
+                  chartData={spendRevenueChartData}
+                  height={chartHeight}
+                  unit="month"
+                  minDate={monthlyMinDate}
+                  maxDate={monthlyMaxDate}
+                />
+              </Panel>
+            )}
+          </GridRow>
+        )}
 
         {/* Campaign Performance Table */}
-        <Panel title="Top Campaigns Performance">
+        {showCampaignTable && (
+          <Panel title="Top Campaigns Performance">
           <Grid
             columns="2fr 1fr 1fr 1fr 1fr"
             gap="2"
@@ -321,7 +384,8 @@ export default function MarketingAttributionPage() {
               </Text>
             </Grid>
           ))}
-        </Panel>
+          </Panel>
+        )}
       </Column>
     </PageBody>
   );

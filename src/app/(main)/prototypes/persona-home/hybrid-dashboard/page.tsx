@@ -10,6 +10,7 @@ import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useDynamicVariant, useDynamicBoolean, useDynamicNumber } from '@umami/dials';
 
 // Mock data generator combining all persona metrics
 function generateMockData() {
@@ -145,6 +146,42 @@ function generateMockData() {
 export default function HybridDashboardPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Dials for layout exploration
+  const layout = useDynamicVariant('hd-layout', {
+    label: 'Layout Style',
+    default: 'two-column',
+    options: ['single-column', 'two-column'] as const,
+    group: 'Layout',
+  });
+
+  const defaultTab = useDynamicVariant('hd-default-tab', {
+    label: 'Default Tab',
+    default: 'overview',
+    options: ['overview', 'product', 'marketing', 'revenue'] as const,
+    group: 'Navigation',
+  });
+
+  const showNorthStar = useDynamicBoolean('hd-show-northstar', {
+    label: 'North Star Metrics Panel',
+    default: true,
+    group: 'Panels',
+  });
+
+  const showChannelTable = useDynamicBoolean('hd-show-channels', {
+    label: 'Channel Performance Table',
+    default: true,
+    group: 'Tables',
+  });
+
+  const chartHeight = useDynamicNumber('hd-chart-height', {
+    label: 'Chart Height (px)',
+    default: 300,
+    min: 200,
+    max: 500,
+    step: 50,
+    group: 'Visualization',
+  });
+
   // Calculate date ranges
   const now = new Date();
   const dailyMinDate = new Date(now);
@@ -154,6 +191,8 @@ export default function HybridDashboardPage() {
   const monthlyMinDate = new Date(now);
   monthlyMinDate.setMonth(monthlyMinDate.getMonth() - 6);
   const monthlyMaxDate = now;
+
+  const gridLayout = layout === 'single-column' ? 'one' : 'two';
 
   // Prepare multi-metric trend chart
   const activeUsersData = mockData.dailyMetrics.map(m => ({
@@ -232,11 +271,12 @@ export default function HybridDashboardPage() {
         </PageHeader>
 
         {/* Top Level KPIs */}
-        <Panel>
-          <Heading size="3" style={{ marginBottom: '16px' }}>
-            North Star Metrics
-          </Heading>
-          <MetricsBar>
+        {showNorthStar && (
+          <Panel>
+            <Heading size="3" style={{ marginBottom: '16px' }}>
+              North Star Metrics
+            </Heading>
+            <MetricsBar>
             <MetricCard
               label="Monthly Active Users"
               value={mockData.metrics.totalActiveUsers}
@@ -264,7 +304,8 @@ export default function HybridDashboardPage() {
               showChange
             />
           </MetricsBar>
-        </Panel>
+          </Panel>
+        )}
 
         {/* Tabbed Views by Persona */}
         <Panel>
@@ -279,11 +320,11 @@ export default function HybridDashboardPage() {
             {/* Overview Tab */}
             <TabPanel id="overview">
               <Column gap="3">
-                <GridRow layout="two">
+                <GridRow layout={gridLayout}>
                   <Panel title="Key Metrics Trend (30 Days)" allowFullscreen>
                     <BarChart
                       chartData={multiMetricChartData}
-                      height={300}
+                      height={chartHeight}
                       unit="day"
                       minDate={dailyMinDate}
                       maxDate={dailyMaxDate}
@@ -292,7 +333,7 @@ export default function HybridDashboardPage() {
                   <Panel title="Revenue Growth (6 Months)" allowFullscreen>
                     <BarChart
                       chartData={revenueChartData}
-                      height={300}
+                      height={chartHeight}
                       unit="month"
                       minDate={monthlyMinDate}
                       maxDate={monthlyMaxDate}
@@ -300,7 +341,8 @@ export default function HybridDashboardPage() {
                   </Panel>
                 </GridRow>
 
-                <Panel title="Channel Performance">
+                {showChannelTable && (
+                  <Panel title="Channel Performance">
                   <Grid
                     columns="2fr 1fr 1fr 1fr 1fr"
                     gap="2"
@@ -330,7 +372,8 @@ export default function HybridDashboardPage() {
                       </Text>
                     </Grid>
                   ))}
-                </Panel>
+                  </Panel>
+                )}
               </Column>
             </TabPanel>
 
@@ -353,9 +396,9 @@ export default function HybridDashboardPage() {
                   />
                 </MetricsBar>
 
-                <GridRow layout="two">
+                <GridRow layout={gridLayout}>
                   <Panel title="Customer Journey Funnel" allowFullscreen>
-                    <PieChart chartData={journeyChartData} height={300} type="doughnut" />
+                    <PieChart chartData={journeyChartData} height={chartHeight} type="doughnut" />
                   </Panel>
                   <Panel title="Feature Adoption vs Revenue">
                     <Grid
@@ -474,9 +517,9 @@ export default function HybridDashboardPage() {
                   />
                 </MetricsBar>
 
-                <GridRow layout="two">
+                <GridRow layout={gridLayout}>
                   <Panel title="Revenue by Source" allowFullscreen>
-                    <PieChart chartData={revenueSourcesChartData} height={300} type="doughnut" />
+                    <PieChart chartData={revenueSourcesChartData} height={chartHeight} type="doughnut" />
                   </Panel>
                   <Panel title="Revenue Breakdown">
                     <Grid

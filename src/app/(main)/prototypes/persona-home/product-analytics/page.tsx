@@ -10,6 +10,7 @@ import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useDynamicVariant, useDynamicBoolean, useDynamicNumber } from '@umami/dials';
 
 // Mock data generator for realistic product analytics metrics
 function generateMockData() {
@@ -88,6 +89,63 @@ function generateMockData() {
 export default function ProductAnalyticsPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Dials for layout exploration
+  const layout = useDynamicVariant('pa-layout', {
+    label: 'Layout Style',
+    default: 'two-column',
+    options: ['single-column', 'two-column', 'three-column'] as const,
+    group: 'Layout',
+  });
+
+  const chartStyle = useDynamicVariant('pa-chart-style', {
+    label: 'Chart Style',
+    default: 'standard',
+    options: ['standard', 'compact', 'detailed'] as const,
+    group: 'Visualization',
+  });
+
+  const showDailyChart = useDynamicBoolean('pa-show-daily', {
+    label: 'Daily Active Users Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showHourlyChart = useDynamicBoolean('pa-show-hourly', {
+    label: 'Hourly Session Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showFeatureChart = useDynamicBoolean('pa-show-features', {
+    label: 'Feature Usage Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showRetentionChart = useDynamicBoolean('pa-show-retention', {
+    label: 'Retention Cohort Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const metricsColumns = useDynamicNumber('pa-metrics-cols', {
+    label: 'Metrics per Row',
+    default: 6,
+    min: 2,
+    max: 8,
+    step: 1,
+    group: 'Layout',
+  });
+
+  const chartHeight = useDynamicNumber('pa-chart-height', {
+    label: 'Chart Height (px)',
+    default: 300,
+    min: 200,
+    max: 500,
+    step: 50,
+    group: 'Visualization',
+  });
+
   // Calculate date ranges
   const now = new Date();
   const dailyMinDate = new Date(now);
@@ -102,6 +160,9 @@ export default function ProductAnalyticsPage() {
   const weeklyMinDate = new Date(now);
   weeklyMinDate.setDate(weeklyMinDate.getDate() - 12 * 7);
   const weeklyMaxDate = now;
+
+  // Determine grid layout based on dial
+  const gridLayout = layout === 'single-column' ? 'one' : layout === 'three-column' ? 'three' : 'two';
 
   // Prepare chart data for daily engagement
   const engagementChartData = {
@@ -168,86 +229,114 @@ export default function ProductAnalyticsPage() {
         </PageHeader>
 
         {/* Key Metrics */}
-        <MetricsBar>
+        <Grid
+          columns={`repeat(auto-fit, minmax(140px, 1fr))`}
+          gap
+          style={{ gridTemplateColumns: `repeat(${metricsColumns}, 1fr)` }}
+        >
           <MetricCard
             label="Monthly Active Users"
             value={mockData.metrics.activeUsers}
             change={mockData.metrics.activeUsers - mockData.metrics.prevActiveUsers}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
           <MetricCard
             label="Daily Active Users"
             value={mockData.metrics.dailyActiveUsers}
             change={mockData.metrics.dailyActiveUsers - mockData.metrics.prevDailyActiveUsers}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
           <MetricCard
             label="Avg Session Duration"
             value={mockData.metrics.sessionDuration}
             change={mockData.metrics.sessionDuration - mockData.metrics.prevSessionDuration}
             formatValue={formatSeconds}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
           <MetricCard
             label="Engagement Rate"
             value={mockData.metrics.engagementRate}
             change={mockData.metrics.engagementRate - mockData.metrics.prevEngagementRate}
             formatValue={formatPercent}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
           <MetricCard
             label="Feature Adoption"
             value={mockData.metrics.featureAdoption}
             change={mockData.metrics.featureAdoption - mockData.metrics.prevFeatureAdoption}
             formatValue={formatPercent}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
           <MetricCard
             label="Weekly Retention"
             value={mockData.metrics.weeklyRetention}
             change={mockData.metrics.weeklyRetention - mockData.metrics.prevWeeklyRetention}
             formatValue={formatPercent}
-            showChange
+            showChange={chartStyle !== 'compact'}
+            labelSize={chartStyle === 'compact' ? '0' : undefined}
+            valueSize={chartStyle === 'detailed' ? '9' : undefined}
           />
-        </MetricsBar>
+        </Grid>
 
         {/* Engagement Charts */}
-        <GridRow layout="two">
-          <Panel title="Daily Active Users (30 Days)" allowFullscreen>
-            <BarChart
-              chartData={engagementChartData}
-              height={300}
-              unit="day"
-              minDate={dailyMinDate}
-              maxDate={dailyMaxDate}
-            />
-          </Panel>
-          <Panel title="Hourly Session Pattern (Today)" allowFullscreen>
-            <BarChart
-              chartData={hourlyChartData}
-              height={300}
-              unit="hour"
-              minDate={hourlyMinDate}
-              maxDate={hourlyMaxDate}
-            />
-          </Panel>
-        </GridRow>
+        {(showDailyChart || showHourlyChart) && (
+          <GridRow layout={gridLayout}>
+            {showDailyChart && (
+              <Panel title="Daily Active Users (30 Days)" allowFullscreen>
+                <BarChart
+                  chartData={engagementChartData}
+                  height={chartHeight}
+                  unit="day"
+                  minDate={dailyMinDate}
+                  maxDate={dailyMaxDate}
+                />
+              </Panel>
+            )}
+            {showHourlyChart && (
+              <Panel title="Hourly Session Pattern (Today)" allowFullscreen>
+                <BarChart
+                  chartData={hourlyChartData}
+                  height={chartHeight}
+                  unit="hour"
+                  minDate={hourlyMinDate}
+                  maxDate={hourlyMaxDate}
+                />
+              </Panel>
+            )}
+          </GridRow>
+        )}
 
         {/* Feature Adoption and Retention */}
-        <GridRow layout="two">
-          <Panel title="Feature Usage Distribution" allowFullscreen>
-            <PieChart chartData={featureChartData} height={300} type="doughnut" />
-          </Panel>
-          <Panel title="User Retention by Cohort (12 Weeks)" allowFullscreen>
-            <BarChart
-              chartData={cohortChartData}
-              height={300}
-              unit="week"
-              minDate={weeklyMinDate}
-              maxDate={weeklyMaxDate}
-            />
-          </Panel>
-        </GridRow>
+        {(showFeatureChart || showRetentionChart) && (
+          <GridRow layout={gridLayout}>
+            {showFeatureChart && (
+              <Panel title="Feature Usage Distribution" allowFullscreen>
+                <PieChart chartData={featureChartData} height={chartHeight} type="doughnut" />
+              </Panel>
+            )}
+            {showRetentionChart && (
+              <Panel title="User Retention by Cohort (12 Weeks)" allowFullscreen>
+                <BarChart
+                  chartData={cohortChartData}
+                  height={chartHeight}
+                  unit="week"
+                  minDate={weeklyMinDate}
+                  maxDate={weeklyMaxDate}
+                />
+              </Panel>
+            )}
+          </GridRow>
+        )}
       </Column>
     </PageBody>
   );

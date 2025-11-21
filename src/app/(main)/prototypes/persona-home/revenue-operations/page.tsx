@@ -10,6 +10,7 @@ import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useDynamicVariant, useDynamicBoolean, useDynamicNumber } from '@umami/dials';
 
 // Mock data generator for realistic revenue operations metrics
 function generateMockData() {
@@ -126,6 +127,53 @@ function generateMockData() {
 export default function RevenueOperationsPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Dials for layout exploration
+  const layout = useDynamicVariant('ro-layout', {
+    label: 'Layout Style',
+    default: 'two-column',
+    options: ['single-column', 'two-column', 'three-column'] as const,
+    group: 'Layout',
+  });
+
+  const showMRRChart = useDynamicBoolean('ro-show-mrr', {
+    label: 'MRR Growth Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showPipelineChart = useDynamicBoolean('ro-show-pipeline', {
+    label: 'Pipeline Trend Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showSegmentCharts = useDynamicBoolean('ro-show-segments', {
+    label: 'Segment Analysis Charts',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showChurnChart = useDynamicBoolean('ro-show-churn', {
+    label: 'Churn Rate Chart',
+    default: true,
+    group: 'Charts',
+  });
+
+  const showDealsTable = useDynamicBoolean('ro-show-deals', {
+    label: 'Deals at Risk Table',
+    default: true,
+    group: 'Tables',
+  });
+
+  const chartHeight = useDynamicNumber('ro-chart-height', {
+    label: 'Chart Height (px)',
+    default: 300,
+    min: 200,
+    max: 500,
+    step: 50,
+    group: 'Visualization',
+  });
+
   // Calculate date ranges
   const now = new Date();
   const monthlyMinDate = new Date(now);
@@ -135,6 +183,8 @@ export default function RevenueOperationsPage() {
   const weeklyMinDate = new Date(now);
   weeklyMinDate.setDate(weeklyMinDate.getDate() - 12 * 7);
   const weeklyMaxDate = now;
+
+  const gridLayout = layout === 'single-column' ? 'one' : layout === 'three-column' ? 'three' : 'two';
 
   // Prepare chart data for MRR growth
   const mrrChartData = {
@@ -295,52 +345,64 @@ export default function RevenueOperationsPage() {
         </MetricsBar>
 
         {/* Revenue Growth and Pipeline */}
-        <GridRow layout="two">
-          <Panel title="Monthly Recurring Revenue (12 Months)" allowFullscreen>
-            <BarChart
-              chartData={mrrChartData}
-              height={300}
-              unit="month"
-              minDate={monthlyMinDate}
-              maxDate={monthlyMaxDate}
-            />
-          </Panel>
-          <Panel title="Pipeline Value Trend (12 Weeks)" allowFullscreen>
-            <BarChart
-              chartData={pipelineChartData}
-              height={300}
-              unit="week"
-              minDate={weeklyMinDate}
-              maxDate={weeklyMaxDate}
-            />
-          </Panel>
-        </GridRow>
+        {(showMRRChart || showPipelineChart) && (
+          <GridRow layout={gridLayout}>
+            {showMRRChart && (
+              <Panel title="Monthly Recurring Revenue (12 Months)" allowFullscreen>
+                <BarChart
+                  chartData={mrrChartData}
+                  height={chartHeight}
+                  unit="month"
+                  minDate={monthlyMinDate}
+                  maxDate={monthlyMaxDate}
+                />
+              </Panel>
+            )}
+            {showPipelineChart && (
+              <Panel title="Pipeline Value Trend (12 Weeks)" allowFullscreen>
+                <BarChart
+                  chartData={pipelineChartData}
+                  height={chartHeight}
+                  unit="week"
+                  minDate={weeklyMinDate}
+                  maxDate={weeklyMaxDate}
+                />
+              </Panel>
+            )}
+          </GridRow>
+        )}
 
         {/* Segment Analysis */}
-        <GridRow layout="three">
-          <Panel title="Revenue by Segment" allowFullscreen>
-            <PieChart chartData={segmentChartData} height={280} type="doughnut" />
-          </Panel>
-          <Panel title="Pipeline by Stage" allowFullscreen>
-            <PieChart chartData={stagesChartData} height={280} type="doughnut" />
-          </Panel>
-          <Panel title="Customer Health" allowFullscreen>
-            <PieChart chartData={healthChartData} height={280} type="pie" />
-          </Panel>
-        </GridRow>
+        {showSegmentCharts && (
+          <GridRow layout="three">
+            <Panel title="Revenue by Segment" allowFullscreen>
+              <PieChart chartData={segmentChartData} height={chartHeight - 20} type="doughnut" />
+            </Panel>
+            <Panel title="Pipeline by Stage" allowFullscreen>
+              <PieChart chartData={stagesChartData} height={chartHeight - 20} type="doughnut" />
+            </Panel>
+            <Panel title="Customer Health" allowFullscreen>
+              <PieChart chartData={healthChartData} height={chartHeight - 20} type="pie" />
+            </Panel>
+          </GridRow>
+        )}
 
         {/* Churn and Deals at Risk */}
-        <GridRow layout="two">
-          <Panel title="Monthly Churn Rate (12 Months)" allowFullscreen>
-            <BarChart
-              chartData={churnChartData}
-              height={300}
-              unit="month"
-              minDate={monthlyMinDate}
-              maxDate={monthlyMaxDate}
-            />
-          </Panel>
-          <Panel title="Deals at Risk">
+        {(showChurnChart || showDealsTable) && (
+          <GridRow layout={gridLayout}>
+            {showChurnChart && (
+              <Panel title="Monthly Churn Rate (12 Months)" allowFullscreen>
+                <BarChart
+                  chartData={churnChartData}
+                  height={chartHeight}
+                  unit="month"
+                  minDate={monthlyMinDate}
+                  maxDate={monthlyMaxDate}
+                />
+              </Panel>
+            )}
+            {showDealsTable && (
+              <Panel title="Deals at Risk">
             <Grid
               columns="2fr 1fr 1fr 1fr 1fr"
               gap="2"
@@ -370,8 +432,10 @@ export default function RevenueOperationsPage() {
                 <Text>{deal.daysStale}</Text>
               </Grid>
             ))}
-          </Panel>
-        </GridRow>
+              </Panel>
+            )}
+          </GridRow>
+        )}
       </Column>
     </PageBody>
   );
