@@ -9,6 +9,7 @@ import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
+import { format } from 'date-fns';
 
 // Mock data generator for realistic revenue operations metrics
 function generateMockData() {
@@ -24,7 +25,7 @@ function generateMockData() {
     date.setMonth(date.getMonth() + i);
     baseRevenue += 150000 + Math.random() * 100000; // Growth trend
     mrrData.push({
-      x: date.toISOString(),
+      x: format(date, 'yyyy-MM'),
       y: Math.floor(baseRevenue),
     });
   }
@@ -35,7 +36,7 @@ function generateMockData() {
     const date = new Date(now);
     date.setDate(date.getDate() - (11 - i) * 7);
     pipelineData.push({
-      x: date.toISOString(),
+      x: format(date, "yyyy-'W'II"),
       y: Math.floor(8500000 + Math.random() * 2000000),
     });
   }
@@ -70,7 +71,7 @@ function generateMockData() {
     const date = new Date(startDate);
     date.setMonth(date.getMonth() + i);
     churnData.push({
-      x: date.toISOString(),
+      x: format(date, 'yyyy-MM'),
       y: 2.1 + Math.random() * 1.2, // Churn rate between 2-3.3%
     });
   }

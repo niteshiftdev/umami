@@ -9,6 +9,7 @@ import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
+import { format } from 'date-fns';
 
 // Mock data generator for realistic product analytics metrics
 function generateMockData() {
@@ -22,7 +23,7 @@ function generateMockData() {
     const date = new Date(startDate);
     date.setDate(date.getDate() + i);
     dailyEngagement.push({
-      x: date.toISOString(),
+      x: format(date, 'yyyy-MM-dd'), // Format for day unit
       y: Math.floor(12000 + Math.random() * 8000 + Math.sin(i / 7) * 3000), // Weekly pattern
     });
   }
@@ -35,7 +36,7 @@ function generateMockData() {
     // Peak during business hours (9-17)
     const baseLine = i >= 9 && i <= 17 ? 800 : 200;
     hourlyData.push({
-      x: hour.toISOString(),
+      x: format(hour, 'yyyy-MM-dd HH'), // Format for hour unit
       y: Math.floor(baseLine + Math.random() * 300),
     });
   }
@@ -57,7 +58,7 @@ function generateMockData() {
     date.setDate(date.getDate() - week * 7);
     const retention = 100 * Math.pow(0.85, week); // 15% weekly churn
     cohortData.push({
-      x: date.toISOString(),
+      x: format(date, "yyyy-'W'II"), // Format for week unit
       y: Math.floor(retention),
     });
   }

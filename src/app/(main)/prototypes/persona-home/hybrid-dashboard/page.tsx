@@ -9,6 +9,7 @@ import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
+import { format } from 'date-fns';
 
 // Mock data generator combining all persona metrics
 function generateMockData() {
@@ -22,7 +23,7 @@ function generateMockData() {
     const date = new Date(startDate);
     date.setDate(date.getDate() + i);
     dailyMetrics.push({
-      date: date.toISOString(),
+      date: format(date, 'yyyy-MM-dd'),
       activeUsers: Math.floor(12000 + Math.random() * 3000 + Math.sin(i / 7) * 2000),
       conversions: Math.floor(150 + Math.random() * 50),
       revenue: Math.floor(25000 + Math.random() * 10000),
@@ -35,7 +36,7 @@ function generateMockData() {
     const date = new Date(now);
     date.setMonth(date.getMonth() - i);
     monthlyRevenue.push({
-      x: date.toISOString(),
+      x: format(date, 'yyyy-MM'),
       y: Math.floor(2800000 + i * 200000 + Math.random() * 300000),
     });
   }

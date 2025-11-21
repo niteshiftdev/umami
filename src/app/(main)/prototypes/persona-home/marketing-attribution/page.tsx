@@ -9,6 +9,7 @@ import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { BarChart } from '@/components/charts/BarChart';
 import { PieChart } from '@/components/charts/PieChart';
 import { useMemo } from 'react';
+import { format } from 'date-fns';
 
 // Mock data generator for realistic marketing attribution metrics
 function generateMockData() {
@@ -32,7 +33,7 @@ function generateMockData() {
       const date = new Date(startDate);
       date.setDate(date.getDate() + i);
       data.push({
-        x: date.toISOString(),
+        x: format(date, 'yyyy-MM-dd'),
         y: Math.floor(baseTraffic + Math.random() * 500 - 250),
       });
     }
@@ -79,7 +80,7 @@ function generateMockData() {
     const date = new Date(now);
     date.setDate(date.getDate() - (funnelStages.length - i - 1));
     funnelData.push({
-      x: date.toISOString(),
+      x: format(date, 'yyyy-MM-dd'),
       y: funnelStages[i].count,
     });
   }
@@ -154,12 +155,12 @@ export default function MarketingAttributionPage() {
 
   // Prepare monthly spend vs revenue
   const monthlyData = mockData.monthlyPerformance.map(m => ({
-    x: m.month.toISOString(),
+    x: format(m.month, 'yyyy-MM'),
     y: m.revenue,
   }));
 
   const monthlySpendData = mockData.monthlyPerformance.map(m => ({
-    x: m.month.toISOString(),
+    x: format(m.month, 'yyyy-MM'),
     y: m.spend,
   }));
 
