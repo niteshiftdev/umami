@@ -99,6 +99,15 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Chart Controls
+  const chartType = useDynamicVariant('chart-type', {
+    label: 'Chart Type',
+    description: 'Switch between bar chart and line chart',
+    default: 'bar',
+    options: ['bar', 'line'] as const,
+    group: 'Chart',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -117,7 +126,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
-          <WebsiteChart websiteId={websiteId} />
+          <WebsiteChart websiteId={websiteId} chartType={chartType} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
