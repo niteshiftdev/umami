@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Row, Column, Icon } from '@umami/react-zen';
+import { Row, Column } from '@umami/react-zen';
 import { Settings } from '@/components/icons';
 
 export interface PaddingValues {
@@ -84,26 +84,32 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
   ];
 
   return (
-    <Column
-      position="fixed"
-      bottom="20px"
-      right="20px"
-      zIndex={1000}
-      gap="2"
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 10000,
+        pointerEvents: 'auto',
+      }}
     >
       {isOpen && (
-        <Column
-          backgroundColor
-          border
-          borderRadius="3"
-          paddingX="4"
-          paddingY="3"
-          minWidth="280px"
-          gap="3"
-          style={{ backdropFilter: 'blur(10px)', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+        <div
+          style={{
+            backgroundColor: 'var(--base-color)',
+            border: '1px solid var(--base-color-3)',
+            borderRadius: '8px',
+            padding: '16px',
+            minWidth: '300px',
+            gap: '12px',
+            marginBottom: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
-          <Row justifyContent="space-between" alignItems="center">
-            <strong>Design Dials - Padding</strong>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <strong style={{ fontSize: '14px' }}>Design Dials - Padding</strong>
             <button
               onClick={handleReset}
               style={{
@@ -114,21 +120,16 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
                 cursor: 'pointer',
                 padding: '4px 8px',
                 borderRadius: '3px',
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'var(--base-color-3)';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'transparent';
+                textDecoration: 'underline',
               }}
             >
               Reset
             </button>
-          </Row>
+          </div>
 
           {dialConfig.map((config) => (
-            <Column key={config.key} gap="1">
-              <Row justifyContent="space-between" alignItems="center">
+            <div key={config.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label style={{ fontSize: '12px', fontWeight: 500 }}>
                   {config.label}
                 </label>
@@ -143,7 +144,7 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
                 >
                   {PADDING_SCALE[paddingValues[config.key] as keyof typeof PADDING_SCALE]}
                 </span>
-              </Row>
+              </div>
               <input
                 type="range"
                 min={0}
@@ -158,16 +159,20 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
                   borderRadius: '2px',
                 }}
               />
-              <div style={{ fontSize: '10px', color: 'var(--secondary-font-color)', marginTop: '-4px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--secondary-font-color)', marginTop: '-2px' }}>
                 {config.description}
               </div>
-            </Column>
+            </div>
           ))}
-        </Column>
+        </div>
       )}
 
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('Button clicked, isOpen was:', isOpen);
+          setIsOpen(!isOpen);
+        }}
+        type="button"
         style={{
           borderRadius: '50%',
           width: '48px',
@@ -182,10 +187,11 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
           color: 'white',
           fontSize: '20px',
           padding: 0,
+          pointerEvents: 'auto',
         }}
       >
         <Settings style={{ width: '20px', height: '20px' }} />
       </button>
-    </Column>
+    </div>
   );
 }
