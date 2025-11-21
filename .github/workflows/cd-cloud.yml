@@ -13,6 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for changelog generation
 
       - name: Generate random hash
         id: random_hash
@@ -20,6 +22,7 @@ jobs:
 
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image to docker.io
+        id: build
         with:
           image: umamisoftware/umami
           tags: cloud-${{ steps.random_hash.outputs.hash }}, cloud-latest
@@ -27,3 +30,77 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the last 10 commits for the cloud/staging deployment
+          CHANGELOG=$(git log HEAD~10..HEAD --pretty=format:"• %s (%h)" --no-merges | head -10)
+
+          if [[ -z "$CHANGELOG" ]]; then
+            CHANGELOG="No recent changes"
+          fi
+
+          # Escape for JSON
+          CHANGELOG="${CHANGELOG//$'\n'/\\n}"
+          CHANGELOG="${CHANGELOG//\"/\\\"}"
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Slack notification
+        if: success()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "☁️ Umami Cloud Deployment",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "☁️ Umami Cloud Deployment"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Hash:*\n${{ steps.random_hash.outputs.hash }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Tags:*\ncloud-${{ steps.random_hash.outputs.hash }}, cloud-latest"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Triggered by:*\n${{ github.actor }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Recent Changes:*\n${{ steps.changelog.outputs.changelog }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
