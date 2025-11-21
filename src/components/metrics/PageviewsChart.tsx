@@ -1,10 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useTheme } from '@umami/react-zen';
 import { BarChart, BarChartProps } from '@/components/charts/BarChart';
+import { LineChart, LineChartProps } from '@/components/charts/LineChart';
 import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
+import { ChartType } from '@/components/charts/ChartTypeSelector';
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
@@ -16,9 +18,10 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  chartType?: ChartType;
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar', ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
@@ -27,26 +30,51 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
   const chartData: any = useMemo(() => {
     if (!data) return;
 
+    const baseChartType = chartType === 'line' ? 'line' : 'bar';
+    const visitorDataConfig =
+      chartType === 'line'
+        ? {
+            type: 'line',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+          }
+        : {
+            type: 'bar',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 0.9,
+          };
+
+    const viewDataConfig =
+      chartType === 'line'
+        ? {
+            type: 'line',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+          }
+        : {
+            type: 'bar',
+            barPercentage: 0.9,
+            categoryPercentage: 0.9,
+            borderWidth: 1,
+          };
+
     return {
       __id: new Date().getTime(),
       datasets: [
         {
-          type: 'bar',
+          ...visitorDataConfig,
           label: formatMessage(labels.visitors),
           data: generateTimeSeries(data.sessions, minDate, maxDate, unit, dateLocale),
-          borderWidth: 1,
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
           ...colors.chart.visitors,
           order: 3,
         },
         {
-          type: 'bar',
+          ...viewDataConfig,
           label: formatMessage(labels.views),
           data: generateTimeSeries(data.pageviews, minDate, maxDate, unit, dateLocale),
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
-          borderWidth: 1,
           ...colors.chart.views,
           order: 4,
         },
@@ -80,12 +108,14 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           : []),
       ],
     };
-  }, [data, locale]);
+  }, [data, locale, chartType]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
+  const ChartComponent = chartType === 'line' ? LineChart : BarChart;
+
   return (
-    <BarChart
+    <ChartComponent
       {...props}
       chartData={chartData}
       unit={unit}
