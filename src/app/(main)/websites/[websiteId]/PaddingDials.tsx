@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { Row, Column, Button, Icon, Slider } from '@umami/react-zen';
+import { Row, Column, Icon } from '@umami/react-zen';
 import { Settings } from '@/components/icons';
-import { useMessages } from '@/components/hooks';
 
 export interface PaddingValues {
   pageBodyPaddingX: number;
@@ -32,7 +31,6 @@ const PADDING_SCALE = {
 };
 
 export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsProps) {
-  const { formatMessage, labels } = useMessages();
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePaddingChange = (key: keyof PaddingValues, value: number) => {
@@ -106,14 +104,26 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
         >
           <Row justifyContent="space-between" alignItems="center">
             <strong>Design Dials - Padding</strong>
-            <Button
-              size="sm"
-              variant="quiet"
-              onPress={handleReset}
-              style={{ fontSize: '12px' }}
+            <button
+              onClick={handleReset}
+              style={{
+                fontSize: '12px',
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                borderRadius: '3px',
+              }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.backgroundColor = 'var(--base-color-3)';
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.backgroundColor = 'transparent';
+              }}
             >
               Reset
-            </Button>
+            </button>
           </Row>
 
           {dialConfig.map((config) => (
@@ -134,13 +144,19 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
                   {PADDING_SCALE[paddingValues[config.key] as keyof typeof PADDING_SCALE]}
                 </span>
               </Row>
-              <Slider
-                value={paddingValues[config.key]}
-                onChange={(value) => handlePaddingChange(config.key, value)}
-                minValue={0}
-                maxValue={config.max}
+              <input
+                type="range"
+                min={0}
+                max={config.max}
                 step={1}
-                style={{ width: '100%' }}
+                value={paddingValues[config.key]}
+                onChange={(e) => handlePaddingChange(config.key, parseInt(e.target.value))}
+                style={{
+                  width: '100%',
+                  height: '4px',
+                  cursor: 'pointer',
+                  borderRadius: '2px',
+                }}
               />
               <div style={{ fontSize: '10px', color: 'var(--secondary-font-color)', marginTop: '-4px' }}>
                 {config.description}
@@ -150,10 +166,8 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
         </Column>
       )}
 
-      <Button
-        variant="solid"
-        size="lg"
-        onPress={() => setIsOpen(!isOpen)}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
         style={{
           borderRadius: '50%',
           width: '48px',
@@ -163,12 +177,15 @@ export function PaddingDials({ paddingValues, onPaddingChange }: PaddingDialsPro
           justifyContent: 'center',
           cursor: 'pointer',
           boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          border: 'none',
+          backgroundColor: 'var(--primary-color)',
+          color: 'white',
+          fontSize: '20px',
+          padding: 0,
         }}
       >
-        <Icon>
-          <Settings style={{ width: '20px', height: '20px' }} />
-        </Icon>
-      </Button>
+        <Settings style={{ width: '20px', height: '20px' }} />
+      </button>
     </Column>
   );
 }
