@@ -17,9 +17,24 @@ export interface PageviewsChartProps extends BarChartProps {
   };
   unit: string;
   chartType?: 'bar' | 'line';
+  lineTension?: number;
+  showGrid?: boolean;
+  visitorsColor?: string;
+  viewsColor?: string;
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar', ...props }: PageviewsChartProps) {
+export function PageviewsChart({
+  data,
+  unit,
+  minDate,
+  maxDate,
+  chartType = 'bar',
+  lineTension = 0,
+  showGrid = true,
+  visitorsColor,
+  viewsColor,
+  ...props
+}: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
@@ -27,6 +42,21 @@ export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar'
 
   const chartData: any = useMemo(() => {
     if (!data) return;
+
+    // Apply custom colors if provided, otherwise use theme defaults
+    const visitorsColorConfig = visitorsColor
+      ? {
+          backgroundColor: visitorsColor,
+          borderColor: visitorsColor,
+        }
+      : colors.chart.visitors;
+
+    const viewsColorConfig = viewsColor
+      ? {
+          backgroundColor: viewsColor,
+          borderColor: viewsColor,
+        }
+      : colors.chart.views;
 
     return {
       __id: new Date().getTime(),
@@ -40,7 +70,10 @@ export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar'
             barPercentage: 0.9,
             categoryPercentage: 0.9,
           }),
-          ...colors.chart.visitors,
+          ...(chartType === 'line' && {
+            tension: lineTension,
+          }),
+          ...visitorsColorConfig,
           order: 3,
         },
         {
@@ -52,7 +85,10 @@ export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar'
             categoryPercentage: 0.9,
           }),
           borderWidth: chartType === 'line' ? 2 : 1,
-          ...colors.chart.views,
+          ...(chartType === 'line' && {
+            tension: lineTension,
+          }),
+          ...viewsColorConfig,
           order: 4,
         },
         ...(data.compare
@@ -85,7 +121,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar'
           : []),
       ],
     };
-  }, [data, locale, chartType]);
+  }, [data, locale, chartType, lineTension, visitorsColor, viewsColor]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
@@ -97,7 +133,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar'
       minDate={minDate}
       maxDate={maxDate}
       renderXLabel={renderXLabel}
-      height="400px"
+      showGrid={showGrid}
     />
   );
 }

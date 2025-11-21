@@ -108,6 +108,64 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Chart',
   });
 
+  const chartHeight = useDynamicVariant('chart-height', {
+    label: 'Chart Height',
+    description: 'Adjust the height of the chart',
+    default: '400px',
+    options: ['300px', '400px', '500px', '600px', '700px'] as const,
+    group: 'Chart',
+  });
+
+  const chartStacked = useDynamicVariant('chart-stacked', {
+    label: 'Stacked Mode',
+    description: 'Stack bars/lines on top of each other',
+    default: 'false',
+    options: ['false', 'true'] as const,
+    group: 'Chart',
+  });
+
+  const chartAnimationSpeed = useDynamicVariant('chart-animation-speed', {
+    label: 'Animation Speed',
+    description: 'Speed of chart animations (in milliseconds)',
+    default: '750',
+    options: ['0', '300', '750', '1000', '2000'] as const,
+    group: 'Chart',
+  });
+
+  const chartLineTension = useDynamicVariant('chart-line-tension', {
+    label: 'Line Smoothness',
+    description: 'Curve tension for line charts (0 = straight, 0.4 = smooth)',
+    default: '0',
+    options: ['0', '0.1', '0.2', '0.3', '0.4'] as const,
+    group: 'Chart',
+  });
+
+  const chartShowGrid = useDynamicVariant('chart-show-grid', {
+    label: 'Show Grid',
+    description: 'Toggle grid lines on the Y axis',
+    default: 'true',
+    options: ['true', 'false'] as const,
+    group: 'Chart',
+  });
+
+  const chartVisitorsColor = useDynamicColor('chart-visitors-color', {
+    label: 'Visitors Color',
+    description: 'Color for the visitors dataset',
+    default: '',
+    options: ['', '#3e63dd', '#30a46c', '#e5484d', '#f76b15', '#8e4ec6', '#0091ff'],
+    allowCustom: true,
+    group: 'Chart - Colors',
+  });
+
+  const chartViewsColor = useDynamicColor('chart-views-color', {
+    label: 'Views Color',
+    description: 'Color for the views dataset',
+    default: '',
+    options: ['', '#3e63dd', '#30a46c', '#e5484d', '#f76b15', '#8e4ec6', '#0091ff'],
+    allowCustom: true,
+    group: 'Chart - Colors',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -126,7 +184,17 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
-          <WebsiteChart websiteId={websiteId} chartType={chartType} />
+          <WebsiteChart
+            websiteId={websiteId}
+            chartType={chartType}
+            chartHeight={chartHeight}
+            chartStacked={chartStacked === 'true'}
+            chartAnimationSpeed={parseInt(chartAnimationSpeed)}
+            chartLineTension={parseFloat(chartLineTension)}
+            chartShowGrid={chartShowGrid === 'true'}
+            chartVisitorsColor={chartVisitorsColor}
+            chartViewsColor={chartViewsColor}
+          />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
