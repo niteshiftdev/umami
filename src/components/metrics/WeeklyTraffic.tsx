@@ -12,7 +12,8 @@ export function WeeklyTraffic({ websiteId }: { websiteId: string }) {
   const { weekStartsOn } = dateLocale.options;
   const daysOfWeek = Array(7)
     .fill(weekStartsOn)
-    .map((d, i) => (d + i) % 7);
+    .map((d, i) => (d + i) % 7)
+    .filter(day => day !== 0 && day !== 6); // Remove Sunday (0) and Saturday (6)
 
   const [, max = 1] = data
     ? data.reduce((arr: number[], hours: number[], index: number) => {
@@ -37,7 +38,7 @@ export function WeeklyTraffic({ websiteId }: { websiteId: string }) {
 
   return (
     <LoadingPanel data={data} isLoading={isLoading} error={error}>
-      <Grid columns="repeat(8, 1fr)" gap>
+      <Grid columns="repeat(6, 1fr)" gap>
         {data && (
           <>
             <Grid rows="repeat(25, 16px)" gap="1">
