@@ -145,6 +145,16 @@ function generateMockData() {
 export default function HybridDashboardPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Calculate date ranges
+  const now = new Date();
+  const dailyMinDate = new Date(now);
+  dailyMinDate.setDate(dailyMinDate.getDate() - 30);
+  const dailyMaxDate = now;
+
+  const monthlyMinDate = new Date(now);
+  monthlyMinDate.setMonth(monthlyMinDate.getMonth() - 6);
+  const monthlyMaxDate = now;
+
   // Prepare multi-metric trend chart
   const activeUsersData = mockData.dailyMetrics.map(m => ({
     x: m.date,
@@ -271,10 +281,22 @@ export default function HybridDashboardPage() {
               <Column gap="3">
                 <GridRow layout="two">
                   <Panel title="Key Metrics Trend (30 Days)" allowFullscreen>
-                    <BarChart chartData={multiMetricChartData} height={300} unit="day" />
+                    <BarChart
+                      chartData={multiMetricChartData}
+                      height={300}
+                      unit="day"
+                      minDate={dailyMinDate}
+                      maxDate={dailyMaxDate}
+                    />
                   </Panel>
                   <Panel title="Revenue Growth (6 Months)" allowFullscreen>
-                    <BarChart chartData={revenueChartData} height={300} unit="month" />
+                    <BarChart
+                      chartData={revenueChartData}
+                      height={300}
+                      unit="month"
+                      minDate={monthlyMinDate}
+                      maxDate={monthlyMaxDate}
+                    />
                   </Panel>
                 </GridRow>
 

@@ -126,6 +126,16 @@ function generateMockData() {
 export default function RevenueOperationsPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Calculate date ranges
+  const now = new Date();
+  const monthlyMinDate = new Date(now);
+  monthlyMinDate.setMonth(monthlyMinDate.getMonth() - 12);
+  const monthlyMaxDate = now;
+
+  const weeklyMinDate = new Date(now);
+  weeklyMinDate.setDate(weeklyMinDate.getDate() - 12 * 7);
+  const weeklyMaxDate = now;
+
   // Prepare chart data for MRR growth
   const mrrChartData = {
     datasets: [
@@ -287,10 +297,22 @@ export default function RevenueOperationsPage() {
         {/* Revenue Growth and Pipeline */}
         <GridRow layout="two">
           <Panel title="Monthly Recurring Revenue (12 Months)" allowFullscreen>
-            <BarChart chartData={mrrChartData} height={300} unit="month" />
+            <BarChart
+              chartData={mrrChartData}
+              height={300}
+              unit="month"
+              minDate={monthlyMinDate}
+              maxDate={monthlyMaxDate}
+            />
           </Panel>
           <Panel title="Pipeline Value Trend (12 Weeks)" allowFullscreen>
-            <BarChart chartData={pipelineChartData} height={300} unit="week" />
+            <BarChart
+              chartData={pipelineChartData}
+              height={300}
+              unit="week"
+              minDate={weeklyMinDate}
+              maxDate={weeklyMaxDate}
+            />
           </Panel>
         </GridRow>
 
@@ -310,7 +332,13 @@ export default function RevenueOperationsPage() {
         {/* Churn and Deals at Risk */}
         <GridRow layout="two">
           <Panel title="Monthly Churn Rate (12 Months)" allowFullscreen>
-            <BarChart chartData={churnChartData} height={300} unit="month" />
+            <BarChart
+              chartData={churnChartData}
+              height={300}
+              unit="month"
+              minDate={monthlyMinDate}
+              maxDate={monthlyMaxDate}
+            />
           </Panel>
           <Panel title="Deals at Risk">
             <Grid

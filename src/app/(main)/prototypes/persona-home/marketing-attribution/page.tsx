@@ -125,6 +125,16 @@ function generateMockData() {
 export default function MarketingAttributionPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Calculate date ranges
+  const now = new Date();
+  const dailyMinDate = new Date(now);
+  dailyMinDate.setDate(dailyMinDate.getDate() - 30);
+  const dailyMaxDate = now;
+
+  const monthlyMinDate = new Date(now);
+  monthlyMinDate.setMonth(monthlyMinDate.getMonth() - 12);
+  const monthlyMaxDate = now;
+
   // Prepare stacked chart data for channel traffic
   const channelTrafficData = {
     datasets: mockData.dailyTraffic,
@@ -244,7 +254,14 @@ export default function MarketingAttributionPage() {
         {/* Traffic and Attribution */}
         <GridRow layout="two">
           <Panel title="Traffic by Channel (30 Days)" allowFullscreen>
-            <BarChart chartData={channelTrafficData} height={300} unit="day" stacked />
+            <BarChart
+              chartData={channelTrafficData}
+              height={300}
+              unit="day"
+              stacked
+              minDate={dailyMinDate}
+              maxDate={dailyMaxDate}
+            />
           </Panel>
           <Panel title="First-Touch Attribution" allowFullscreen>
             <PieChart chartData={attributionChartData} height={300} type="doughnut" />
@@ -254,10 +271,22 @@ export default function MarketingAttributionPage() {
         {/* Conversion Funnel and Performance */}
         <GridRow layout="two">
           <Panel title="Conversion Funnel" allowFullscreen>
-            <BarChart chartData={funnelChartData} height={300} unit="day" />
+            <BarChart
+              chartData={funnelChartData}
+              height={300}
+              unit="day"
+              minDate={dailyMinDate}
+              maxDate={dailyMaxDate}
+            />
           </Panel>
           <Panel title="Spend vs Revenue (12 Months)" allowFullscreen>
-            <BarChart chartData={spendRevenueChartData} height={300} unit="month" />
+            <BarChart
+              chartData={spendRevenueChartData}
+              height={300}
+              unit="month"
+              minDate={monthlyMinDate}
+              maxDate={monthlyMaxDate}
+            />
           </Panel>
         </GridRow>
 

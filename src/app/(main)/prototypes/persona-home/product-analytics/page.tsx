@@ -88,6 +88,21 @@ function generateMockData() {
 export default function ProductAnalyticsPage() {
   const mockData = useMemo(() => generateMockData(), []);
 
+  // Calculate date ranges
+  const now = new Date();
+  const dailyMinDate = new Date(now);
+  dailyMinDate.setDate(dailyMinDate.getDate() - 30);
+  const dailyMaxDate = now;
+
+  const hourlyMinDate = new Date(now);
+  hourlyMinDate.setHours(0, 0, 0, 0);
+  const hourlyMaxDate = new Date(now);
+  hourlyMaxDate.setHours(23, 59, 59, 999);
+
+  const weeklyMinDate = new Date(now);
+  weeklyMinDate.setDate(weeklyMinDate.getDate() - 12 * 7);
+  const weeklyMaxDate = now;
+
   // Prepare chart data for daily engagement
   const engagementChartData = {
     datasets: [
@@ -199,10 +214,22 @@ export default function ProductAnalyticsPage() {
         {/* Engagement Charts */}
         <GridRow layout="two">
           <Panel title="Daily Active Users (30 Days)" allowFullscreen>
-            <BarChart chartData={engagementChartData} height={300} unit="day" />
+            <BarChart
+              chartData={engagementChartData}
+              height={300}
+              unit="day"
+              minDate={dailyMinDate}
+              maxDate={dailyMaxDate}
+            />
           </Panel>
           <Panel title="Hourly Session Pattern (Today)" allowFullscreen>
-            <BarChart chartData={hourlyChartData} height={300} unit="hour" />
+            <BarChart
+              chartData={hourlyChartData}
+              height={300}
+              unit="hour"
+              minDate={hourlyMinDate}
+              maxDate={hourlyMaxDate}
+            />
           </Panel>
         </GridRow>
 
@@ -212,7 +239,13 @@ export default function ProductAnalyticsPage() {
             <PieChart chartData={featureChartData} height={300} type="doughnut" />
           </Panel>
           <Panel title="User Retention by Cohort (12 Weeks)" allowFullscreen>
-            <BarChart chartData={cohortChartData} height={300} unit="week" />
+            <BarChart
+              chartData={cohortChartData}
+              height={300}
+              unit="week"
+              minDate={weeklyMinDate}
+              maxDate={weeklyMaxDate}
+            />
           </Panel>
         </GridRow>
       </Column>
