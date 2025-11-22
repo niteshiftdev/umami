@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useContext } from 'react';
 import { Icon, Text, Row, Grid } from '@umami/react-zen';
 import { LinkButton } from '@/components/common/LinkButton';
 import { LoadingPanel } from '@/components/common/LoadingPanel';
@@ -7,6 +7,7 @@ import { Maximize } from '@/components/icons';
 import { MetricLabel } from '@/components/metrics/MetricLabel';
 import { percentFilter } from '@/lib/filters';
 import { ListTable, ListTableProps } from './ListTable';
+import { TypographyContext } from '@/app/(main)/websites/[websiteId]/WebsitePage';
 
 export interface MetricsTableProps extends ListTableProps {
   websiteId: string;
@@ -32,6 +33,7 @@ export function MetricsTable({
 }: MetricsTableProps) {
   const { updateParams } = useNavigation();
   const { formatMessage, labels } = useMessages();
+  const typography = useContext(TypographyContext);
   const { data, isLoading, isFetching, error } = useWebsiteMetricsQuery(websiteId, {
     type,
     limit,
@@ -78,7 +80,22 @@ export function MetricsTable({
       minHeight="400px"
     >
       <Grid>
-        {data && <ListTable {...props} data={filteredData} renderLabel={renderLabel} />}
+        {data && (
+          <ListTable
+            {...props}
+            data={filteredData}
+            renderLabel={renderLabel}
+            headerSize={typography.tableHeaderSize}
+            headerWeight={typography.tableHeaderWeight}
+            headerColor={typography.tableHeaderColor}
+            rowLabelSize={typography.tableRowLabelSize}
+            rowLabelWeight={typography.tableRowLabelWeight}
+            rowLabelColor={typography.tableRowLabelColor}
+            rowValueSize={typography.tableRowValueSize}
+            rowValueWeight={typography.tableRowValueWeight}
+            rowValueColor={typography.tableRowValueColor}
+          />
+        )}
         {showMore && limit && (
           <Row justifyContent="center" alignItems="flex-end">
             <LinkButton href={updateParams({ view: type })} variant="quiet">

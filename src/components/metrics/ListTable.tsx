@@ -27,6 +27,15 @@ export interface ListTableProps {
   showPercentage?: boolean;
   itemCount?: number;
   currency?: string;
+  headerSize?: string;
+  headerWeight?: string;
+  headerColor?: string;
+  rowLabelSize?: string;
+  rowLabelWeight?: string;
+  rowLabelColor?: string;
+  rowValueSize?: string;
+  rowValueWeight?: string;
+  rowValueColor?: string;
 }
 
 export function ListTable({
@@ -40,6 +49,15 @@ export function ListTable({
   showPercentage = true,
   itemCount = 10,
   currency,
+  headerSize,
+  headerWeight,
+  headerColor,
+  rowLabelSize,
+  rowLabelWeight,
+  rowLabelColor,
+  rowValueSize,
+  rowValueWeight,
+  rowValueColor,
 }: ListTableProps) {
   const { formatMessage, labels } = useMessages();
   const { isPhone } = useMobile();
@@ -58,6 +76,12 @@ export function ListTable({
         change={renderChange ? renderChange(row, index) : null}
         currency={currency}
         isMobile={isPhone}
+        rowLabelSize={rowLabelSize}
+        rowLabelWeight={rowLabelWeight}
+        rowLabelColor={rowLabelColor}
+        rowValueSize={rowValueSize}
+        rowValueWeight={rowValueWeight}
+        rowValueColor={rowValueColor}
       />
     );
   };
@@ -66,11 +90,25 @@ export function ListTable({
     return <div style={style}>{getRow(data[index], index)}</div>;
   };
 
+  const headerStyle = {
+    fontWeight:
+      headerWeight === 'normal'
+        ? 400
+        : headerWeight === 'medium'
+          ? 500
+          : headerWeight === 'semibold'
+            ? 600
+            : 700,
+    color: headerColor,
+  };
+
   return (
     <Column gap>
       <Grid alignItems="center" justifyContent="space-between" paddingLeft="2" columns="1fr 100px">
-        <Text weight="bold">{title}</Text>
-        <Text weight="bold" align="center">
+        <Text size={headerSize as any} weight={headerWeight as any} style={headerStyle}>
+          {title}
+        </Text>
+        <Text size={headerSize as any} weight={headerWeight as any} align="center" style={headerStyle}>
           {metric}
         </Text>
       </Grid>
@@ -102,6 +140,12 @@ const AnimatedRow = ({
   showPercentage = true,
   currency,
   isMobile,
+  rowLabelSize,
+  rowLabelWeight,
+  rowLabelColor,
+  rowValueSize,
+  rowValueWeight,
+  rowValueColor,
 }) => {
   const props = useSpring({
     width: percent,
@@ -109,6 +153,30 @@ const AnimatedRow = ({
     from: { width: 0, y: 0 },
     config: animate ? config.default : { duration: 0 },
   });
+
+  const labelStyle = {
+    fontWeight:
+      rowLabelWeight === 'normal'
+        ? 400
+        : rowLabelWeight === 'medium'
+          ? 500
+          : rowLabelWeight === 'semibold'
+            ? 600
+            : 700,
+    color: rowLabelColor,
+  };
+
+  const valueStyle = {
+    fontWeight:
+      rowValueWeight === 'normal'
+        ? 400
+        : rowValueWeight === 'medium'
+          ? 500
+          : rowValueWeight === 'semibold'
+            ? 600
+            : 700,
+    color: rowValueColor,
+  };
 
   return (
     <Grid
@@ -120,13 +188,18 @@ const AnimatedRow = ({
       gap
     >
       <Row alignItems="center">
-        <Text truncate={true} style={{ maxWidth: isMobile ? '200px' : '400px' }}>
+        <Text
+          size={rowLabelSize as any}
+          weight={rowLabelWeight as any}
+          truncate={true}
+          style={{ maxWidth: isMobile ? '200px' : '400px', ...labelStyle }}
+        >
           {label}
         </Text>
       </Row>
       <Row alignItems="center" height="30px" justifyContent="flex-end">
         {change}
-        <Text weight="bold">
+        <Text size={rowValueSize as any} weight={rowValueWeight as any} style={valueStyle}>
           <AnimatedDiv title={props?.y as any}>
             {currency
               ? props.y?.to(n => formatLongCurrency(n, currency))
