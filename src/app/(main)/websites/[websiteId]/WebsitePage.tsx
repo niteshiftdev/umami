@@ -65,7 +65,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     label: 'Metric Label Color',
     description: 'Text color for metric labels',
     default: '',
-    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d', '#9256d9', '#e68619', '#00a2c7', '#d6409f', '#46a758'],
     allowCustom: true,
     group: 'Typography - Metrics',
   });
@@ -74,7 +74,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     label: 'Metric Value Color',
     description: 'Text color for metric values',
     default: '',
-    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d', '#9256d9', '#e68619', '#00a2c7', '#d6409f', '#46a758'],
     allowCustom: true,
     group: 'Typography - Metrics',
   });
@@ -100,7 +100,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     label: 'Section Heading Color',
     description: 'Text color for section headings',
     default: '',
-    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d'],
+    options: ['', '#000000', '#333333', '#666666', '#999999', '#3e63dd', '#30a46c', '#e5484d', '#9256d9', '#e68619', '#00a2c7', '#d6409f', '#46a758'],
     allowCustom: true,
     group: 'Typography - Headings',
   });
