@@ -20,8 +20,11 @@ export default function RevenueOperationsHomePage() {
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
   // Generate realistic date range for last 12 months
-  const endDate = new Date();
-  const startDate = subMonths(startOfMonth(endDate), 11);
+  const { endDate, startDate } = useMemo(() => {
+    const end = new Date();
+    const start = subMonths(startOfMonth(end), 11);
+    return { endDate: end, startDate: start };
+  }, []);
 
   // Mock data for Revenue Operations persona - focused on sales, pipeline, and revenue
   const revenueMetrics = [

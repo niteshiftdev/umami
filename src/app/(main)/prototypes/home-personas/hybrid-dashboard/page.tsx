@@ -21,9 +21,11 @@ export default function HybridDashboardHomePage() {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Date ranges
-  const currentDate = new Date();
-  const endDate = currentDate;
-  const startDate = subMonths(startOfMonth(currentDate), 11);
+  const { endDate, startDate } = useMemo(() => {
+    const end = new Date();
+    const start = subMonths(startOfMonth(end), 11);
+    return { endDate: end, startDate: start };
+  }, []);
 
   // Combined top-level metrics showing all aspects
   const overviewMetrics = [

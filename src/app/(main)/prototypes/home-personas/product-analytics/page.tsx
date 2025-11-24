@@ -20,8 +20,11 @@ export default function ProductAnalyticsHomePage() {
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
   // Generate realistic date range for last 30 days
-  const endDate = new Date();
-  const startDate = subDays(endDate, 29);
+  const { endDate, startDate } = useMemo(() => {
+    const end = new Date();
+    const start = subDays(end, 29);
+    return { endDate: end, startDate: start };
+  }, []);
 
   // Mock data for Product Analytics persona - focused on user engagement
   const engagementMetrics = [
