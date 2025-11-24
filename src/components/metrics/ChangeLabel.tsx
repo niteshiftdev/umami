@@ -1,5 +1,6 @@
 import { Icon, Text, Row, RowProps } from '@umami/react-zen';
 import { ReactNode } from 'react';
+import { useDynamicVariant } from '@niteshift/dials';
 import { ArrowRight } from '@/components/icons';
 
 const STYLES = {
@@ -36,6 +37,14 @@ export function ChangeLabel({
   const neutral = value === 0 || isNaN(value);
   const good = reverseColors ? negative : positive;
 
+  const fontWeight = useDynamicVariant('change-label-font-weight', {
+    label: 'Change Label Font Weight',
+    description: 'Font weight for the change percentage label',
+    default: 'bold' as const,
+    options: ['normal', 'medium', 'semibold', 'bold'] as const,
+    group: 'Typography - Metrics',
+  });
+
   const style =
     STYLES[good && 'positive'] || STYLES[!good && 'negative'] || STYLES[neutral && 'neutral'];
 
@@ -54,7 +63,7 @@ export function ChangeLabel({
           <ArrowRight />
         </Icon>
       )}
-      <Text>{children || value}</Text>
+      <Text weight={fontWeight as 'normal' | 'medium' | 'semibold' | 'bold'}>{children || value}</Text>
     </Row>
   );
 }
