@@ -1,7 +1,7 @@
 'use client';
 
 import { Column, Grid, Heading, Row, Text } from '@umami/react-zen';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
@@ -13,6 +13,17 @@ import { useMessages } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
 import { useTheme } from '@umami/react-zen';
 import { formatNumber } from '@/lib/format';
+
+// Wrapper to delay BarChart rendering until client-side
+function ClientOnlyBarChart(props: any) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+  return <BarChart {...props} />;
+}
 
 export default function ProductAnalyticsDashboard() {
   const { formatMessage, labels } = useMessages();
@@ -176,11 +187,10 @@ export default function ProductAnalyticsDashboard() {
         {/* Engagement Trends */}
         <GridRow layout="one" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="Engagement Trends (30 Days)">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={engagementTrendData}
               stacked={false}
               height="350px"
-              XAxisType="linear"
               renderXLabel={(label, index, values) => {
                 // Show every 5th label to avoid crowding
                 return index % 5 === 0 ? label : '';
@@ -199,7 +209,7 @@ export default function ProductAnalyticsDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Feature Adoption Rates">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={featureAdoptionData}
               height="350px"
               XAxisType="linear"
@@ -218,7 +228,7 @@ export default function ProductAnalyticsDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Key Event Completion Rates">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={eventCompletionData}
               height="350px"
               XAxisType="linear"

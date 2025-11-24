@@ -1,7 +1,7 @@
 'use client';
 
 import { Column, Grid, Heading, Row, Text } from '@umami/react-zen';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
@@ -13,6 +13,17 @@ import { useMessages } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
 import { useTheme } from '@umami/react-zen';
 import { formatNumber, formatCurrency } from '@/lib/format';
+
+// Wrapper to delay BarChart rendering until client-side
+function ClientOnlyBarChart(props: any) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+  return <BarChart {...props} />;
+}
 
 export default function RevenueOperationsDashboard() {
   const { formatMessage, labels } = useMessages();
@@ -176,11 +187,10 @@ export default function RevenueOperationsDashboard() {
         {/* Revenue Pipeline Trend */}
         <GridRow layout="one" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="Revenue Pipeline Trend (30 Days)">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={revenuePipelineData}
               stacked={true}
               height="350px"
-              XAxisType="linear"
               renderXLabel={(label, index, values) => {
                 return index % 5 === 0 ? label : '';
               }}
@@ -199,7 +209,7 @@ export default function RevenueOperationsDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Win Rate by Sales Rep">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={winRateByRepData}
               height="350px"
               XAxisType="linear"
@@ -211,7 +221,7 @@ export default function RevenueOperationsDashboard() {
         {/* Revenue Risk & Forecast */}
         <GridRow layout="two" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="Revenue Risk by Customer Segment">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={riskBySegmentData}
               stacked={true}
               height="350px"
@@ -220,7 +230,7 @@ export default function RevenueOperationsDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Quarterly Revenue Forecast">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={revenueForecastData}
               height="350px"
               XAxisType="linear"

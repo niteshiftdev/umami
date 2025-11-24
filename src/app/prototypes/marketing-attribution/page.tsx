@@ -1,7 +1,7 @@
 'use client';
 
 import { Column, Grid, Heading, Row, Text } from '@umami/react-zen';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
@@ -13,6 +13,17 @@ import { useMessages } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
 import { useTheme } from '@umami/react-zen';
 import { formatNumber, formatCurrency } from '@/lib/format';
+
+// Wrapper to delay BarChart rendering until client-side
+function ClientOnlyBarChart(props: any) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+  return <BarChart {...props} />;
+}
 
 export default function MarketingAttributionDashboard() {
   const { formatMessage, labels } = useMessages();
@@ -198,11 +209,10 @@ export default function MarketingAttributionDashboard() {
         {/* Campaign Performance Over Time */}
         <GridRow layout="one" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="Campaign Traffic Trends (30 Days)">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={campaignPerformanceData}
               stacked={true}
               height="350px"
-              XAxisType="linear"
               renderXLabel={(label, index, values) => {
                 return index % 5 === 0 ? label : '';
               }}
@@ -220,7 +230,7 @@ export default function MarketingAttributionDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Conversion Rate by Channel">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={conversionRateData}
               height="350px"
               XAxisType="linear"
@@ -232,7 +242,7 @@ export default function MarketingAttributionDashboard() {
         {/* ROI by Campaign & Attribution Models */}
         <GridRow layout="two" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="ROI by Campaign">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={roiByCampaignData}
               height="350px"
               XAxisType="linear"
@@ -240,7 +250,7 @@ export default function MarketingAttributionDashboard() {
             />
           </Panel>
           <Panel allowFullscreen title="Attribution Model Comparison">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={attributionModelData}
               stacked={false}
               height="350px"

@@ -1,7 +1,7 @@
 'use client';
 
 import { Column, Grid, Heading, Row, Text, Tabs, Tab, TabList, TabPanel } from '@umami/react-zen';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
@@ -13,6 +13,17 @@ import { useMessages } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
 import { useTheme } from '@umami/react-zen';
 import { formatNumber, formatCurrency } from '@/lib/format';
+
+// Wrapper to delay BarChart rendering until client-side
+function ClientOnlyBarChart(props: any) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+  return <BarChart {...props} />;
+}
 
 export default function HybridDashboard() {
   const { formatMessage, labels } = useMessages();
@@ -200,11 +211,10 @@ export default function HybridDashboard() {
         {/* Engagement & Revenue Correlation */}
         <GridRow layout="one" minHeight="400px" marginBottom="4">
           <Panel allowFullscreen title="MRR & User Engagement Correlation (30 Days)">
-            <BarChart
+            <ClientOnlyBarChart
               chartData={engagementRevenueData}
               stacked={false}
               height="350px"
-              XAxisType="linear"
               renderXLabel={(label, index, values) => {
                 return index % 5 === 0 ? label : '';
               }}
