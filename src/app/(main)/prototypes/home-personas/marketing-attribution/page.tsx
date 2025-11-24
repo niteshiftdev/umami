@@ -229,9 +229,7 @@ export default function MarketingAttributionHomePage() {
           <Panel title="Traffic Sources (Last 30 Days)">
             <BarChart
               chartData={trafficChartData}
-              unit="day"
-              minDate={startDate}
-              maxDate={endDate}
+              XAxisType="category"
               stacked={true}
               height="350px"
             />

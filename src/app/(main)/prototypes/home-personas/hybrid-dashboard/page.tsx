@@ -266,10 +266,7 @@ export default function HybridDashboardHomePage() {
                       },
                     ],
                   }}
-                  unit="month"
-                  minDate={startDate}
-                  maxDate={endDate}
-                  currency="USD"
+                  XAxisType="category"
                   height="400px"
                 />
               </Panel>
@@ -288,9 +285,7 @@ export default function HybridDashboardHomePage() {
                         },
                       ],
                     }}
-                    unit="month"
-                    minDate={startDate}
-                    maxDate={endDate}
+                    XAxisType="category"
                     height="350px"
                   />
                 </Panel>
@@ -308,9 +303,7 @@ export default function HybridDashboardHomePage() {
                         },
                       ],
                     }}
-                    unit="month"
-                    minDate={startDate}
-                    maxDate={endDate}
+                    XAxisType="category"
                     height="350px"
                   />
                 </Panel>

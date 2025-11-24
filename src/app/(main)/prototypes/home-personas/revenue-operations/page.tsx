@@ -213,9 +213,7 @@ export default function RevenueOperationsHomePage() {
           <Panel title="Monthly Recurring Revenue (12 Months)">
             <BarChart
               chartData={mrrChartData}
-              unit="month"
-              minDate={startDate}
-              maxDate={endDate}
+              XAxisType="category"
               height="350px"
             />
           </Panel>

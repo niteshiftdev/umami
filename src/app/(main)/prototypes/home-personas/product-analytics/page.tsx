@@ -187,9 +187,7 @@ export default function ProductAnalyticsHomePage() {
           <Panel title="Daily Active Users (Last 30 Days)">
             <BarChart
               chartData={engagementChartData}
-              unit="day"
-              minDate={startDate}
-              maxDate={endDate}
+              XAxisType="category"
               height="350px"
             />
           </Panel>
