@@ -21,9 +21,9 @@ export default function HybridDashboardHomePage() {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Date ranges
-  const today = startOfDay(new Date());
-  const thirtyDaysAgo = subDays(today, 29);
-  const twelveMonthsAgo = subMonths(startOfMonth(new Date()), 11);
+  const currentDate = new Date();
+  const endDate = currentDate;
+  const startDate = subMonths(startOfMonth(currentDate), 11);
 
   // Combined top-level metrics showing all aspects
   const overviewMetrics = [
@@ -70,7 +70,7 @@ export default function HybridDashboardHomePage() {
     let baseTraffic = 72000;
 
     for (let i = 0; i < 12; i++) {
-      const date = addMonths(twelveMonthsAgo, i);
+      const date = addMonths(startDate, i);
       const dateStr = format(date, 'yyyy-MM');
 
       // Simulate growth with correlation
@@ -85,7 +85,7 @@ export default function HybridDashboardHomePage() {
     }
 
     return { revenueData, usersData, trafficData };
-  }, [twelveMonthsAgo]);
+  }, [startDate]);
 
   // Health score breakdown
   const healthScoreData = useMemo(() => {
@@ -265,8 +265,8 @@ export default function HybridDashboardHomePage() {
                     ],
                   }}
                   unit="month"
-                  minDate={twelveMonthsAgo}
-                  maxDate={new Date()}
+                  minDate={startDate}
+                  maxDate={endDate}
                   currency="USD"
                   height="400px"
                 />
@@ -287,8 +287,8 @@ export default function HybridDashboardHomePage() {
                       ],
                     }}
                     unit="month"
-                    minDate={twelveMonthsAgo}
-                    maxDate={new Date()}
+                    minDate={startDate}
+                    maxDate={endDate}
                     height="350px"
                   />
                 </Panel>
@@ -307,8 +307,8 @@ export default function HybridDashboardHomePage() {
                       ],
                     }}
                     unit="month"
-                    minDate={twelveMonthsAgo}
-                    maxDate={new Date()}
+                    minDate={startDate}
+                    maxDate={endDate}
                     height="350px"
                   />
                 </Panel>

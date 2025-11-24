@@ -20,8 +20,8 @@ export default function MarketingAttributionHomePage() {
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
   // Generate realistic date range for last 30 days
-  const today = startOfDay(new Date());
-  const startDate = subDays(today, 29);
+  const endDate = new Date();
+  const startDate = subDays(endDate, 29);
 
   // Mock data for Marketing Attribution persona - focused on campaigns and traffic sources
   const campaignMetrics = [
@@ -228,7 +228,7 @@ export default function MarketingAttributionHomePage() {
               chartData={trafficChartData}
               unit="day"
               minDate={startDate}
-              maxDate={today}
+              maxDate={endDate}
               stacked={true}
               height="350px"
             />

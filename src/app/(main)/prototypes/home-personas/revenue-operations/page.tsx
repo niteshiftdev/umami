@@ -20,8 +20,8 @@ export default function RevenueOperationsHomePage() {
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
   // Generate realistic date range for last 12 months
-  const today = new Date();
-  const startDate = subMonths(startOfMonth(today), 11);
+  const endDate = new Date();
+  const startDate = subMonths(startOfMonth(endDate), 11);
 
   // Mock data for Revenue Operations persona - focused on sales, pipeline, and revenue
   const revenueMetrics = [
@@ -212,7 +212,7 @@ export default function RevenueOperationsHomePage() {
               chartData={mrrChartData}
               unit="month"
               minDate={startDate}
-              maxDate={today}
+              maxDate={endDate}
               currency="USD"
               height="350px"
             />
