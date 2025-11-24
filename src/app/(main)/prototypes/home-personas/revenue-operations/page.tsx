@@ -216,7 +216,6 @@ export default function RevenueOperationsHomePage() {
               unit="month"
               minDate={startDate}
               maxDate={endDate}
-              currency="USD"
               height="350px"
             />
           </Panel>
