@@ -21,6 +21,12 @@ export const TypographyContext = createContext<{
   sectionHeadingColor?: string;
 }>({});
 
+export const VisualizationContext = createContext<{
+  chartType?: 'bar' | 'line' | 'area';
+  colorScheme?: string;
+  layoutStyle?: 'one' | 'two' | 'three' | 'one-two' | 'two-one';
+}>({});
+
 export function WebsitePage({ websiteId }: { websiteId: string }) {
   // Metric Typography Controls
   const metricLabelSize = useDynamicVariant('metric-label-size', {
@@ -99,6 +105,31 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Visualization Controls
+  const chartType = useDynamicVariant('chart-type', {
+    label: 'Chart Type',
+    description: 'Visualization type for the main pageviews chart',
+    default: 'bar',
+    options: ['bar', 'line', 'area'] as const,
+    group: 'Visualization',
+  });
+
+  const colorScheme = useDynamicVariant('color-scheme', {
+    label: 'Color Scheme',
+    description: 'Color palette for chart visualizations',
+    default: 'default',
+    options: ['default', 'vibrant', 'pastel', 'monochrome', 'warm', 'cool'] as const,
+    group: 'Visualization',
+  });
+
+  const layoutStyle = useDynamicVariant('layout-style', {
+    label: 'Component Layout',
+    description: 'Grid layout style for dashboard panels',
+    default: 'two',
+    options: ['one', 'two', 'three'] as const,
+    group: 'Layout',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -111,17 +142,25 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingColor,
   };
 
+  const visualizationConfig = {
+    chartType,
+    colorScheme,
+    layoutStyle,
+  };
+
   return (
     <TypographyContext.Provider value={typographyConfig}>
-      <Column gap>
-        <WebsiteControls websiteId={websiteId} />
-        <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-        <Panel minHeight="520px">
-          <WebsiteChart websiteId={websiteId} />
-        </Panel>
-        <WebsitePanels websiteId={websiteId} />
-        <ExpandedViewModal websiteId={websiteId} />
-      </Column>
+      <VisualizationContext.Provider value={visualizationConfig}>
+        <Column gap>
+          <WebsiteControls websiteId={websiteId} />
+          <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
+          <Panel minHeight="520px">
+            <WebsiteChart websiteId={websiteId} />
+          </Panel>
+          <WebsitePanels websiteId={websiteId} />
+          <ExpandedViewModal websiteId={websiteId} />
+        </Column>
+      </VisualizationContext.Provider>
     </TypographyContext.Provider>
   );
 }
