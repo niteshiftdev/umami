@@ -1,0 +1,84 @@
+/**
+ * Number control component for the overlay UI
+ */
+
+import React from 'react';
+import type { NumberDialConfig } from '../types';
+
+export interface NumberControlProps {
+  id: string;
+  value: number;
+  config: NumberDialConfig;
+  onChange: (value: number) => void;
+  onReset: () => void;
+}
+
+export function NumberControl({ id, value, config, onChange, onReset }: NumberControlProps) {
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Number(e.target.value));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const num = Number(e.target.value);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  const hasRange = config.min !== undefined && config.max !== undefined;
+
+  return (
+    <div className="dial-control number-control">
+      <div className="control-header">
+        <label htmlFor={id}>{config.label}</label>
+        {config.description && <span className="control-description">{config.description}</span>}
+        <button className="reset-button" onClick={onReset} title="Reset to default">
+          ↺
+        </button>
+      </div>
+
+      <div className="control-body">
+        {/* Slider for range */}
+        {hasRange && (
+          <div className="number-slider">
+            <input
+              type="range"
+              min={config.min}
+              max={config.max}
+              step={config.step || 1}
+              value={value}
+              onChange={handleSliderChange}
+            />
+            <div className="slider-labels">
+              <span>
+                {config.min}
+                {config.unit}
+              </span>
+              <span className="slider-value">
+                {value}
+                {config.unit}
+              </span>
+              <span>
+                {config.max}
+                {config.unit}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Direct input */}
+        <div className="number-input">
+          <input
+            type="number"
+            value={value}
+            onChange={handleInputChange}
+            min={config.min}
+            max={config.max}
+            step={config.step || 1}
+          />
+          {config.unit && <span className="number-unit">{config.unit}</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
