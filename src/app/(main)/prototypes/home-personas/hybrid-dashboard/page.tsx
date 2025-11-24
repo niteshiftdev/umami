@@ -1,6 +1,6 @@
 'use client';
 
-import { Column, useTheme, Tabs, TabList, Tab, TabBody } from '@umami/react-zen';
+import { Column, useTheme, Tabs, TabList, Tab, TabPanel } from '@umami/react-zen';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PageBody } from '@/components/common/PageBody';
 import { MetricCard } from '@/components/metrics/MetricCard';
@@ -200,7 +200,7 @@ export default function HybridDashboardHomePage() {
             <Tab value="efficiency">Efficiency</Tab>
           </TabList>
 
-          <TabBody value="overview">
+          <TabPanel value="overview">
             <Column gap="3">
               <GridRow layout="two">
                 <Panel title="Business Health Score">
@@ -246,9 +246,9 @@ export default function HybridDashboardHomePage() {
                 </Panel>
               </GridRow>
             </Column>
-          </TabBody>
+          </TabPanel>
 
-          <TabBody value="growth">
+          <TabPanel value="growth">
             <Column gap="3">
               <Panel title="12-Month Growth Trends">
                 <BarChart
@@ -314,9 +314,9 @@ export default function HybridDashboardHomePage() {
                 </Panel>
               </GridRow>
             </Column>
-          </TabBody>
+          </TabPanel>
 
-          <TabBody value="efficiency">
+          <TabPanel value="efficiency">
             <Column gap="3">
               <Panel title="Multi-Channel Attribution & Revenue">
                 <ListTable
@@ -381,7 +381,7 @@ export default function HybridDashboardHomePage() {
                 </Panel>
               </GridRow>
             </Column>
-          </TabBody>
+          </TabPanel>
         </Tabs>
       </Column>
     </PageBody>
