@@ -2,7 +2,8 @@ import { LoadingPanel } from '@/components/common/LoadingPanel';
 import { useDateRange } from '@/components/hooks';
 import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
 import { PageviewsChart } from '@/components/metrics/PageviewsChart';
-import { useMemo } from 'react';
+import { useMemo, useContext } from 'react';
+import { TypographyContext } from './WebsitePage';
 
 export function WebsiteChart({
   websiteId,
@@ -11,6 +12,7 @@ export function WebsiteChart({
   websiteId: string;
   compareMode?: boolean;
 }) {
+  const typography = useContext(TypographyContext);
   const { dateRange, dateCompare } = useDateRange();
   const { startDate, endDate, unit, value } = dateRange;
   const { data, isLoading, isFetching, error } = useWebsitePageviewsQuery({
@@ -54,6 +56,7 @@ export function WebsiteChart({
         minDate={startDate}
         maxDate={endDate}
         unit={unit}
+        primaryColorOverride={typography.chartPrimaryColor}
       />
     </LoadingPanel>
   );

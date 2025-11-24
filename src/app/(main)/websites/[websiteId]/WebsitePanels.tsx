@@ -6,10 +6,13 @@ import { MetricsTable } from '@/components/metrics/MetricsTable';
 import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
 import { WorldMap } from '@/components/metrics/WorldMap';
 import { Grid, Heading, Row, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
+import { useContext } from 'react';
+import { TypographyContext } from './WebsitePage';
 
 export function WebsitePanels({ websiteId }: { websiteId: string }) {
   const { formatMessage, labels } = useMessages();
   const { pathname } = useNavigation();
+  const typography = useContext(TypographyContext);
   const tableProps = {
     websiteId,
     limit: 10,
@@ -20,11 +23,25 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   const rowProps = { minHeight: '570px' };
   const isSharePage = pathname.includes('/share/');
 
+  const headingStyle = {
+    fontWeight:
+      typography.sectionHeadingWeight === 'normal'
+        ? 400
+        : typography.sectionHeadingWeight === 'medium'
+          ? 500
+          : typography.sectionHeadingWeight === 'semibold'
+            ? 600
+            : 700,
+    color: typography.sectionHeadingColor,
+  };
+
   return (
-    <Grid gap="3">
+    <Grid gap={typography.gridGap as any}>
       <GridRow layout="two" {...rowProps}>
-        <Panel>
-          <Heading size="2">{formatMessage(labels.pages)}</Heading>
+        <Panel padding={typography.panelPadding as any}>
+          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+            {formatMessage(labels.pages)}
+          </Heading>
           <Tabs>
             <TabList>
               <Tab id="path">{formatMessage(labels.path)}</Tab>
@@ -42,8 +59,10 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
             </TabPanel>
           </Tabs>
         </Panel>
-        <Panel>
-          <Heading size="2">{formatMessage(labels.sources)}</Heading>
+        <Panel padding={typography.panelPadding as any}>
+          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+            {formatMessage(labels.sources)}
+          </Heading>
           <Tabs>
             <TabList>
               <Tab id="referrer">{formatMessage(labels.referrers)}</Tab>
@@ -64,8 +83,10 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
 
       <GridRow layout="two" {...rowProps}>
-        <Panel>
-          <Heading size="2">{formatMessage(labels.environment)}</Heading>
+        <Panel padding={typography.panelPadding as any}>
+          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+            {formatMessage(labels.environment)}
+          </Heading>
           <Tabs>
             <TabList>
               <Tab id="browser">{formatMessage(labels.browsers)}</Tab>
@@ -84,8 +105,10 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Tabs>
         </Panel>
 
-        <Panel>
-          <Heading size="2">{formatMessage(labels.location)}</Heading>
+        <Panel padding={typography.panelPadding as any}>
+          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+            {formatMessage(labels.location)}
+          </Heading>
           <Tabs>
             <TabList>
               <Tab id="country">{formatMessage(labels.countries)}</Tab>
@@ -110,16 +133,20 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           <WorldMap websiteId={websiteId} />
         </Panel>
 
-        <Panel>
-          <Heading size="2">{formatMessage(labels.traffic)}</Heading>
+        <Panel padding={typography.panelPadding as any}>
+          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+            {formatMessage(labels.traffic)}
+          </Heading>
           <Row border="bottom" marginBottom="4" />
           <WeeklyTraffic websiteId={websiteId} />
         </Panel>
       </GridRow>
       {isSharePage && (
         <GridRow layout="two-one" {...rowProps}>
-          <Panel>
-            <Heading size="2">{formatMessage(labels.events)}</Heading>
+          <Panel padding={typography.panelPadding as any}>
+            <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+              {formatMessage(labels.events)}
+            </Heading>
             <Row border="bottom" marginBottom="4" />
             <MetricsTable
               websiteId={websiteId}
@@ -130,7 +157,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               filterLink={false}
             />
           </Panel>
-          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }}>
+          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} padding={typography.panelPadding as any}>
             <EventsChart websiteId={websiteId} />
           </Panel>
         </GridRow>
