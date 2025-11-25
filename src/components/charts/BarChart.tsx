@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from 'react';
 import { useTheme } from '@umami/react-zen';
 import { ChartTooltip } from '@/components/charts/ChartTooltip';
@@ -7,6 +9,7 @@ import { renderNumberLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { formatDate, DATE_FORMATS } from '@/lib/date';
 import { formatLongCurrency, formatLongNumber } from '@/lib/format';
+import { useAnnotationDials } from '@/components/annotations';
 
 const dateFormats = {
   millisecond: 'T',
@@ -57,6 +60,9 @@ export function BarChart({
   const { locale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
+  // Get annotation styles from dials
+  const { currentStyle } = useAnnotationDials();
+
   const annotationMarks = useMemo(() => {
     if (!annotationGroups) return [];
     return Object.entries(annotationGroups).map(([label, group]) => ({
@@ -66,10 +72,27 @@ export function BarChart({
     }));
   }, [annotationGroups]);
 
+  // Build annotation style config for the chart plugin
+  const annotationStyle = useMemo(() => {
+    return {
+      indicator: {
+        shape: currentStyle.indicator.shape,
+        size: currentStyle.indicator.size,
+        strokeWidth: currentStyle.indicator.strokeWidth,
+        filled: currentStyle.indicator.filled,
+        glowEffect: currentStyle.indicator.glowEffect,
+      },
+      defaultColor: currentStyle.colors.primary,
+      countFont: `${currentStyle.typography.countSize} ${currentStyle.typography.fontFamily}`,
+      countColor: currentStyle.colors.text,
+    };
+  }, [currentStyle]);
+
   const chartOptions: any = useMemo(() => {
     return {
       __id: new Date().getTime(),
       annotationMarks,
+      annotationStyle,
       scales: {
         x: {
           type: XAxisType,
@@ -111,7 +134,7 @@ export function BarChart({
         },
       },
     };
-  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks]);
+  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks, annotationStyle]);
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;

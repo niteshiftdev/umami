@@ -12,9 +12,25 @@ type AnnotationMark = {
   count?: number;
 };
 
+type AnnotationIndicatorStyle = {
+  shape: 'circle' | 'diamond' | 'square' | 'flag' | 'circleOutline' | 'circleGlow';
+  size: number;
+  strokeWidth: number;
+  filled: boolean;
+  glowEffect: boolean;
+};
+
+type AnnotationStyleConfig = {
+  indicator: AnnotationIndicatorStyle;
+  defaultColor: string;
+  countFont: string;
+  countColor: string;
+};
+
 declare module 'chart.js' {
   interface ChartOptions {
     annotationMarks?: AnnotationMark[];
+    annotationStyle?: AnnotationStyleConfig;
   }
 }
 
@@ -42,11 +58,118 @@ function withAlpha(color: string, alpha: number) {
   return parsed;
 }
 
+// Default annotation style
+const defaultAnnotationStyle: AnnotationStyleConfig = {
+  indicator: {
+    shape: 'circle',
+    size: 4,
+    strokeWidth: 0,
+    filled: true,
+    glowEffect: false,
+  },
+  defaultColor: '#f97316',
+  countFont: '10px Inter',
+  countColor: '#111',
+};
+
+function drawAnnotationIndicator(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  color: string,
+  style: AnnotationIndicatorStyle
+) {
+  const { shape, size, strokeWidth, filled, glowEffect } = style;
+
+  ctx.save();
+
+  // Add glow effect if enabled
+  if (glowEffect) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  }
+
+  ctx.fillStyle = filled ? color : 'transparent';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = strokeWidth;
+
+  switch (shape) {
+    case 'circle':
+    case 'circleGlow':
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, 2 * Math.PI);
+      if (filled) {
+        ctx.fill();
+      }
+      if (strokeWidth > 0) {
+        ctx.stroke();
+      }
+      break;
+
+    case 'circleOutline':
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, 2 * Math.PI);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      break;
+
+    case 'diamond':
+      ctx.beginPath();
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x, y + size);
+      ctx.lineTo(x - size, y);
+      ctx.closePath();
+      if (filled) {
+        ctx.fill();
+      }
+      if (strokeWidth > 0) {
+        ctx.stroke();
+      }
+      break;
+
+    case 'square':
+      if (filled) {
+        ctx.fillRect(x - size / 2, y - size / 2, size, size);
+      }
+      if (strokeWidth > 0) {
+        ctx.strokeRect(x - size / 2, y - size / 2, size, size);
+      }
+      break;
+
+    case 'flag':
+      // Draw flag shape
+      ctx.beginPath();
+      ctx.lineWidth = 1.5;
+      // Pole
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x, y + size / 2);
+      ctx.stroke();
+      // Flag banner
+      ctx.beginPath();
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x + size, y - size / 2);
+      ctx.lineTo(x, y);
+      ctx.closePath();
+      if (filled) {
+        ctx.fill();
+      }
+      break;
+  }
+
+  ctx.restore();
+}
+
 const annotationPlugin = {
   id: 'annotationPlugin',
   afterDraw: (chart: ChartJS) => {
     const annotations = chart?.options?.annotationMarks;
     if (!annotations?.length) return;
+
+    const style = chart?.options?.annotationStyle || defaultAnnotationStyle;
 
     const baseMeta = chart.getDatasetMeta(0);
     const bars = baseMeta?.data || [];
@@ -78,20 +201,22 @@ const annotationPlugin = {
       const props = entry.element.getProps(['x', 'width'], true);
       const x = props.x;
       const width = props.width || entry.element.width || 0;
-      const color = annotation.color || '#f97316';
+      const color = annotation.color || style.defaultColor;
+
       ctx.save();
+
+      // Draw background highlight
       ctx.fillStyle = withAlpha(color, 0.15);
       ctx.fillRect(x - width / 2, top, width, bottom - top);
 
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(x, top + 8, 4, 0, 2 * Math.PI);
-      ctx.fill();
+      // Draw indicator using the style configuration
+      drawAnnotationIndicator(ctx, x, top + 8, color, style.indicator);
 
+      // Draw count if multiple annotations
       if (annotation.count && annotation.count > 1) {
-        ctx.font = '10px Inter';
+        ctx.font = style.countFont;
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#111';
+        ctx.fillStyle = style.countColor;
         ctx.fillText(`×${annotation.count}`, x, top + 24);
       }
 
