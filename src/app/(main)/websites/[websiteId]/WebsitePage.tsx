@@ -19,7 +19,6 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
-  barChartColor?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -100,16 +99,6 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
-  // Chart Controls
-  const barChartColor = useDynamicColor('bar-chart-color', {
-    label: 'Bar Chart Color',
-    description: 'Primary color for bar chart bars',
-    default: '',
-    options: ['', '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'],
-    allowCustom: true,
-    group: 'Charts',
-  });
-
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -120,7 +109,6 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
-    barChartColor,
   };
 
   return (

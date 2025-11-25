@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useContext } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTheme } from '@umami/react-zen';
 import { BarChart, BarChartProps } from '@/components/charts/BarChart';
 import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
-import { TypographyContext } from '@/app/(main)/websites/[websiteId]/WebsitePage';
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
@@ -24,13 +23,9 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
-  const { barChartColor } = useContext(TypographyContext);
 
   const chartData: any = useMemo(() => {
     if (!data) return;
-
-    const visitorColor = barChartColor || colors.chart.visitors.backgroundColor;
-    const viewColor = barChartColor || colors.chart.views.backgroundColor;
 
     return {
       __id: new Date().getTime(),
@@ -42,8 +37,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           borderWidth: 1,
           barPercentage: 0.9,
           categoryPercentage: 0.9,
-          backgroundColor: visitorColor,
-          borderColor: barChartColor ? barChartColor : colors.chart.visitors.borderColor,
+          ...colors.chart.visitors,
           order: 3,
         },
         {
@@ -53,8 +47,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           barPercentage: 0.9,
           categoryPercentage: 0.9,
           borderWidth: 1,
-          backgroundColor: viewColor,
-          borderColor: barChartColor ? barChartColor : colors.chart.views.borderColor,
+          ...colors.chart.views,
           order: 4,
         },
         ...(data.compare
@@ -87,7 +80,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           : []),
       ],
     };
-  }, [data, locale, barChartColor, colors]);
+  }, [data, locale]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
