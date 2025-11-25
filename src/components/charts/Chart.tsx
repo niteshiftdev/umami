@@ -15,6 +15,7 @@ type AnnotationMark = {
 declare module 'chart.js' {
   interface ChartOptions {
     annotationMarks?: AnnotationMark[];
+    annotationUnderlayColor?: string;
   }
 }
 
@@ -45,7 +46,8 @@ function withAlpha(color: string, alpha: number) {
 const annotationPlugin = {
   id: 'annotationPlugin',
   afterDraw: (chart: ChartJS) => {
-    const annotations = chart?.options?.annotationMarks;
+    const options = chart?.options as any;
+    const annotations = options?.annotationMarks;
     if (!annotations?.length) return;
 
     const baseMeta = chart.getDatasetMeta(0);
@@ -71,6 +73,8 @@ const annotationPlugin = {
 
     const ctx = chart.ctx;
     const { top, bottom } = chart.chartArea;
+    // Use the dynamic underlay color if provided, otherwise fall back to annotation-specific or default
+    const defaultUnderlayColor = options?.annotationUnderlayColor || '#f97316';
 
     annotations.forEach(annotation => {
       const entry = labelMap.get(annotation.label);
@@ -78,7 +82,8 @@ const annotationPlugin = {
       const props = entry.element.getProps(['x', 'width'], true);
       const x = props.x;
       const width = props.width || entry.element.width || 0;
-      const color = annotation.color || '#f97316';
+      // Prefer the dynamic underlay color, then annotation-specific, then default
+      const color = defaultUnderlayColor !== '#f97316' ? defaultUnderlayColor : (annotation.color || defaultUnderlayColor);
       ctx.save();
       ctx.fillStyle = withAlpha(color, 0.15);
       ctx.fillRect(x - width / 2, top, width, bottom - top);

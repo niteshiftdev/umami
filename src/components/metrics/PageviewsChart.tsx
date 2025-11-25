@@ -18,6 +18,7 @@ export interface PageviewsChartProps extends BarChartProps {
   };
   unit: string;
   annotations?: WebsiteAnnotation[];
+  annotationUnderlayColor?: string;
   onBarClick?: (timestamp: Date) => void;
 }
 
@@ -27,6 +28,7 @@ export function PageviewsChart({
   minDate,
   maxDate,
   annotations,
+  annotationUnderlayColor,
   onBarClick,
   ...props
 }: PageviewsChartProps) {
@@ -132,6 +134,7 @@ export function PageviewsChart({
       minDate={minDate}
       maxDate={maxDate}
       annotationGroups={annotationGroups}
+      annotationUnderlayColor={annotationUnderlayColor}
       onBarClick={handleBarClick}
       renderXLabel={renderXLabel}
       height="400px"

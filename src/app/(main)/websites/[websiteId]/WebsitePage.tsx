@@ -19,6 +19,7 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
+  annotationUnderlayColor?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -99,6 +100,16 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Annotation Underlay Color Control
+  const annotationUnderlayColor = useDynamicColor('annotation-underlay-color', {
+    label: 'Annotation Underlay Color',
+    description: 'Background color for annotation highlights on the bar chart',
+    default: '#f97316',
+    options: ['#f97316', '#3e63dd', '#30a46c', '#e5484d', '#8b5cf6', '#0ea5e9', '#f59e0b', '#ec4899'],
+    allowCustom: true,
+    group: 'Chart',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -109,6 +120,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
+    annotationUnderlayColor,
   };
 
   return (

@@ -34,6 +34,7 @@ export interface BarChartProps extends ChartProps {
     string,
     { color?: string; items: { title: string; description?: string | null }[] }
   >;
+  annotationUnderlayColor?: string;
   onBarClick?: (payload: { label: string; raw: any }) => void;
 }
 
@@ -49,6 +50,7 @@ export function BarChart({
   maxDate,
   currency,
   annotationGroups,
+  annotationUnderlayColor,
   onBarClick,
   ...props
 }: BarChartProps) {
@@ -70,6 +72,7 @@ export function BarChart({
     return {
       __id: new Date().getTime(),
       annotationMarks,
+      annotationUnderlayColor,
       scales: {
         x: {
           type: XAxisType,
@@ -111,7 +114,7 @@ export function BarChart({
         },
       },
     };
-  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks]);
+  }, [chartData, colors, unit, stacked, renderXLabel, renderYLabel, annotationMarks, annotationUnderlayColor]);
 
   const handleTooltip = ({ tooltip }: { tooltip: any }) => {
     const { opacity, labelColors, dataPoints } = tooltip;

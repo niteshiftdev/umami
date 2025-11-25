@@ -11,8 +11,9 @@ import {
 } from '@/components/hooks';
 import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
 import { PageviewsChart } from '@/components/metrics/PageviewsChart';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { Column, Row, Text, useToast, Modal, Dialog } from '@umami/react-zen';
+import { TypographyContext } from './WebsitePage';
 
 export function WebsiteChart({
   websiteId,
@@ -21,6 +22,7 @@ export function WebsiteChart({
   websiteId: string;
   compareMode?: boolean;
 }) {
+  const { annotationUnderlayColor } = useContext(TypographyContext);
   const { dateRange, dateCompare } = useDateRange();
   const { startDate, endDate, unit, value } = dateRange;
   const { formatMessage, labels, messages } = useMessages();
@@ -93,6 +95,7 @@ export function WebsiteChart({
           maxDate={endDate}
           unit={unit}
           annotations={annotationList}
+          annotationUnderlayColor={annotationUnderlayColor}
           onBarClick={setEditorTimestamp}
         />
         <Row justifyContent="space-between" alignItems="center">
