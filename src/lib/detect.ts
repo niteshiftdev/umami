@@ -1,3 +1,8 @@
+// Client Detection Module
+// Detects visitor device, browser, OS, and geolocation from request headers and IP
+// Uses MaxMind GeoLite2 database for IP geolocation lookup
+// Falls back to CDN headers (Cloudflare, Vercel, CloudFront) when available
+
 import path from 'node:path';
 import { UAParser } from 'ua-parser-js';
 import { browserName, detectOS } from 'detect-browser';
@@ -107,40 +112,62 @@ export async function getLocation(ip: string = '', headers: Headers, hasPayloadI
   }
 }
 
+// Extract comprehensive client information from request
+// Called on every event to populate session and event details
+//
+// @param request - NextJS Request object
+// @param payload - Event payload (may contain explicit userAgent, ip, screen)
+// @returns Object with {userAgent, browser, os, ip, country, region, city, device}
 export async function getClientInfo(request: Request, payload: Record<string, any>) {
+  // User agent string from payload or request headers
   const userAgent = payload?.userAgent || request.headers.get('user-agent');
+  // IP address from payload or request headers (handles proxies)
   const ip = payload?.ip || getIpAddress(request.headers);
+  // Geolocation lookup from IP or CDN headers
   const location = await getLocation(ip, request.headers, !!payload?.ip);
+  // Safe URI decode to handle special characters in location data
   const country = safeDecodeURIComponent(location?.country);
   const region = safeDecodeURIComponent(location?.region);
   const city = safeDecodeURIComponent(location?.city);
+  // Browser and OS detection from user agent string
   const browser = browserName(userAgent);
   const os = detectOS(userAgent) as string;
+  // Device type classification (desktop, laptop, tablet, mobile)
   const device = getDevice(userAgent, payload?.screen);
 
   return { userAgent, browser, os, ip, country, region, city, device };
 }
 
+// Check if client IP should be blocked from analytics
+// Useful for excluding internal traffic, CI/CD pipelines, monitoring tools
+// Supports both exact IP matches and CIDR notation ranges
+//
+// @param clientIp - IP address to check against blocklist
+// @returns true if IP is blocked, false otherwise
 export function hasBlockedIp(clientIp: string) {
   const ignoreIps = process.env.IGNORE_IP;
 
   if (ignoreIps) {
     const ips = [];
 
+    // Parse comma-separated IP list from environment variable
     if (ignoreIps) {
       ips.push(...ignoreIps.split(',').map(n => n.trim()));
     }
 
+    // Check each IP in the blocklist
     return ips.find(ip => {
+      // Exact match
       if (ip === clientIp) {
         return true;
       }
 
-      // CIDR notation
+      // CIDR notation match (e.g., "192.168.0.0/16")
       if (ip.indexOf('/') > 0) {
         const addr = ipaddr.parse(clientIp);
         const range = ipaddr.parseCIDR(ip);
 
+        // Ensure IP version matches (IPv4 or IPv6) before checking range
         if (addr.kind() === range[0].kind() && addr.match(range)) {
           return true;
         }

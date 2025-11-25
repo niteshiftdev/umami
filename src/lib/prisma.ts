@@ -1,3 +1,7 @@
+// Prisma Database Layer
+// Provides ORM client, query builders, and utilities for type-safe database access
+// Supports PostgreSQL with optional read replicas and custom query building
+
 import debug from 'debug';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { readReplicas } from '@prisma/extension-read-replicas';
@@ -175,6 +179,14 @@ function parseFilters(filters: Record<string, any>, options?: QueryOptions) {
   };
 }
 
+// Execute raw SQL queries with parameter substitution
+// Converts template syntax {{paramName}} to PostgreSQL positional parameters ($1, $2, etc.)
+// Supports optional type casts like {{paramName::uuid}}
+//
+// @param sql - SQL query with {{paramName}} template syntax
+// @param data - Object with parameter values to substitute
+// @param name - Optional query name for debugging
+// @returns Promise with query results
 async function rawQuery(sql: string, data: Record<string, any>, name?: string): Promise<any> {
   if (process.env.LOG_QUERY) {
     log('QUERY:\n', sql);
@@ -184,10 +196,13 @@ async function rawQuery(sql: string, data: Record<string, any>, name?: string): 
   const params = [];
   const schema = getSchema();
 
+  // Set PostgreSQL schema if configured (multi-tenant support)
   if (schema) {
     await client.$executeRawUnsafe(`SET search_path TO "${schema}";`);
   }
 
+  // Replace {{paramName}} template syntax with PostgreSQL $N positional parameters
+  // Also preserves PostgreSQL type casts (e.g., {{id::uuid}} becomes $1::uuid)
   const query = sql?.replaceAll(/\{\{\s*(\w+)(::\w+)?\s*}}/g, (...args) => {
     const [, name, type] = args;
 

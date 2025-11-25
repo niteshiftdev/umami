@@ -1,54 +1,98 @@
+// Prisma Database Schema for Umami Analytics Platform
+// This defines the core data models for storing analytics events, sessions, users, and configuration
+
+// Prisma Code Generator Configuration
+// - Generates TypeScript client for type-safe database access
+// - Output directory: src/generated/prisma
+// - Engine type: client (uses native PostgreSQL driver)
 generator client {
   provider   = "prisma-client"
   output     = "../src/generated/prisma"
   engineType = "client"
 }
 
+// PostgreSQL Datasource Configuration
+// - Primary database for storing all analytics data
+// - Connection string from DATABASE_URL environment variable
+// - relationMode: "prisma" enables Prisma-level relation handling
 datasource db {
   provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
+// USER MODEL - Core identity and authentication
+// Represents system users who can own websites, create reports, and manage access
 model User {
+  // Primary identifier (UUID) - maps to database column "user_id"
   id          String    @id @unique @map("user_id") @db.Uuid
+
+  // Unique username for login authentication
   username    String    @unique @db.VarChar(255)
+
+  // Bcrypt hashed password (bcryptjs generates 60-character hashes)
   password    String    @db.VarChar(60)
+
+  // User role: "admin", "viewer", or custom team roles (determines permissions)
   role        String    @map("role") @db.VarChar(50)
+
+  // Optional custom logo URL for user/team branding
   logoUrl     String?   @map("logo_url") @db.VarChar(2183)
+
+  // Display name shown in UI (different from username)
   displayName String?   @map("display_name") @db.VarChar(255)
+
+  // Audit timestamps
   createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  websites  Website[]  @relation("user")
-  createdBy Website[]  @relation("createUser")
-  links     Link[]     @relation("user")
-  pixels    Pixel[]    @relation("user")
-  teams     TeamUser[]
-  reports   Report[]
+  // Relations
+  websites  Website[]  @relation("user")        // Websites owned by this user
+  createdBy Website[]  @relation("createUser")  // Websites created by this user (for audit)
+  links     Link[]     @relation("user")        // Links owned by this user
+  pixels    Pixel[]    @relation("user")        // Conversion pixels owned by this user
+  teams     TeamUser[] // Teams this user belongs to (many-to-many)
+  reports   Report[]   // Custom reports created by this user
 
   @@map("user")
 }
 
+// SESSION MODEL - Visitor session tracking
+// Represents a unique visitor/browser session with device and location detection
+// One session = one visitor during one session window (typically 30 minutes of activity)
 model Session {
+  // Unique session identifier (UUID)
   id         String    @id @unique @map("session_id") @db.Uuid
+
+  // Foreign key to the website being tracked
   websiteId  String    @map("website_id") @db.Uuid
-  browser    String?   @db.VarChar(20)
-  os         String?   @db.VarChar(20)
-  device     String?   @db.VarChar(20)
-  screen     String?   @db.VarChar(11)
-  language   String?   @db.VarChar(35)
-  country    String?   @db.Char(2)
-  region     String?   @db.VarChar(20)
-  city       String?   @db.VarChar(50)
+
+  // Client environment details (from user agent detection)
+  browser    String?   @db.VarChar(20)  // e.g., "Chrome", "Firefox", "Safari"
+  os         String?   @db.VarChar(20)  // Operating system: "Windows", "Mac", "Linux", "iOS", "Android"
+  device     String?   @db.VarChar(20)  // Device type: "desktop", "laptop", "tablet", "mobile"
+  screen     String?   @db.VarChar(11)  // Screen resolution: "1920x1080"
+  language   String?   @db.VarChar(35)  // Browser language preference: "en-US", "fr-FR"
+
+  // Geolocation data (from IP or CDN headers)
+  country    String?   @db.Char(2)      // ISO 3166-1 alpha-2 country code: "US", "GB", "FR"
+  region     String?   @db.VarChar(20)  // State/region code: "CA-ON", "US-CA"
+  city       String?   @db.VarChar(50)  // City name
+
+  // Optional distinct identifier for customer identification (set by identify() call)
   distinctId String?   @map("distinct_id") @db.VarChar(50)
+
+  // Timestamp when session was created
   createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  websiteEvents WebsiteEvent[]
-  sessionData   SessionData[]
-  revenue       Revenue[]
+  // Relations
+  websiteEvents WebsiteEvent[] // All events/pageviews in this session
+  sessionData   SessionData[]   // Custom properties set via identify()
+  revenue       Revenue[]       // Revenue/conversion events in this session
 
+  // Indexes for fast analytics queries (websiteId + createdAt is most common)
+  // Each index allows fast filtering by specific fields for dashboard queries
   @@index([createdAt])
   @@index([websiteId])
   @@index([websiteId, createdAt])
