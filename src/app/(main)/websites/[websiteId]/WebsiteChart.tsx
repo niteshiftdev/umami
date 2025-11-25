@@ -7,9 +7,25 @@ import { useMemo } from 'react';
 export function WebsiteChart({
   websiteId,
   compareMode,
+  chartType = 'bar',
+  chartHeight,
+  chartStacked,
+  chartAnimationSpeed,
+  chartLineTension,
+  chartShowGrid,
+  chartVisitorsColor,
+  chartViewsColor,
 }: {
   websiteId: string;
   compareMode?: boolean;
+  chartType?: 'bar' | 'line';
+  chartHeight?: string;
+  chartStacked?: boolean;
+  chartAnimationSpeed?: number;
+  chartLineTension?: number;
+  chartShowGrid?: boolean;
+  chartVisitorsColor?: string;
+  chartViewsColor?: string;
 }) {
   const { dateRange, dateCompare } = useDateRange();
   const { startDate, endDate, unit, value } = dateRange;
@@ -54,6 +70,14 @@ export function WebsiteChart({
         minDate={startDate}
         maxDate={endDate}
         unit={unit}
+        chartType={chartType}
+        height={chartHeight}
+        stacked={chartStacked}
+        animationDuration={chartAnimationSpeed}
+        lineTension={chartLineTension}
+        showGrid={chartShowGrid}
+        visitorsColor={chartVisitorsColor}
+        viewsColor={chartViewsColor}
       />
     </LoadingPanel>
   );
