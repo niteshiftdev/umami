@@ -6,6 +6,7 @@ import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
+import { TypographyControls } from './TypographyControls';
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
   return (
@@ -17,6 +18,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
       </Panel>
       <WebsitePanels websiteId={websiteId} />
       <ExpandedViewModal websiteId={websiteId} />
+      <TypographyControls />
     </Column>
   );
 }
