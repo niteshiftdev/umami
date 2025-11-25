@@ -4,7 +4,6 @@ import { useMessages, useNavigation } from '@/components/hooks';
 import { EventsChart } from '@/components/metrics/EventsChart';
 import { MetricsTable } from '@/components/metrics/MetricsTable';
 import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
-import { WorldMap } from '@/components/metrics/WorldMap';
 import { Grid, Heading, Row, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
 
 export function WebsitePanels({ websiteId }: { websiteId: string }) {
@@ -82,32 +81,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               <MetricsTable type="device" title={formatMessage(labels.device)} {...tableProps} />
             </TabPanel>
           </Tabs>
-        </Panel>
-
-        <Panel>
-          <Heading size="2">{formatMessage(labels.location)}</Heading>
-          <Tabs>
-            <TabList>
-              <Tab id="country">{formatMessage(labels.countries)}</Tab>
-              <Tab id="region">{formatMessage(labels.regions)}</Tab>
-              <Tab id="city">{formatMessage(labels.cities)}</Tab>
-            </TabList>
-            <TabPanel id="country">
-              <MetricsTable type="country" title={formatMessage(labels.country)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="region">
-              <MetricsTable type="region" title={formatMessage(labels.region)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="city">
-              <MetricsTable type="city" title={formatMessage(labels.city)} {...tableProps} />
-            </TabPanel>
-          </Tabs>
-        </Panel>
-      </GridRow>
-
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
         </Panel>
 
         <Panel>

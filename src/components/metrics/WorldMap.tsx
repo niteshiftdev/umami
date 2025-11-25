@@ -8,6 +8,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
 } from '@/components/hooks';
 import { formatLongNumber } from '@/lib/format';
 import { percentFilter } from '@/lib/filters';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleCountryClick = (code: string) => {
+    if (code === 'AQ') return;
+    const country = metrics?.find(({ x }) => x === code);
+    if (!country) return;
+
+    const url = updateParams({ country: `eq.${code}` });
+    router.push(url);
+  };
+
   return (
     <Column
       {...props}
@@ -77,6 +88,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const hasData = metrics?.find(({ x }) => x === code);
 
                 return (
                   <Geography
@@ -86,12 +98,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
+                      default: { outline: 'none', cursor: hasData ? 'pointer' : 'default' },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleCountryClick(code)}
                   />
                 );
               });
