@@ -86,6 +86,7 @@ export function WebsiteMetricsBar({
               valueSize={typography.metricValueSize as any}
               labelWeight={typography.metricLabelWeight as any}
               valueWeight={typography.metricValueWeight as any}
+              changeWeight={typography.metricChangeWeight as any}
               labelColor={typography.metricLabelColor}
               valueColor={typography.metricValueColor}
             />
