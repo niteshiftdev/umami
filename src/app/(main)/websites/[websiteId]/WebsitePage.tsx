@@ -15,6 +15,7 @@ export const TypographyContext = createContext<{
   metricValueSize?: string;
   metricLabelWeight?: string;
   metricValueWeight?: string;
+  metricChangeWeight?: string;
   metricLabelColor?: string;
   metricValueColor?: string;
   sectionHeadingSize?: string;
@@ -51,6 +52,14 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   const metricValueWeight = useDynamicVariant('metric-value-weight', {
     label: 'Metric Value Weight',
     description: 'Font weight for metric values',
+    default: 'bold',
+    options: ['normal', 'medium', 'semibold', 'bold'] as const,
+    group: 'Typography - Metrics',
+  });
+
+  const metricChangeWeight = useDynamicVariant('metric-change-weight', {
+    label: 'Metric Change Weight',
+    description: 'Font weight for metric change percentage',
     default: 'bold',
     options: ['normal', 'medium', 'semibold', 'bold'] as const,
     group: 'Typography - Metrics',
@@ -105,6 +114,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     metricValueSize,
     metricLabelWeight,
     metricValueWeight,
+    metricChangeWeight,
     metricLabelColor,
     metricValueColor,
     sectionHeadingSize,
