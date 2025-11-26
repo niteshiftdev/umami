@@ -68,7 +68,7 @@ export function WebsiteMetricsBar({
       minHeight="136px"
     >
       <MetricsBar>
-        {metrics?.map(({ label, value, prev, change, formatValue, reverseColors }) => {
+        {metrics?.map(({ label, value, prev, change, formatValue, reverseColors }, index) => {
           return (
             <MetricCard
               key={label}
@@ -79,6 +79,7 @@ export function WebsiteMetricsBar({
               formatValue={formatValue}
               reverseColors={reverseColors}
               showChange={!isAllTime}
+              metricIndex={index}
             />
           );
         })}
