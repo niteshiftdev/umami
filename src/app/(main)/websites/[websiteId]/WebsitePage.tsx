@@ -6,6 +6,7 @@ import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
+import { WorldMap } from '@/components/metrics/WorldMap';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
 
@@ -16,6 +17,7 @@ export const TypographyContext = createContext<{
   metricValueWeight?: string;
   metricLabelColor?: string;
   metricValueColor?: string;
+  metricChangeWeight?: string;
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
@@ -73,6 +75,14 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Metrics',
   });
 
+  const metricChangeWeight = useDynamicVariant('metric-change-weight', {
+    label: 'Metric Change Weight',
+    description: 'Font weight for change labels (percentage changes)',
+    default: 'bold',
+    options: ['normal', 'medium', 'semibold', 'bold'] as const,
+    group: 'Typography - Metrics',
+  });
+
   // Section Heading Controls
   const sectionHeadingSize = useDynamicVariant('section-heading-size', {
     label: 'Section Heading Size',
@@ -106,6 +116,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     metricValueWeight,
     metricLabelColor,
     metricValueColor,
+    metricChangeWeight,
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
@@ -118,6 +129,9 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
+        </Panel>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
