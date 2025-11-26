@@ -1,7 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useTheme } from '@umami/react-zen';
 import { BarChart, BarChartProps } from '@/components/charts/BarChart';
+import { LineChart } from '@/components/charts/LineChart';
 import { useLocale, useMessages } from '@/components/hooks';
+import { useDynamicVariant } from '@niteshift/dials';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
@@ -23,6 +25,15 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
   const { colors } = useMemo(() => getThemeColors(theme), [theme]);
+
+  // Chart type dial control
+  const chartType = useDynamicVariant('pageviews-chart-type', {
+    label: 'Chart Type',
+    description: 'Choose between bar and line chart visualization',
+    default: 'bar',
+    options: ['bar', 'line'] as const,
+    group: 'Dashboard',
+  });
 
   const chartData: any = useMemo(() => {
     if (!data) return;
@@ -84,8 +95,10 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
+  const ChartComponent = chartType === 'line' ? LineChart : BarChart;
+
   return (
-    <BarChart
+    <ChartComponent
       {...props}
       chartData={chartData}
       unit={unit}
