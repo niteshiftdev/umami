@@ -193,6 +193,66 @@ export const THEME_COLORS = {
     line: '#3a3a3a',
     fill: '#191919',
   },
+  default: {
+    primary: '#2680eb',
+    text: '#838383',
+    line: '#d9d9d9',
+    fill: 'transparent',
+  },
+  'tokyo-night': {
+    primary: '#7aa2f7',
+    text: '#c0caf5',
+    line: '#414868',
+    fill: '#24283b',
+  },
+  dracula: {
+    primary: '#bd93f9',
+    text: '#f8f8f2',
+    line: '#44475a',
+    fill: '#282a36',
+  },
+  nord: {
+    primary: '#88c0d0',
+    text: '#eceff4',
+    line: '#4c566a',
+    fill: '#3b4252',
+  },
+  'solarized-dark': {
+    primary: '#268bd2',
+    text: '#839496',
+    line: '#073642',
+    fill: '#002b36',
+  },
+  'solarized-light': {
+    primary: '#268bd2',
+    text: '#657b83',
+    line: '#eee8d5',
+    fill: '#fdf6e3',
+  },
+  monokai: {
+    primary: '#66d9ef',
+    text: '#f8f8f2',
+    line: '#49483e',
+    fill: '#272822',
+  },
+  'github-dark': {
+    primary: '#58a6ff',
+    text: '#c9d1d9',
+    line: '#30363d',
+    fill: '#0d1117',
+  },
+  'github-light': {
+    primary: '#0969da',
+    text: '#24292f',
+    line: '#d0d7de',
+    fill: '#ffffff',
+  },
+  catppuccin: {
+    primary: '#89b4fa',
+    text: '#cdd6f4',
+    line: '#313244',
+    fill: '#1e1e2e',
+  },
 } as const;
 
 export const CHART_COLORS = [

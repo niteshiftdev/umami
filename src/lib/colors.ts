@@ -56,13 +56,15 @@ export function getColor(seed: string, min: number = 0, max: number = 255) {
 }
 
 export function getThemeColors(theme: string) {
-  const { primary, text, line, fill } = THEME_COLORS[theme];
-  const primaryColor = colord(THEME_COLORS[theme].primary);
+  // Fallback to light theme if theme doesn't exist
+  const themeData = THEME_COLORS[theme] || THEME_COLORS['light'];
+  const { primary, text, line, fill } = themeData;
+  const primaryColor = colord(primary);
 
   return {
     colors: {
       theme: {
-        ...THEME_COLORS[theme],
+        ...themeData,
       },
       chart: {
         text,
