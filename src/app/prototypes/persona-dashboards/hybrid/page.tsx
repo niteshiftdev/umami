@@ -20,16 +20,17 @@ import {
 
 // ===== PRODUCT ANALYTICS DATA =====
 function generateEngagementTrend(days: number = 14) {
-  const data: { x: string; y: number }[] = [];
+  const data: { x: Date; y: number }[] = [];
   const now = new Date();
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
+    // Use actual Date objects for timeseries charts
+    const dateObj = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const dayOfWeek = date.getDay();
     const baseValue = 3200 + Math.sin(i * 0.4) * 600;
     const weekendDip = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.7 : 1;
-    data.push({ x: dateStr, y: Math.round(baseValue * weekendDip * (0.9 + Math.random() * 0.2)) });
+    data.push({ x: dateObj, y: Math.round(baseValue * weekendDip * (0.9 + Math.random() * 0.2)) });
   }
   return data;
 }
@@ -95,21 +96,22 @@ function generateChurnRisks() {
 
 // ===== COMBINED METRICS =====
 function generateCombinedTrends(days: number = 14) {
-  const users: { x: string; y: number }[] = [];
-  const revenue: { x: string; y: number }[] = [];
-  const conversions: { x: string; y: number }[] = [];
+  const users: { x: Date; y: number }[] = [];
+  const revenue: { x: Date; y: number }[] = [];
+  const conversions: { x: Date; y: number }[] = [];
   const now = new Date();
 
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
+    // Use actual Date objects for timeseries charts
+    const dateObj = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const dayOfWeek = date.getDay();
     const weekendDip = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.7 : 1;
 
-    users.push({ x: dateStr, y: Math.round(3500 * weekendDip * (0.9 + Math.random() * 0.2)) });
-    revenue.push({ x: dateStr, y: Math.round(42000 * weekendDip * (0.85 + Math.random() * 0.3)) });
-    conversions.push({ x: dateStr, y: Math.round(145 * weekendDip * (0.8 + Math.random() * 0.4)) });
+    users.push({ x: dateObj, y: Math.round(3500 * weekendDip * (0.9 + Math.random() * 0.2)) });
+    revenue.push({ x: dateObj, y: Math.round(42000 * weekendDip * (0.85 + Math.random() * 0.3)) });
+    conversions.push({ x: dateObj, y: Math.round(145 * weekendDip * (0.8 + Math.random() * 0.4)) });
   }
 
   return { users, revenue, conversions };

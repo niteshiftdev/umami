@@ -20,20 +20,21 @@ import {
 
 // Generate mock time series data for engagement
 function generateEngagementData(days: number = 30) {
-  const data: { x: string; y: number }[] = [];
+  const data: { x: Date; y: number }[] = [];
   const now = new Date();
 
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
+    // Use actual Date objects for timeseries charts
+    const dateObj = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     // Simulate realistic engagement patterns with weekly cycles
     const dayOfWeek = date.getDay();
     const baseValue = 2500 + Math.sin(i * 0.3) * 500;
     const weekendDip = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.7 : 1;
     const randomVariation = 0.85 + Math.random() * 0.3;
     data.push({
-      x: dateStr,
+      x: dateObj,
       y: Math.round(baseValue * weekendDip * randomVariation),
     });
   }
@@ -324,6 +325,8 @@ function ProductAnalyticsDashboardContent() {
             XAxisType="category"
             height="250px"
             renderYLabel={(label) => `${label}%`}
+            minDate={new Date()}
+            maxDate={new Date()}
           />
         </Panel>
 

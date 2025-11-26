@@ -21,7 +21,7 @@ import {
 // Generate mock campaign performance data over time
 function generateCampaignTimeSeriesData(days: number = 30) {
   const channels = ['Paid Search', 'Organic Search', 'Social Media', 'Email', 'Direct'];
-  const data: Record<string, { x: string; y: number }[]> = {};
+  const data: Record<string, { x: Date; y: number }[]> = {};
 
   channels.forEach(channel => {
     data[channel] = [];
@@ -31,16 +31,17 @@ function generateCampaignTimeSeriesData(days: number = 30) {
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
+    // Use actual Date objects for timeseries charts
+    const dateObj = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     const dayOfWeek = date.getDay();
     const weekendMultiplier = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.65 : 1;
 
-    data['Paid Search'].push({ x: dateStr, y: Math.round((1200 + Math.random() * 400) * weekendMultiplier) });
-    data['Organic Search'].push({ x: dateStr, y: Math.round((2800 + Math.random() * 600) * weekendMultiplier) });
-    data['Social Media'].push({ x: dateStr, y: Math.round((800 + Math.random() * 300) * weekendMultiplier) });
-    data['Email'].push({ x: dateStr, y: Math.round((600 + Math.random() * 200) * weekendMultiplier) });
-    data['Direct'].push({ x: dateStr, y: Math.round((1500 + Math.random() * 350) * weekendMultiplier) });
+    data['Paid Search'].push({ x: dateObj, y: Math.round((1200 + Math.random() * 400) * weekendMultiplier) });
+    data['Organic Search'].push({ x: dateObj, y: Math.round((2800 + Math.random() * 600) * weekendMultiplier) });
+    data['Social Media'].push({ x: dateObj, y: Math.round((800 + Math.random() * 300) * weekendMultiplier) });
+    data['Email'].push({ x: dateObj, y: Math.round((600 + Math.random() * 200) * weekendMultiplier) });
+    data['Direct'].push({ x: dateObj, y: Math.round((1500 + Math.random() * 350) * weekendMultiplier) });
   }
 
   return data;

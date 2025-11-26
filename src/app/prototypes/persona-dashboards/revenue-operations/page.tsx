@@ -18,25 +18,26 @@ import {
   DialsOverlay,
 } from '@niteshift/dials';
 
-// Generate mock revenue data over time
+// Generate mock revenue data over time - returns labels and data separately for category chart
 function generateRevenueTimeSeriesData(months: number = 12) {
-  const data: { x: string; y: number }[] = [];
+  const labels: string[] = [];
+  const data: number[] = [];
   const now = new Date();
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   for (let i = months - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setMonth(date.getMonth() - i);
-    const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    // Use human-readable month labels for category charts
+    const monthLabel = `${monthNames[date.getMonth()]} ${date.getFullYear().toString().slice(-2)}`;
+    labels.push(monthLabel);
     // Simulate growth trend with some variance
     const baseRevenue = 850000 + (months - i) * 45000;
     const seasonalFactor = 1 + Math.sin((date.getMonth() / 12) * Math.PI * 2) * 0.15;
     const randomVariation = 0.92 + Math.random() * 0.16;
-    data.push({
-      x: monthStr,
-      y: Math.round(baseRevenue * seasonalFactor * randomVariation),
-    });
+    data.push(Math.round(baseRevenue * seasonalFactor * randomVariation));
   }
-  return data;
+  return { labels, data };
 }
 
 function generateMRRBreakdownData() {
@@ -178,12 +179,12 @@ function RevenueOperationsDashboardContent() {
 
   // Chart data
   const revenueChartData = useMemo(() => ({
-    labels: revenueTimeSeries.map(d => d.x),
+    labels: revenueTimeSeries.labels,
     datasets: [
       {
         type: 'bar' as const,
         label: 'Monthly Revenue',
-        data: revenueTimeSeries.map(d => d.y),
+        data: revenueTimeSeries.data,
         backgroundColor: primaryColor + '99',
         borderColor: primaryColor,
         borderWidth: 1,
@@ -318,6 +319,8 @@ function RevenueOperationsDashboardContent() {
             XAxisType="category"
             height="300px"
             currency={currency}
+            minDate={new Date()}
+            maxDate={new Date()}
           />
         </Panel>
 
@@ -338,6 +341,8 @@ function RevenueOperationsDashboardContent() {
             XAxisType="category"
             height="250px"
             currency={currency}
+            minDate={new Date()}
+            maxDate={new Date()}
           />
         </Panel>
 
