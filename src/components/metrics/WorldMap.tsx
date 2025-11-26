@@ -1,5 +1,6 @@
 import { FloatingTooltip, Column, useTheme, ColumnProps } from '@umami/react-zen';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import { colord } from 'colord';
 import { ISO_COUNTRIES, MAP_FILE } from '@/lib/constants';
@@ -21,6 +22,7 @@ export interface WorldMapProps extends ColumnProps {
 
 export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
+  const router = useRouter();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
@@ -68,7 +70,8 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const handleClick = (code: string) => {
     if (code === 'AQ') return;
-    updateParams({ country: `eq.${code}` });
+    const url = updateParams({ country: `eq.${code}` });
+    router.replace(url);
   };
 
   return (
