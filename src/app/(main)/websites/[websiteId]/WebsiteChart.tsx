@@ -2,7 +2,8 @@ import { LoadingPanel } from '@/components/common/LoadingPanel';
 import { useDateRange } from '@/components/hooks';
 import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
 import { PageviewsChart } from '@/components/metrics/PageviewsChart';
-import { useMemo } from 'react';
+import { ChartTypeSelector, ChartType } from '@/components/charts/ChartTypeSelector';
+import { useMemo, useState } from 'react';
 
 export function WebsiteChart({
   websiteId,
@@ -11,6 +12,7 @@ export function WebsiteChart({
   websiteId: string;
   compareMode?: boolean;
 }) {
+  const [chartType, setChartType] = useState<ChartType>('bar');
   const { dateRange, dateCompare } = useDateRange();
   const { startDate, endDate, unit, value } = dateRange;
   const { data, isLoading, isFetching, error } = useWebsitePageviewsQuery({
@@ -48,12 +50,14 @@ export function WebsiteChart({
 
   return (
     <LoadingPanel data={data} isFetching={isFetching} isLoading={isLoading} error={error}>
+      <ChartTypeSelector chartType={chartType} onChange={setChartType} />
       <PageviewsChart
         key={value}
         data={chartData}
         minDate={startDate}
         maxDate={endDate}
         unit={unit}
+        chartType={chartType}
       />
     </LoadingPanel>
   );
