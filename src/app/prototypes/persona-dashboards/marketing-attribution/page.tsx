@@ -105,6 +105,83 @@ function MarketingAttributionDashboardContent() {
   }, []);
 
   // Dials for customization
+
+  // === Chart Type Dials ===
+  const trendChartType = useDynamicVariant('ma-trend-chart-type', {
+    label: 'Trend Chart Type',
+    default: 'line',
+    options: ['line', 'bar', 'area'] as const,
+    group: 'Chart Types',
+  });
+
+  const distributionChartType = useDynamicVariant('ma-distribution-chart-type', {
+    label: 'Distribution Chart Type',
+    default: 'doughnut',
+    options: ['doughnut', 'pie', 'bar'] as const,
+    group: 'Chart Types',
+  });
+
+  const chartBorderRadius = useDynamicNumber('ma-chart-border-radius', {
+    label: 'Chart Bar Radius',
+    default: 4,
+    min: 0,
+    max: 12,
+    step: 2,
+    group: 'Chart Types',
+  });
+
+  // === Layout Dials ===
+  const layout = useDynamicVariant('ma-layout', {
+    label: 'Dashboard Layout',
+    default: 'standard',
+    options: ['standard', 'wide', 'compact'] as const,
+    group: 'Layout',
+  });
+
+  const chartPanelRatio = useDynamicVariant('ma-chart-ratio', {
+    label: 'Chart Panel Ratio',
+    default: '2fr 1fr',
+    options: ['2fr 1fr', '1fr 1fr', '3fr 1fr'] as const,
+    group: 'Layout',
+  });
+
+  const panelSpacing = useDynamicNumber('ma-panel-spacing', {
+    label: 'Panel Spacing',
+    default: 3,
+    min: 1,
+    max: 6,
+    step: 1,
+    group: 'Layout',
+  });
+
+  // === Table Styling Dials ===
+  const tableStyle = useDynamicVariant('ma-table-style', {
+    label: 'Table Style',
+    default: 'striped',
+    options: ['striped', 'bordered', 'minimal', 'cards'] as const,
+    group: 'Table Styling',
+  });
+
+  const tableRowHeight = useDynamicVariant('ma-table-row-height', {
+    label: 'Table Row Height',
+    default: 'normal',
+    options: ['compact', 'normal', 'spacious'] as const,
+    group: 'Table Styling',
+  });
+
+  const showTableIcons = useDynamicBoolean('ma-show-table-icons', {
+    label: 'Show Row Icons',
+    default: true,
+    group: 'Table Styling',
+  });
+
+  const highlightTopPerformers = useDynamicBoolean('ma-highlight-top', {
+    label: 'Highlight Top Performers',
+    default: true,
+    group: 'Table Styling',
+  });
+
+  // === Color Dials ===
   const primaryColor = useDynamicColor('ma-primary-color', {
     label: 'Primary Color',
     default: '#9256d9',
@@ -126,13 +203,7 @@ function MarketingAttributionDashboardContent() {
     group: 'Colors',
   });
 
-  const layout = useDynamicVariant('ma-layout', {
-    label: 'Dashboard Layout',
-    default: 'standard',
-    options: ['standard', 'metrics-first', 'charts-first'] as const,
-    group: 'Layout',
-  });
-
+  // === Display Dials ===
   const showROAS = useDynamicBoolean('ma-show-roas', {
     label: 'Show ROAS Metrics',
     default: true,
@@ -150,16 +221,7 @@ function MarketingAttributionDashboardContent() {
     label: 'Metric Value Size',
     default: '8',
     options: ['6', '7', '8', '9'] as const,
-    group: 'Typography',
-  });
-
-  const panelSpacing = useDynamicNumber('ma-panel-spacing', {
-    label: 'Panel Spacing',
-    default: 3,
-    min: 1,
-    max: 6,
-    step: 1,
-    group: 'Spacing',
+    group: 'Display',
   });
 
   // Mock data
@@ -169,48 +231,103 @@ function MarketingAttributionDashboardContent() {
   const utmSourceData = useMemo(() => generateUTMSourceData(), []);
   const landingPageData = useMemo(() => generateLandingPageData(), []);
 
-  // Chart data
-  const channelTrendsChartData = useMemo(() => ({
-    datasets: [
-      {
-        type: 'line' as const,
-        label: 'Organic Search',
-        data: channelTimeData['Organic Search'],
-        borderColor: primaryColor,
-        backgroundColor: primaryColor + '22',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-      },
-      {
-        type: 'line' as const,
-        label: 'Paid Search',
-        data: channelTimeData['Paid Search'],
-        borderColor: secondaryColor,
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        tension: 0.4,
-      },
-      {
-        type: 'line' as const,
-        label: 'Social Media',
-        data: channelTimeData['Social Media'],
-        borderColor: warningColor,
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        tension: 0.4,
-      },
-    ],
-  }), [channelTimeData, primaryColor, secondaryColor, warningColor]);
+  // Chart data - responds to trendChartType dial
+  const channelTrendsChartData = useMemo(() => {
+    const chartType = trendChartType === 'area' ? 'line' : trendChartType;
+    const isFilled = trendChartType === 'area';
+    const isBar = trendChartType === 'bar';
 
+    return {
+      datasets: [
+        {
+          type: chartType as 'line' | 'bar',
+          label: 'Organic Search',
+          data: channelTimeData['Organic Search'],
+          borderColor: primaryColor,
+          backgroundColor: isBar ? primaryColor + '99' : (isFilled ? primaryColor + '33' : primaryColor + '22'),
+          borderWidth: isBar ? 1 : 2,
+          fill: isFilled,
+          tension: isBar ? 0 : 0.4,
+          borderRadius: isBar ? chartBorderRadius : 0,
+        },
+        {
+          type: chartType as 'line' | 'bar',
+          label: 'Paid Search',
+          data: channelTimeData['Paid Search'],
+          borderColor: secondaryColor,
+          backgroundColor: isBar ? secondaryColor + '99' : (isFilled ? secondaryColor + '33' : 'transparent'),
+          borderWidth: isBar ? 1 : 2,
+          fill: isFilled,
+          tension: isBar ? 0 : 0.4,
+          borderRadius: isBar ? chartBorderRadius : 0,
+        },
+        {
+          type: chartType as 'line' | 'bar',
+          label: 'Social Media',
+          data: channelTimeData['Social Media'],
+          borderColor: warningColor,
+          backgroundColor: isBar ? warningColor + '99' : (isFilled ? warningColor + '33' : 'transparent'),
+          borderWidth: isBar ? 1 : 2,
+          fill: isFilled,
+          tension: isBar ? 0 : 0.4,
+          borderRadius: isBar ? chartBorderRadius : 0,
+        },
+      ],
+    };
+  }, [channelTimeData, primaryColor, secondaryColor, warningColor, trendChartType, chartBorderRadius]);
+
+  // Distribution chart data - responds to distributionChartType dial
   const channelPieData = useMemo(() => ({
     labels: channelBreakdown.slice(0, 6).map(d => d.label),
     datasets: [{
       data: channelBreakdown.slice(0, 6).map(d => d.count),
       backgroundColor: [primaryColor, secondaryColor, warningColor, '#e34850', '#01bad7', '#f7bd12'],
       borderWidth: 0,
+      borderRadius: distributionChartType === 'bar' ? chartBorderRadius : 0,
     }],
-  }), [channelBreakdown, primaryColor, secondaryColor, warningColor]);
+  }), [channelBreakdown, primaryColor, secondaryColor, warningColor, distributionChartType, chartBorderRadius]);
+
+  // Distribution as bar chart data (horizontal)
+  const channelBarData = useMemo(() => ({
+    labels: channelBreakdown.slice(0, 6).map(d => d.label),
+    datasets: [{
+      label: 'Visitors',
+      data: channelBreakdown.slice(0, 6).map(d => d.count),
+      backgroundColor: [primaryColor, secondaryColor, warningColor, '#e34850', '#01bad7', '#f7bd12'],
+      borderWidth: 0,
+      borderRadius: chartBorderRadius,
+    }],
+  }), [channelBreakdown, primaryColor, secondaryColor, warningColor, chartBorderRadius]);
+
+  // Table styling helpers
+  const getTableRowPadding = () => {
+    switch (tableRowHeight) {
+      case 'compact': return '1';
+      case 'spacious': return '4';
+      default: return '2';
+    }
+  };
+
+  const getTableRowStyle = (index: number, isTopPerformer: boolean) => {
+    const baseStyle: React.CSSProperties = {};
+
+    if (tableStyle === 'striped' && index % 2 === 1) {
+      baseStyle.backgroundColor = 'var(--color-background2)';
+    }
+    if (tableStyle === 'bordered') {
+      baseStyle.borderBottom = '1px solid var(--color-border)';
+    }
+    if (tableStyle === 'cards') {
+      baseStyle.backgroundColor = 'var(--color-background2)';
+      baseStyle.borderRadius = '8px';
+      baseStyle.marginBottom = '4px';
+    }
+    if (highlightTopPerformers && isTopPerformer) {
+      baseStyle.backgroundColor = primaryColor + '11';
+    }
+
+    return baseStyle;
+  };
 
   const minDate = useMemo(() => {
     const d = new Date();
@@ -296,7 +413,7 @@ function MarketingAttributionDashboardContent() {
       </MetricsBar>
 
       {/* Channel Performance */}
-      <Grid columns={{ xs: '1fr', lg: '2fr 1fr' }} gap={gridGap}>
+      <Grid columns={{ xs: '1fr', lg: layout === 'wide' ? '1fr' : chartPanelRatio }} gap={gridGap}>
         <Panel title="Traffic by Channel Over Time">
           <BarChart
             chartData={channelTrendsChartData}
@@ -304,52 +421,83 @@ function MarketingAttributionDashboardContent() {
             minDate={minDate}
             maxDate={maxDate}
             height="320px"
+            stacked={trendChartType === 'bar'}
           />
         </Panel>
 
         <Panel title="Channel Distribution">
-          <PieChart
-            type="doughnut"
-            chartData={channelPieData}
-            height="320px"
-          />
+          {distributionChartType === 'bar' ? (
+            <BarChart
+              chartData={channelBarData}
+              XAxisType="category"
+              height="320px"
+              minDate={new Date()}
+              maxDate={new Date()}
+            />
+          ) : (
+            <PieChart
+              type={distributionChartType as 'doughnut' | 'pie'}
+              chartData={channelPieData}
+              height="320px"
+            />
+          )}
         </Panel>
       </Grid>
 
       {/* Campaign Performance Table */}
       <Panel title="Campaign Performance">
-        <Column gap="3">
-          <Grid columns="2fr 1fr 1fr 1fr 1fr" gap="3" padding="2" backgroundColor="2" borderRadius="2">
+        <Column gap={tableStyle === 'cards' ? '2' : '0'}>
+          <Grid
+            columns="2fr 1fr 1fr 1fr 1fr"
+            gap="3"
+            padding={getTableRowPadding() as any}
+            backgroundColor="2"
+            borderRadius="2"
+            style={tableStyle === 'bordered' ? { borderBottom: '2px solid var(--color-border)' } : {}}
+          >
             <Text weight="bold" size="1">Campaign</Text>
             <Text weight="bold" size="1" align="right">Conversions</Text>
             <Text weight="bold" size="1" align="right">Spend</Text>
             <Text weight="bold" size="1" align="right">Revenue</Text>
             <Text weight="bold" size="1" align="right">ROAS</Text>
           </Grid>
-          {campaignPerformance.map((campaign, idx) => (
-            <Grid key={campaign.label} columns="2fr 1fr 1fr 1fr 1fr" gap="3" padding="2" hoverBackgroundColor="2" borderRadius="2">
-              <Row alignItems="center" gap="2">
-                <Box
-                  width="8px"
-                  height="8px"
-                  borderRadius="4"
-                  backgroundColor={[primaryColor, secondaryColor, warningColor, '#e34850', '#01bad7', '#f7bd12', '#6734bc'][idx]}
-                />
-                <Text size="1">{campaign.label}</Text>
-              </Row>
-              <Text size="1" align="right">{formatLongNumber(campaign.count)}</Text>
-              <Text size="1" align="right">{formatCurrency(campaign.spend)}</Text>
-              <Text size="1" align="right" weight="bold">{formatCurrency(campaign.revenue)}</Text>
-              <Text
-                size="1"
-                align="right"
-                weight="bold"
-                style={{ color: campaign.roas > 4 ? '#44b556' : campaign.roas > 2 ? warningColor : '#e34850' }}
+          {campaignPerformance.map((campaign, idx) => {
+            const isTopPerformer = campaign.roas > 5;
+            return (
+              <Grid
+                key={campaign.label}
+                columns="2fr 1fr 1fr 1fr 1fr"
+                gap="3"
+                padding={getTableRowPadding() as any}
+                hoverBackgroundColor={tableStyle !== 'cards' ? '2' : undefined}
+                borderRadius={tableStyle === 'cards' ? '2' : undefined}
+                style={getTableRowStyle(idx, isTopPerformer)}
               >
-                {campaign.roas.toFixed(2)}x
-              </Text>
-            </Grid>
-          ))}
+                <Row alignItems="center" gap="2">
+                  {showTableIcons && (
+                    <Box
+                      width="8px"
+                      height="8px"
+                      borderRadius="4"
+                      backgroundColor={[primaryColor, secondaryColor, warningColor, '#e34850', '#01bad7', '#f7bd12', '#6734bc'][idx]}
+                    />
+                  )}
+                  <Text size="1">{campaign.label}</Text>
+                </Row>
+                <Text size="1" align="right">{formatLongNumber(campaign.count)}</Text>
+                <Text size="1" align="right">{formatCurrency(campaign.spend)}</Text>
+                <Text size="1" align="right" weight="bold">{formatCurrency(campaign.revenue)}</Text>
+                <Text
+                  size="1"
+                  align="right"
+                  weight="bold"
+                  style={{ color: campaign.roas > 4 ? '#44b556' : campaign.roas > 2 ? warningColor : '#e34850' }}
+                >
+                  {campaign.roas.toFixed(2)}x
+                </Text>
+              </Grid>
+            );
+          })}
         </Column>
       </Panel>
 
@@ -364,26 +512,44 @@ function MarketingAttributionDashboardContent() {
         </Panel>
 
         <Panel title="Landing Page Performance">
-          <Column gap="2">
-            <Grid columns="2fr 1fr 1fr" gap="3" padding="2" backgroundColor="2" borderRadius="2">
+          <Column gap={tableStyle === 'cards' ? '2' : '0'}>
+            <Grid
+              columns="2fr 1fr 1fr"
+              gap="3"
+              padding={getTableRowPadding() as any}
+              backgroundColor="2"
+              borderRadius="2"
+              style={tableStyle === 'bordered' ? { borderBottom: '2px solid var(--color-border)' } : {}}
+            >
               <Text weight="bold" size="1">Page</Text>
               <Text weight="bold" size="1" align="right">Visitors</Text>
               <Text weight="bold" size="1" align="right">Conv. Rate</Text>
             </Grid>
-            {landingPageData.map((page) => (
-              <Grid key={page.label} columns="2fr 1fr 1fr" gap="3" padding="2" hoverBackgroundColor="2" borderRadius="2">
-                <Text size="1" truncate>{page.label}</Text>
-                <Text size="1" align="right">{formatLongNumber(page.count)}</Text>
-                <Text
-                  size="1"
-                  align="right"
-                  weight="bold"
-                  style={{ color: page.conversionRate > 5 ? '#44b556' : page.conversionRate > 3 ? warningColor : '#e34850' }}
+            {landingPageData.map((page, idx) => {
+              const isTopPerformer = page.conversionRate > 8;
+              return (
+                <Grid
+                  key={page.label}
+                  columns="2fr 1fr 1fr"
+                  gap="3"
+                  padding={getTableRowPadding() as any}
+                  hoverBackgroundColor={tableStyle !== 'cards' ? '2' : undefined}
+                  borderRadius={tableStyle === 'cards' ? '2' : undefined}
+                  style={getTableRowStyle(idx, isTopPerformer)}
                 >
-                  {page.conversionRate.toFixed(1)}%
-                </Text>
-              </Grid>
-            ))}
+                  <Text size="1" truncate>{page.label}</Text>
+                  <Text size="1" align="right">{formatLongNumber(page.count)}</Text>
+                  <Text
+                    size="1"
+                    align="right"
+                    weight="bold"
+                    style={{ color: page.conversionRate > 5 ? '#44b556' : page.conversionRate > 3 ? warningColor : '#e34850' }}
+                  >
+                    {page.conversionRate.toFixed(1)}%
+                  </Text>
+                </Grid>
+              );
+            })}
           </Column>
         </Panel>
       </Grid>
