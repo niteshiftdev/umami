@@ -22,6 +22,18 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
 
   return (
     <Grid gap="3">
+      <GridRow layout="two-one" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
+
+        <Panel>
+          <Heading size="2">{formatMessage(labels.traffic)}</Heading>
+          <Row border="bottom" marginBottom="4" />
+          <WeeklyTraffic websiteId={websiteId} />
+        </Panel>
+      </GridRow>
+
       <GridRow layout="two" {...rowProps}>
         <Panel>
           <Heading size="2">{formatMessage(labels.pages)}</Heading>
@@ -102,18 +114,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               <MetricsTable type="city" title={formatMessage(labels.city)} {...tableProps} />
             </TabPanel>
           </Tabs>
-        </Panel>
-      </GridRow>
-
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
-        <Panel>
-          <Heading size="2">{formatMessage(labels.traffic)}</Heading>
-          <Row border="bottom" marginBottom="4" />
-          <WeeklyTraffic websiteId={websiteId} />
         </Panel>
       </GridRow>
       {isSharePage && (
