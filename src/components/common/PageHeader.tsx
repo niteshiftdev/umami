@@ -37,7 +37,7 @@ export function PageHeader({
               {icon}
             </Icon>
           )}
-          {title && <Heading size={{ xs: '2', md: '3', lg: '4' }}>{title}</Heading>}
+          {title && <Heading size={{ xs: '3', md: '4', lg: '5' }}>{title}</Heading>}
         </Row>
         {description && (
           <Text color="muted" truncate style={{ maxWidth: 600 }} title={description}>
