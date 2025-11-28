@@ -37,6 +37,12 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
 
   return (
     <Grid gap="3">
+      <GridRow layout="one" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 1' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
+      </GridRow>
+
       <GridRow layout="two" {...rowProps}>
         <Panel>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
@@ -79,12 +85,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               <MetricsTable type="channel" title={formatMessage(labels.channel)} {...tableProps} />
             </TabPanel>
           </Tabs>
-        </Panel>
-      </GridRow>
-
-      <GridRow layout="one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 1' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
         </Panel>
       </GridRow>
 
