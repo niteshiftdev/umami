@@ -16,9 +16,10 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  chartType?: string;
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PageviewsChart({ data, unit, minDate, maxDate, chartType = 'bar', ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
   const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
@@ -27,26 +28,44 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
   const chartData: any = useMemo(() => {
     if (!data) return;
 
+    const mainChartType = chartType === 'bar' ? 'bar' : chartType === 'area' ? 'line' : 'line';
+    const mainFilled = chartType === 'area';
+
     return {
       __id: new Date().getTime(),
       datasets: [
         {
-          type: 'bar',
+          type: mainChartType,
           label: formatMessage(labels.visitors),
           data: generateTimeSeries(data.sessions, minDate, maxDate, unit, dateLocale),
-          borderWidth: 1,
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
+          borderWidth: mainChartType === 'bar' ? 1 : 2,
+          ...(mainChartType === 'bar' && {
+            barPercentage: 0.9,
+            categoryPercentage: 0.9,
+          }),
+          ...(mainFilled && {
+            fill: true,
+            backgroundColor: colors.chart.visitors.backgroundColor + '40',
+          }),
           ...colors.chart.visitors,
           order: 3,
         },
         {
-          type: 'bar',
+          type: mainChartType,
           label: formatMessage(labels.views),
           data: generateTimeSeries(data.pageviews, minDate, maxDate, unit, dateLocale),
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
-          borderWidth: 1,
+          ...(mainChartType === 'bar' && {
+            barPercentage: 0.9,
+            categoryPercentage: 0.9,
+            borderWidth: 1,
+          }),
+          ...(mainChartType === 'line' && {
+            borderWidth: 2,
+          }),
+          ...(mainFilled && {
+            fill: true,
+            backgroundColor: colors.chart.views.backgroundColor + '40',
+          }),
           ...colors.chart.views,
           order: 4,
         },
@@ -80,7 +99,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           : []),
       ],
     };
-  }, [data, locale]);
+  }, [data, locale, chartType]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 
