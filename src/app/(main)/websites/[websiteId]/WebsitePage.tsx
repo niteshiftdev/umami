@@ -19,6 +19,7 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
+  visualizationMode?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -99,6 +100,15 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Visualization Mode Controls
+  const visualizationMode = useDynamicVariant('visualization-mode', {
+    label: 'Visualization Mode',
+    description: 'Switch between different visualization modes for the page',
+    default: 'default',
+    options: ['default', 'compact', 'detailed'] as const,
+    group: 'Visualizations - Page Layout',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -109,6 +119,7 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
+    visualizationMode,
   };
 
   return (
