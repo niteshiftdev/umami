@@ -7,7 +7,7 @@ import { Panel } from '@/components/common/Panel';
 import { Favicon } from '@/components/common/Favicon';
 import { LinkButton } from '@/components/common/LinkButton';
 import { Empty } from '@/components/common/Empty';
-import { useMessages, useNavigation, useLoginQuery, useUserWebsitesQuery } from '@/components/hooks';
+import { useMessages, useNavigation, useUserWebsitesQuery } from '@/components/hooks';
 import { ArrowRight, Users, Eye, BarChart3, TrendingUp, TrendingDown, ExternalLink } from '@/components/icons';
 
 // Mock stats data for demonstration
