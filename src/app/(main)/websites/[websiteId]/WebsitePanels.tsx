@@ -23,6 +23,11 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   const rowProps = { minHeight: '570px' };
   const isSharePage = pathname.includes('/share/');
 
+  const panelPaddingProps = {
+    paddingX: typography.panelPaddingX || '6',
+    paddingY: typography.panelPaddingY || '6',
+  };
+
   const headingStyle = {
     fontWeight:
       typography.sectionHeadingWeight === 'normal'
@@ -38,7 +43,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   return (
     <Grid gap="3">
       <GridRow layout="two" {...rowProps}>
-        <Panel>
+        <Panel {...panelPaddingProps}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.pages)}
           </Heading>
@@ -59,7 +64,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
             </TabPanel>
           </Tabs>
         </Panel>
-        <Panel>
+        <Panel {...panelPaddingProps}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.sources)}
           </Heading>
@@ -83,7 +88,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
 
       <GridRow layout="two" {...rowProps}>
-        <Panel>
+        <Panel {...panelPaddingProps}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.environment)}
           </Heading>
@@ -105,7 +110,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Tabs>
         </Panel>
 
-        <Panel>
+        <Panel {...panelPaddingProps}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.location)}
           </Heading>
@@ -128,12 +133,8 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
         </Panel>
       </GridRow>
 
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
-        <Panel>
+      <GridRow layout="full" {...rowProps}>
+        <Panel {...panelPaddingProps}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.traffic)}
           </Heading>
@@ -143,7 +144,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
       {isSharePage && (
         <GridRow layout="two-one" {...rowProps}>
-          <Panel>
+          <Panel {...panelPaddingProps}>
             <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
               {formatMessage(labels.events)}
             </Heading>
@@ -157,7 +158,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               filterLink={false}
             />
           </Panel>
-          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }}>
+          <Panel {...panelPaddingProps} gridColumn={{ xs: 'span 1', md: 'span 2' }}>
             <EventsChart websiteId={websiteId} />
           </Panel>
         </GridRow>

@@ -6,6 +6,7 @@ import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
+import { WorldMap } from '@/components/metrics/WorldMap';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
 
@@ -19,6 +20,8 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
+  panelPaddingX?: string;
+  panelPaddingY?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -99,6 +102,23 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Panel Padding Controls
+  const panelPaddingX = useDynamicVariant('panel-padding-x', {
+    label: 'Panel Padding X (Horizontal)',
+    description: 'Horizontal padding for panels',
+    default: '6',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Panel - Spacing',
+  });
+
+  const panelPaddingY = useDynamicVariant('panel-padding-y', {
+    label: 'Panel Padding Y (Vertical)',
+    description: 'Vertical padding for panels',
+    default: '6',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Panel - Spacing',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -109,6 +129,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
+    panelPaddingX,
+    panelPaddingY,
   };
 
   return (
@@ -118,6 +140,9 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
+        </Panel>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
