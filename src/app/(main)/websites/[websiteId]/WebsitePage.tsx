@@ -20,6 +20,8 @@ export const TypographyContext = createContext<{
   sectionHeadingSize?: string;
   sectionHeadingWeight?: string;
   sectionHeadingColor?: string;
+  panelPaddingX?: string;
+  panelPaddingY?: string;
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
@@ -100,6 +102,23 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     group: 'Typography - Headings',
   });
 
+  // Panel Padding Controls
+  const panelPaddingX = useDynamicVariant('panel-padding-x', {
+    label: 'Panel Padding X (Horizontal)',
+    description: 'Horizontal padding for panels',
+    default: '6',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Panel - Spacing',
+  });
+
+  const panelPaddingY = useDynamicVariant('panel-padding-y', {
+    label: 'Panel Padding Y (Vertical)',
+    description: 'Vertical padding for panels',
+    default: '6',
+    options: ['0', '1', '2', '3', '4', '5', '6', '7', '8'] as const,
+    group: 'Panel - Spacing',
+  });
+
   const typographyConfig = {
     metricLabelSize,
     metricValueSize,
@@ -110,6 +129,8 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingSize,
     sectionHeadingWeight,
     sectionHeadingColor,
+    panelPaddingX,
+    panelPaddingY,
   };
 
   return (
