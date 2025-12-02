@@ -23,6 +23,9 @@ import {
   Plus,
   ArrowRight,
   Zap,
+  Clock,
+  MapPin,
+  BarChart2,
 } from 'lucide-react';
 import { Favicon } from '@/components/common/Favicon';
 
@@ -38,6 +41,9 @@ const mockWebsites = [
     activeNow: 127,
     trend: 12.5,
     sparkline: [65, 72, 68, 80, 74, 85, 92],
+    avgSessionDuration: '3m 24s',
+    topCountry: 'US',
+    topCountryPercent: 42,
   },
   {
     id: '2b3c4d5e-6f78-90ab-cdef-123456789012',
@@ -49,6 +55,9 @@ const mockWebsites = [
     activeNow: 34,
     trend: -3.2,
     sparkline: [45, 42, 48, 40, 38, 42, 35],
+    avgSessionDuration: '2m 15s',
+    topCountry: 'UK',
+    topCountryPercent: 31,
   },
   {
     id: '3c4d5e6f-7890-abcd-ef12-345678901234',
@@ -60,6 +69,9 @@ const mockWebsites = [
     activeNow: 312,
     trend: 24.8,
     sparkline: [50, 55, 62, 70, 75, 82, 95],
+    avgSessionDuration: '4m 52s',
+    topCountry: 'US',
+    topCountryPercent: 38,
   },
   {
     id: '4d5e6f78-90ab-cdef-1234-567890123456',
@@ -71,6 +83,9 @@ const mockWebsites = [
     activeNow: 8,
     trend: 8.1,
     sparkline: [20, 25, 22, 28, 24, 30, 32],
+    avgSessionDuration: '1m 02s',
+    topCountry: 'CA',
+    topCountryPercent: 28,
   },
   {
     id: '5e6f7890-abcd-ef12-3456-789012345678',
@@ -82,6 +97,9 @@ const mockWebsites = [
     activeNow: 89,
     trend: 15.3,
     sparkline: [40, 45, 50, 48, 55, 60, 65],
+    avgSessionDuration: '5m 38s',
+    topCountry: 'DE',
+    topCountryPercent: 25,
   },
   {
     id: '6f789012-cdef-1234-5678-901234567890',
@@ -93,6 +111,9 @@ const mockWebsites = [
     activeNow: 156,
     trend: 31.2,
     sparkline: [55, 60, 68, 75, 80, 88, 98],
+    avgSessionDuration: '8m 12s',
+    topCountry: 'US',
+    topCountryPercent: 52,
   },
 ];
 
@@ -136,6 +157,33 @@ function MiniSparkline({ data, trend }: { data: number[]; trend: number }) {
   );
 }
 
+function MiniBarChart({ data, color }: { data: number[]; color: string }) {
+  const max = Math.max(...data);
+  const height = 24;
+  const barWidth = 6;
+  const gap = 2;
+
+  return (
+    <svg width={(barWidth + gap) * data.length - gap} height={height}>
+      {data.map((val, i) => {
+        const barHeight = (val / max) * height;
+        return (
+          <rect
+            key={i}
+            x={i * (barWidth + gap)}
+            y={height - barHeight}
+            width={barWidth}
+            height={barHeight}
+            rx="2"
+            fill={color}
+            opacity={0.6 + (i / data.length) * 0.4}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 function SummaryCard({
   icon,
   label,
@@ -143,6 +191,9 @@ function SummaryCard({
   subValue,
   trend,
   index,
+  chartData,
+  chartColor,
+  secondaryStats,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -150,10 +201,13 @@ function SummaryCard({
   subValue?: string;
   trend?: number;
   index: number;
+  chartData?: number[];
+  chartColor?: string;
+  secondaryStats?: { label: string; value: string }[];
 }) {
   return (
     <Column
-      padding="5"
+      padding="4"
       gap="3"
       style={{
         backgroundColor: 'var(--base-color-1)',
@@ -178,8 +232,8 @@ function SummaryCard({
         <Row alignItems="center" gap="2">
           <div
             style={{
-              width: 36,
-              height: 36,
+              width: 32,
+              height: 32,
               borderRadius: '8px',
               backgroundColor: 'var(--base-color-3)',
               display: 'flex',
@@ -219,21 +273,46 @@ function SummaryCard({
               weight="medium"
               style={{ color: trend >= 0 ? '#30a46c' : '#e5484d' }}
             >
-              {Math.abs(trend)}%
+              {Math.abs(trend).toFixed(1)}%
             </Text>
           </Row>
         )}
       </Row>
-      <Column gap="0">
-        <Text size="6" weight="bold">
-          {value}
-        </Text>
-        {subValue && (
-          <Text size="1" color="muted">
-            {subValue}
+      <Row alignItems="flex-end" justifyContent="space-between">
+        <Column gap="0">
+          <Text size="5" weight="bold">
+            {value}
           </Text>
+          {subValue && (
+            <Text size="1" color="muted">
+              {subValue}
+            </Text>
+          )}
+        </Column>
+        {chartData && chartColor && (
+          <MiniBarChart data={chartData} color={chartColor} />
         )}
-      </Column>
+      </Row>
+      {secondaryStats && secondaryStats.length > 0 && (
+        <Row
+          gap="3"
+          style={{
+            paddingTop: 8,
+            borderTop: '1px solid var(--base-color-3)',
+          }}
+        >
+          {secondaryStats.map((stat, i) => (
+            <Column key={i} gap="0">
+              <Text size="1" color="muted">
+                {stat.label}
+              </Text>
+              <Text size="2" weight="medium">
+                {stat.value}
+              </Text>
+            </Column>
+          ))}
+        </Row>
+      )}
     </Column>
   );
 }
@@ -256,8 +335,8 @@ function WebsiteRow({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         alignItems="center"
-        padding="4"
-        gap="4"
+        padding="3"
+        gap="3"
         style={{
           backgroundColor: isHovered ? 'var(--base-color-2)' : 'transparent',
           borderRadius: '8px',
@@ -277,15 +356,19 @@ function WebsiteRow({
               transform: translateX(0);
             }
           }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
         `}</style>
 
         {/* Website Info */}
-        <Row alignItems="center" gap="3" style={{ flex: 1, minWidth: 180 }}>
+        <Row alignItems="center" gap="3" style={{ flex: 1, minWidth: 160 }}>
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: '10px',
+              width: 36,
+              height: 36,
+              borderRadius: '8px',
               backgroundColor: 'var(--base-color-3)',
               display: 'flex',
               alignItems: 'center',
@@ -311,33 +394,41 @@ function WebsiteRow({
         </Row>
 
         {/* Active Users */}
-        <Row alignItems="center" gap="2" style={{ width: 90 }}>
+        <Row
+          alignItems="center"
+          gap="1"
+          style={{
+            width: 70,
+            padding: '4px 8px',
+            backgroundColor: 'rgba(48, 164, 108, 0.08)',
+            borderRadius: '6px',
+          }}
+        >
           <div
             style={{
-              width: 8,
-              height: 8,
+              width: 6,
+              height: 6,
               borderRadius: '50%',
               backgroundColor: '#30a46c',
               animation: 'pulse 2s ease-in-out infinite',
             }}
           />
-          <style>{`
-            @keyframes pulse {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.5; }
-            }
-          `}</style>
-          <Text size="2" weight="medium">
+          <Text size="1" weight="medium" style={{ color: '#30a46c' }}>
             {website.activeNow}
-          </Text>
-          <Text size="1" color="muted">
-            now
           </Text>
         </Row>
 
-        {/* Stats */}
-        <Column style={{ width: 80 }} alignItems="flex-end">
-          <Text size="2" weight="medium">
+        {/* Stats - Visitors */}
+        <Column
+          style={{
+            width: 75,
+            padding: '4px 8px',
+            backgroundColor: 'var(--base-color-2)',
+            borderRadius: '6px',
+          }}
+          alignItems="center"
+        >
+          <Text size="2" weight="semi-bold">
             {formatNumber(website.visitors)}
           </Text>
           <Text size="1" color="muted">
@@ -345,8 +436,17 @@ function WebsiteRow({
           </Text>
         </Column>
 
-        <Column style={{ width: 80 }} alignItems="flex-end">
-          <Text size="2" weight="medium">
+        {/* Stats - Pageviews */}
+        <Column
+          style={{
+            width: 75,
+            padding: '4px 8px',
+            backgroundColor: 'var(--base-color-2)',
+            borderRadius: '6px',
+          }}
+          alignItems="center"
+        >
+          <Text size="2" weight="semi-bold">
             {formatNumber(website.pageviews)}
           </Text>
           <Text size="1" color="muted">
@@ -354,13 +454,74 @@ function WebsiteRow({
           </Text>
         </Column>
 
+        {/* Bounce Rate */}
+        <Column
+          style={{
+            width: 60,
+            padding: '4px 8px',
+            backgroundColor: 'var(--base-color-2)',
+            borderRadius: '6px',
+          }}
+          alignItems="center"
+        >
+          <Text
+            size="2"
+            weight="semi-bold"
+            style={{
+              color:
+                website.bounceRate < 30
+                  ? '#30a46c'
+                  : website.bounceRate > 50
+                    ? '#e5484d'
+                    : 'inherit',
+            }}
+          >
+            {website.bounceRate}%
+          </Text>
+          <Text size="1" color="muted">
+            bounce
+          </Text>
+        </Column>
+
+        {/* Session Duration */}
+        <Row
+          alignItems="center"
+          gap="1"
+          style={{
+            width: 70,
+            padding: '4px 8px',
+            backgroundColor: 'var(--base-color-2)',
+            borderRadius: '6px',
+          }}
+        >
+          <Icon size="xs" color="muted">
+            <Clock />
+          </Icon>
+          <Text size="1" weight="medium">
+            {website.avgSessionDuration}
+          </Text>
+        </Row>
+
         {/* Sparkline */}
-        <Row style={{ width: 100 }} justifyContent="flex-end">
+        <Row style={{ width: 85 }} justifyContent="flex-end">
           <MiniSparkline data={website.sparkline} trend={website.trend} />
         </Row>
 
         {/* Trend */}
-        <Row style={{ width: 70 }} alignItems="center" justifyContent="flex-end" gap="1">
+        <Row
+          style={{
+            width: 65,
+            padding: '4px 8px',
+            backgroundColor:
+              website.trend >= 0
+                ? 'rgba(48, 164, 108, 0.1)'
+                : 'rgba(229, 72, 77, 0.1)',
+            borderRadius: '6px',
+          }}
+          alignItems="center"
+          justifyContent="center"
+          gap="1"
+        >
           <Icon
             size="xs"
             style={{ color: website.trend >= 0 ? '#30a46c' : '#e5484d' }}
@@ -368,7 +529,7 @@ function WebsiteRow({
             {website.trend >= 0 ? <TrendingUp /> : <TrendingDown />}
           </Icon>
           <Text
-            size="2"
+            size="1"
             weight="medium"
             style={{ color: website.trend >= 0 ? '#30a46c' : '#e5484d' }}
           >
@@ -380,7 +541,7 @@ function WebsiteRow({
         <Row
           gap="1"
           style={{
-            width: 80,
+            width: 60,
             justifyContent: 'flex-end',
             opacity: isHovered ? 1 : 0,
             transition: 'opacity 0.15s ease',
@@ -468,13 +629,19 @@ export default function WebsitesDashboardOverviewPage() {
         </Row>
 
         {/* Summary Cards */}
-        <Grid columns={{ xs: '2', md: '4' }} gap="4">
+        <Grid columns={{ xs: '2', md: '4' }} gap="3">
           <SummaryCard
             icon={<Globe />}
             label="Total Websites"
             value={mockWebsites.length.toString()}
             subValue="Active tracking"
             index={0}
+            chartData={[3, 4, 4, 5, 5, 6, 6]}
+            chartColor="var(--base-color-8)"
+            secondaryStats={[
+              { label: 'New this month', value: '2' },
+              { label: 'Avg. uptime', value: '99.9%' },
+            ]}
           />
           <SummaryCard
             icon={<Zap />}
@@ -482,6 +649,12 @@ export default function WebsitesDashboardOverviewPage() {
             value={formatNumber(totalActiveNow)}
             subValue="Real-time visitors"
             index={1}
+            chartData={[120, 145, 178, 156, 189, 210, 234]}
+            chartColor="#30a46c"
+            secondaryStats={[
+              { label: 'Peak today', value: '892' },
+              { label: 'Avg. session', value: '4m 12s' },
+            ]}
           />
           <SummaryCard
             icon={<Users />}
@@ -490,6 +663,12 @@ export default function WebsitesDashboardOverviewPage() {
             subValue="Last 30 days"
             trend={avgTrend}
             index={2}
+            chartData={[45, 52, 48, 61, 58, 72, 85]}
+            chartColor="#3b82f6"
+            secondaryStats={[
+              { label: 'New visitors', value: '68%' },
+              { label: 'Returning', value: '32%' },
+            ]}
           />
           <SummaryCard
             icon={<Eye />}
@@ -498,6 +677,12 @@ export default function WebsitesDashboardOverviewPage() {
             subValue="Last 30 days"
             trend={avgTrend * 1.2}
             index={3}
+            chartData={[120, 135, 128, 155, 148, 172, 195]}
+            chartColor="#8b5cf6"
+            secondaryStats={[
+              { label: 'Pages/session', value: '3.2' },
+              { label: 'Avg. bounce', value: `${avgBounceRate}%` },
+            ]}
           />
         </Grid>
 
@@ -547,9 +732,9 @@ export default function WebsitesDashboardOverviewPage() {
           {/* List Header */}
           <Row
             alignItems="center"
-            paddingX="4"
+            paddingX="3"
             paddingY="2"
-            gap="4"
+            gap="3"
             style={{ borderBottom: '1px solid var(--base-color-3)' }}
           >
             <Text
@@ -558,7 +743,7 @@ export default function WebsitesDashboardOverviewPage() {
               weight="medium"
               style={{
                 flex: 1,
-                minWidth: 180,
+                minWidth: 160,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}
@@ -569,7 +754,7 @@ export default function WebsitesDashboardOverviewPage() {
               size="1"
               color="muted"
               weight="medium"
-              style={{ width: 90, textTransform: 'uppercase', letterSpacing: '0.5px' }}
+              style={{ width: 70, textTransform: 'uppercase', letterSpacing: '0.5px' }}
             >
               Live
             </Text>
@@ -578,8 +763,8 @@ export default function WebsitesDashboardOverviewPage() {
               color="muted"
               weight="medium"
               style={{
-                width: 80,
-                textAlign: 'right',
+                width: 75,
+                textAlign: 'center',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}
@@ -591,8 +776,8 @@ export default function WebsitesDashboardOverviewPage() {
               color="muted"
               weight="medium"
               style={{
-                width: 80,
-                textAlign: 'right',
+                width: 75,
+                textAlign: 'center',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}
@@ -604,7 +789,33 @@ export default function WebsitesDashboardOverviewPage() {
               color="muted"
               weight="medium"
               style={{
-                width: 100,
+                width: 60,
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Bounce
+            </Text>
+            <Text
+              size="1"
+              color="muted"
+              weight="medium"
+              style={{
+                width: 70,
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Duration
+            </Text>
+            <Text
+              size="1"
+              color="muted"
+              weight="medium"
+              style={{
+                width: 85,
                 textAlign: 'right',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
@@ -617,15 +828,15 @@ export default function WebsitesDashboardOverviewPage() {
               color="muted"
               weight="medium"
               style={{
-                width: 70,
-                textAlign: 'right',
+                width: 65,
+                textAlign: 'center',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}
             >
               Trend
             </Text>
-            <div style={{ width: 80 }} />
+            <div style={{ width: 60 }} />
           </Row>
 
           {/* Website Rows */}
