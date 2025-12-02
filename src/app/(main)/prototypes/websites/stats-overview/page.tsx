@@ -352,15 +352,10 @@ function WebsiteCard({
 export default function StatsOverviewPage() {
   const { formatMessage, labels } = useMessages();
   const { teamId, renderUrl } = useNavigation();
-  const { user } = useLoginQuery();
-  const {
-    result,
-    isLoading,
-    error,
-  } = useUserWebsitesQuery({ userId: user?.id, teamId });
+  const { data, isLoading, error } = useUserWebsitesQuery({ teamId });
 
   // Use real data if available, otherwise use sample data
-  const websites = result?.data?.length ? result.data : SAMPLE_WEBSITES;
+  const websites = data?.data?.length ? data.data : SAMPLE_WEBSITES;
   const heroWebsite = websites[0];
   const otherWebsites = websites.slice(1);
 
