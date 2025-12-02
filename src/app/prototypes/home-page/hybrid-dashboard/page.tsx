@@ -17,7 +17,6 @@ import { renderDateLabels } from '@/lib/charts';
 import { colord } from 'colord';
 import {
   DialsProvider,
-  DialsOverlay,
   useDynamicColor,
   useDynamicNumber,
   useDynamicBoolean,
@@ -511,7 +510,6 @@ function HybridDashboard() {
           </Column>
         </Grid>
       </Column>
-      <DialsOverlay position="bottom-right" />
     </PageBody>
   );
 }

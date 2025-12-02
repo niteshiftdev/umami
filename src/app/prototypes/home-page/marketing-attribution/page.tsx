@@ -17,7 +17,6 @@ import { renderDateLabels } from '@/lib/charts';
 import { colord } from 'colord';
 import {
   DialsProvider,
-  DialsOverlay,
   useDynamicColor,
   useDynamicNumber,
   useDynamicBoolean,
@@ -370,7 +369,6 @@ function MarketingAttributionDashboard() {
           </Grid>
         </Panel>
       </Column>
-      <DialsOverlay position="bottom-right" />
     </PageBody>
   );
 }
