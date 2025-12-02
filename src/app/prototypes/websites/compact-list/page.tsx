@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 import { Row, Column, Text, Button, Icon, SearchField } from '@umami/react-zen';
-import { Globe, ExternalLink, Clock, Users, Eye, TrendingUp } from 'lucide-react';
+import { PageBody } from '@/components/common/PageBody';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Favicon } from '@/components/common/Favicon';
+import { Globe, ExternalLink, Clock, Users, Eye, TrendingUp } from '@/components/icons';
 
 interface Website {
   id: string;
@@ -136,356 +139,7 @@ export default function CompactListPage() {
   const selectedWebsite = sampleWebsites.find(w => w.id === selectedId);
 
   return (
-    <Column
-      style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--base-color-2)',
-        padding: 'var(--spacing-6)',
-      }}
-    >
-      <Column
-        style={{
-          maxWidth: '1320px',
-          margin: '0 auto',
-          width: '100%',
-        }}
-      >
-        {/* Header */}
-        <Row
-          justifyContent="space-between"
-          alignItems="center"
-          style={{
-            paddingBottom: 'var(--spacing-6)',
-            marginBottom: 'var(--spacing-6)',
-            borderBottom: '1px solid var(--border-color)',
-          }}
-        >
-          <Column gap="1">
-            <Text size="5" weight="semi-bold">
-              Websites
-            </Text>
-            <Text size="2" color="muted">
-              {sampleWebsites.length} sites tracked
-            </Text>
-          </Column>
-          <Button variant="primary">Add Website</Button>
-        </Row>
-
-        {/* Main Content - Two Panel Layout */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(280px, 400px) 1fr',
-            gap: 'var(--spacing-5)',
-            minHeight: '600px',
-          }}
-        >
-          {/* Left Panel - Compact List */}
-          <Column
-            style={{
-              backgroundColor: 'var(--base-color-1)',
-              borderRadius: 'var(--border-radius-3)',
-              border: '1px solid var(--border-color)',
-              overflow: 'hidden',
-            }}
-          >
-            {/* Search */}
-            <div
-              style={{
-                padding: 'var(--spacing-4)',
-                borderBottom: '1px solid var(--border-color)',
-              }}
-            >
-              <SearchField
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search websites..."
-                style={{ width: '100%' }}
-              />
-            </div>
-
-            {/* List */}
-            <Column
-              style={{
-                overflowY: 'auto',
-                flex: 1,
-              }}
-            >
-              {filteredWebsites.map((website, index) => (
-                <div
-                  key={website.id}
-                  onClick={() => setSelectedId(website.id)}
-                  style={{
-                    padding: 'var(--spacing-4)',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid var(--border-color)',
-                    backgroundColor:
-                      selectedId === website.id
-                        ? 'var(--base-color-3)'
-                        : 'transparent',
-                    borderLeft:
-                      selectedId === website.id
-                        ? '3px solid var(--primary-color)'
-                        : '3px solid transparent',
-                    transition: 'all 0.15s ease',
-                    animation: `fadeSlideIn 0.3s ease ${index * 0.05}s both`,
-                  }}
-                  onMouseEnter={e => {
-                    if (selectedId !== website.id) {
-                      e.currentTarget.style.backgroundColor = 'var(--highlight-color)';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (selectedId !== website.id) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  <Row gap="3" alignItems="center">
-                    <div
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: 'var(--border-radius-2)',
-                        backgroundColor: 'var(--base-color-4)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={`https://icons.duckduckgo.com/ip3/${website.domain}.ico`}
-                        width={16}
-                        height={16}
-                        alt=""
-                        style={{ borderRadius: '2px' }}
-                        onError={e => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement!.innerHTML =
-                            '<span style="color: var(--font-color-muted); font-size: 14px;">' +
-                            website.name.charAt(0).toUpperCase() +
-                            '</span>';
-                        }}
-                      />
-                    </div>
-                    <Column gap="0" style={{ minWidth: 0, flex: 1 }}>
-                      <Text
-                        size="2"
-                        weight="medium"
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {website.name}
-                      </Text>
-                      <Text
-                        size="1"
-                        color="muted"
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {website.domain}
-                      </Text>
-                    </Column>
-                    <Text size="1" color="muted" style={{ flexShrink: 0 }}>
-                      {formatNumber(website.pageviews)}
-                    </Text>
-                  </Row>
-                </div>
-              ))}
-            </Column>
-          </Column>
-
-          {/* Right Panel - Details */}
-          <Column
-            style={{
-              backgroundColor: 'var(--base-color-1)',
-              borderRadius: 'var(--border-radius-3)',
-              border: '1px solid var(--border-color)',
-              padding: 'var(--spacing-6)',
-            }}
-          >
-            {selectedWebsite ? (
-              <Column gap="5" style={{ animation: 'fadeIn 0.2s ease' }}>
-                {/* Website Header */}
-                <Row gap="4" alignItems="flex-start" justifyContent="space-between">
-                  <Row gap="4" alignItems="center">
-                    <div
-                      style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: 'var(--border-radius-3)',
-                        backgroundColor: 'var(--base-color-3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={`https://icons.duckduckgo.com/ip3/${selectedWebsite.domain}.ico`}
-                        width={28}
-                        height={28}
-                        alt=""
-                        style={{ borderRadius: '4px' }}
-                        onError={e => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement!.innerHTML =
-                            '<span style="color: var(--font-color-muted); font-size: 24px; font-weight: 600;">' +
-                            selectedWebsite.name.charAt(0).toUpperCase() +
-                            '</span>';
-                        }}
-                      />
-                    </div>
-                    <Column gap="1">
-                      <Text size="4" weight="semi-bold">
-                        {selectedWebsite.name}
-                      </Text>
-                      <Row gap="2" alignItems="center">
-                        <Icon size="xs" color="muted">
-                          <Globe size={12} />
-                        </Icon>
-                        <Text size="2" color="muted">
-                          {selectedWebsite.domain}
-                        </Text>
-                      </Row>
-                    </Column>
-                  </Row>
-                  <Button variant="quiet" size="sm">
-                    <Icon>
-                      <ExternalLink size={16} />
-                    </Icon>
-                  </Button>
-                </Row>
-
-                {/* Stats Grid */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: 'var(--spacing-4)',
-                  }}
-                >
-                  <StatBlock
-                    icon={<Eye size={14} />}
-                    label="Pageviews"
-                    value={formatNumber(selectedWebsite.pageviews)}
-                  />
-                  <StatBlock
-                    icon={<Users size={14} />}
-                    label="Sessions"
-                    value={formatNumber(selectedWebsite.sessions)}
-                  />
-                  <StatBlock
-                    icon={<Clock size={14} />}
-                    label="Avg. Duration"
-                    value={selectedWebsite.avgDuration}
-                  />
-                  <StatBlock
-                    icon={<TrendingUp size={14} />}
-                    label="Bounce Rate"
-                    value={`${selectedWebsite.bounceRate}%`}
-                  />
-                </div>
-
-                {/* Additional Info */}
-                <Column
-                  gap="3"
-                  style={{
-                    padding: 'var(--spacing-4)',
-                    backgroundColor: 'var(--base-color-2)',
-                    borderRadius: 'var(--border-radius-3)',
-                  }}
-                >
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Text size="2" color="muted">
-                      Added on
-                    </Text>
-                    <Text size="2">
-                      {new Date(selectedWebsite.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </Text>
-                  </Row>
-                  <div
-                    style={{
-                      height: '1px',
-                      backgroundColor: 'var(--border-color)',
-                    }}
-                  />
-                  <Row justifyContent="space-between" alignItems="center">
-                    <Text size="2" color="muted">
-                      Status
-                    </Text>
-                    <Row gap="2" alignItems="center">
-                      <div
-                        style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '50%',
-                          backgroundColor: '#22c55e',
-                        }}
-                      />
-                      <Text size="2">Active</Text>
-                    </Row>
-                  </Row>
-                </Column>
-
-                {/* Action Button */}
-                <Button
-                  variant="primary"
-                  style={{ marginTop: 'auto' }}
-                  onPress={() => {
-                    // Placeholder action
-                  }}
-                >
-                  View Dashboard
-                </Button>
-              </Column>
-            ) : (
-              <Column
-                alignItems="center"
-                justifyContent="center"
-                style={{ flex: 1, minHeight: '400px' }}
-              >
-                <Column gap="3" alignItems="center" style={{ maxWidth: '240px', textAlign: 'center' }}>
-                  <div
-                    style={{
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: 'var(--border-radius-3)',
-                      backgroundColor: 'var(--base-color-3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Icon size="lg" color="muted">
-                      <Globe size={28} />
-                    </Icon>
-                  </div>
-                  <Text size="3" weight="medium">
-                    Select a website
-                  </Text>
-                  <Text size="2" color="muted">
-                    Choose a website from the list to view its details and statistics
-                  </Text>
-                </Column>
-              </Column>
-            )}
-          </Column>
-        </div>
-      </Column>
-
-      {/* CSS Animations */}
+    <>
       <style>{`
         @keyframes fadeSlideIn {
           from {
@@ -507,13 +161,300 @@ export default function CompactListPage() {
           }
         }
 
+        .list-item {
+          transition: all 0.15s ease;
+        }
+
+        .list-item:hover {
+          background-color: var(--highlight-color);
+        }
+
         @media (max-width: 768px) {
-          div[style*="gridTemplateColumns: minmax(280px, 400px) 1fr"] {
+          .two-panel-layout {
             grid-template-columns: 1fr !important;
             grid-template-rows: auto 1fr;
           }
         }
       `}</style>
-    </Column>
+      <PageBody>
+        <Column gap="6">
+          <PageHeader title="Websites" description="Select a website to view details">
+            <Button variant="primary">Add Website</Button>
+          </PageHeader>
+
+          {/* Main Content - Two Panel Layout */}
+          <div
+            className="two-panel-layout"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(280px, 400px) 1fr',
+              gap: 'var(--spacing-5)',
+              minHeight: '600px',
+            }}
+          >
+            {/* Left Panel - Compact List */}
+            <Column
+              style={{
+                backgroundColor: 'var(--base-color-1)',
+                borderRadius: 'var(--border-radius-3)',
+                border: '1px solid var(--border-color)',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Search */}
+              <div
+                style={{
+                  padding: 'var(--spacing-4)',
+                  borderBottom: '1px solid var(--border-color)',
+                }}
+              >
+                <SearchField
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search websites..."
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              {/* List */}
+              <Column
+                style={{
+                  overflowY: 'auto',
+                  flex: 1,
+                }}
+              >
+                {filteredWebsites.map((website, index) => (
+                  <div
+                    key={website.id}
+                    onClick={() => setSelectedId(website.id)}
+                    className="list-item"
+                    style={{
+                      padding: 'var(--spacing-4)',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid var(--border-color)',
+                      backgroundColor:
+                        selectedId === website.id
+                          ? 'var(--base-color-3)'
+                          : 'transparent',
+                      borderLeft:
+                        selectedId === website.id
+                          ? '3px solid var(--primary-color)'
+                          : '3px solid transparent',
+                      animation: `fadeSlideIn 0.3s ease ${index * 0.05}s both`,
+                    }}
+                  >
+                    <Row gap="3" alignItems="center">
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: 'var(--border-radius-2)',
+                          backgroundColor: 'var(--base-color-4)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Favicon domain={website.domain} />
+                      </div>
+                      <Column gap="0" style={{ minWidth: 0, flex: 1 }}>
+                        <Text
+                          size="2"
+                          weight="medium"
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {website.name}
+                        </Text>
+                        <Text
+                          size="1"
+                          color="muted"
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {website.domain}
+                        </Text>
+                      </Column>
+                      <Text size="1" color="muted" style={{ flexShrink: 0 }}>
+                        {formatNumber(website.pageviews)}
+                      </Text>
+                    </Row>
+                  </div>
+                ))}
+              </Column>
+            </Column>
+
+            {/* Right Panel - Details */}
+            <Column
+              style={{
+                backgroundColor: 'var(--base-color-1)',
+                borderRadius: 'var(--border-radius-3)',
+                border: '1px solid var(--border-color)',
+                padding: 'var(--spacing-6)',
+              }}
+            >
+              {selectedWebsite ? (
+                <Column gap="5" style={{ animation: 'fadeIn 0.2s ease' }}>
+                  {/* Website Header */}
+                  <Row gap="4" alignItems="flex-start" justifyContent="space-between">
+                    <Row gap="4" alignItems="center">
+                      <div
+                        style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: 'var(--border-radius-3)',
+                          backgroundColor: 'var(--base-color-3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Favicon domain={selectedWebsite.domain} />
+                      </div>
+                      <Column gap="1">
+                        <Text size="4" weight="semi-bold">
+                          {selectedWebsite.name}
+                        </Text>
+                        <Row gap="2" alignItems="center">
+                          <Icon size="xs" color="muted">
+                            <Globe size={12} />
+                          </Icon>
+                          <Text size="2" color="muted">
+                            {selectedWebsite.domain}
+                          </Text>
+                        </Row>
+                      </Column>
+                    </Row>
+                    <Button variant="quiet" size="sm">
+                      <Icon>
+                        <ExternalLink size={16} />
+                      </Icon>
+                    </Button>
+                  </Row>
+
+                  {/* Stats Grid */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gap: 'var(--spacing-4)',
+                    }}
+                  >
+                    <StatBlock
+                      icon={<Eye size={14} />}
+                      label="Pageviews"
+                      value={formatNumber(selectedWebsite.pageviews)}
+                    />
+                    <StatBlock
+                      icon={<Users size={14} />}
+                      label="Sessions"
+                      value={formatNumber(selectedWebsite.sessions)}
+                    />
+                    <StatBlock
+                      icon={<Clock size={14} />}
+                      label="Avg. Duration"
+                      value={selectedWebsite.avgDuration}
+                    />
+                    <StatBlock
+                      icon={<TrendingUp size={14} />}
+                      label="Bounce Rate"
+                      value={`${selectedWebsite.bounceRate}%`}
+                    />
+                  </div>
+
+                  {/* Additional Info */}
+                  <Column
+                    gap="3"
+                    style={{
+                      padding: 'var(--spacing-4)',
+                      backgroundColor: 'var(--base-color-2)',
+                      borderRadius: 'var(--border-radius-3)',
+                    }}
+                  >
+                    <Row justifyContent="space-between" alignItems="center">
+                      <Text size="2" color="muted">
+                        Added on
+                      </Text>
+                      <Text size="2">
+                        {new Date(selectedWebsite.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </Text>
+                    </Row>
+                    <div
+                      style={{
+                        height: '1px',
+                        backgroundColor: 'var(--border-color)',
+                      }}
+                    />
+                    <Row justifyContent="space-between" alignItems="center">
+                      <Text size="2" color="muted">
+                        Status
+                      </Text>
+                      <Row gap="2" alignItems="center">
+                        <div
+                          style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--success-color)',
+                          }}
+                        />
+                        <Text size="2">Active</Text>
+                      </Row>
+                    </Row>
+                  </Column>
+
+                  {/* Action Button */}
+                  <Button variant="primary" style={{ marginTop: 'auto' }}>
+                    View Dashboard
+                  </Button>
+                </Column>
+              ) : (
+                <Column
+                  alignItems="center"
+                  justifyContent="center"
+                  style={{ flex: 1, minHeight: '400px' }}
+                >
+                  <Column gap="3" alignItems="center" style={{ maxWidth: '240px', textAlign: 'center' }}>
+                    <div
+                      style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: 'var(--border-radius-3)',
+                        backgroundColor: 'var(--base-color-3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Icon size="lg" color="muted">
+                        <Globe size={28} />
+                      </Icon>
+                    </div>
+                    <Text size="3" weight="medium">
+                      Select a website
+                    </Text>
+                    <Text size="2" color="muted">
+                      Choose a website from the list to view its details and statistics
+                    </Text>
+                  </Column>
+                </Column>
+              )}
+            </Column>
+          </div>
+        </Column>
+      </PageBody>
+    </>
   );
 }
