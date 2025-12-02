@@ -47,9 +47,11 @@ export function EventsTable(props: DataTableProps) {
       </DataColumn>
       <DataColumn id="location" label={formatMessage(labels.location)}>
         {(row: any) => (
-          <TypeIcon type="country" value={row.country}>
-            {row.city ? `${row.city}, ` : ''} {formatValue(row.country, 'country')}
-          </TypeIcon>
+          <Link href={updateParams({ country: `eq.${row.country}` })}>
+            <TypeIcon type="country" value={row.country}>
+              {row.city ? `${row.city}, ` : ''} {formatValue(row.country, 'country')}
+            </TypeIcon>
+          </Link>
         )}
       </DataColumn>
       <DataColumn id="browser" label={formatMessage(labels.browser)} width="140px">
