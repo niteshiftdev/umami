@@ -1,0 +1,74 @@
+.grid {
+  width: 100%;
+}
+
+.card {
+  opacity: 0;
+  animation: cardFadeIn 0.4s ease-out forwards;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faviconWrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--base-color-3);
+  border-radius: var(--border-radius-2);
+  flex-shrink: 0;
+}
+
+.faviconWrapper img {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+.faviconFallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+.externalLink {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.externalLink:hover {
+  color: var(--primary-color);
+}
+
+.card:hover .externalLink {
+  opacity: 1;
+}
+
+.actions {
+  margin-top: auto;
+  padding-top: var(--spacing-2);
+  border-top: 1px solid var(--base-color-4);
+}
