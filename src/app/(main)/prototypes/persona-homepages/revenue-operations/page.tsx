@@ -7,7 +7,7 @@ import { Panel } from '@/components/common/Panel';
 import { MetricCard } from '@/components/metrics/MetricCard';
 import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { ListTable } from '@/components/metrics/ListTable';
-import { BarChart } from '@/components/charts/BarChart';
+import { Chart } from '@/components/charts/Chart';
 import { PieChart } from '@/components/charts/PieChart';
 import {
   useDynamicBoolean,
@@ -646,7 +646,7 @@ export default function RevenueOperationsDashboard() {
         {/* Revenue Trend Chart */}
         <Panel title="Monthly Revenue Trend">
           <div style={{ height: 300 }}>
-            <BarChart chartData={monthlyRevenueTrend} XAxisType="category" currency="USD" />
+            <Chart type="bar" chartData={monthlyRevenueTrend} />
           </div>
         </Panel>
 

@@ -1,12 +1,12 @@
 'use client';
-import { Column, Row, Grid, Text, Heading, Icon } from '@umami/react-zen';
+import { Column, Row, Grid, Text, Heading, Icon, Box } from '@umami/react-zen';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
 import { MetricCard } from '@/components/metrics/MetricCard';
 import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { ListTable } from '@/components/metrics/ListTable';
-import { BarChart } from '@/components/charts/BarChart';
+import { Chart } from '@/components/charts/Chart';
 import { PieChart } from '@/components/charts/PieChart';
 import {
   useDynamicVariant,
@@ -281,12 +281,12 @@ export default function MarketingAttributionPage() {
 
           {showCampaignSection && (
             <Panel title="Campaign Performance">
-              <div style={{ height: 320 }}>
-                <BarChart
+              <Box style={{ height: 320 }}>
+                <Chart
+                  type="bar"
                   chartData={campaignPerformanceData}
-                  XAxisType="category"
                 />
-              </div>
+              </Box>
             </Panel>
           )}
         </Grid>
@@ -296,7 +296,7 @@ export default function MarketingAttributionPage() {
           <Panel title="Channel ROI Comparison">
             <Grid columns={{ xs: '1fr', md: '2fr 1fr' }} gap="6">
               <div style={{ height: 280 }}>
-                <BarChart chartData={channelROIData} XAxisType="category" />
+                <Chart type="bar" chartData={channelROIData} />
               </div>
               <Column gap="4">
                 <Text size="3" weight="bold">ROI by Channel</Text>
