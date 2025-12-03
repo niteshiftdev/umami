@@ -8,10 +8,6 @@ import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
-import { GridRow } from '@/components/common/GridRow';
-import { WorldMap } from '@/components/metrics/WorldMap';
-import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
-import { Heading, Row } from '@umami/react-zen';
 
 export const TypographyContext = createContext<{
   metricLabelSize?: string;
@@ -115,38 +111,11 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     sectionHeadingColor,
   };
 
-  const headingStyle = {
-    fontWeight:
-      sectionHeadingWeight === 'normal'
-        ? 400
-        : sectionHeadingWeight === 'medium'
-          ? 500
-          : sectionHeadingWeight === 'semibold'
-            ? 600
-            : 700,
-    color: sectionHeadingColor,
-  };
-
-  const rowProps = { minHeight: '570px' };
-
   return (
     <TypographyContext.Provider value={typographyConfig}>
       <Column gap>
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
-        <GridRow layout="two-one" {...rowProps}>
-          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-            <WorldMap websiteId={websiteId} />
-          </Panel>
-
-          <Panel>
-            <Heading size={sectionHeadingSize as any} style={headingStyle}>
-              Traffic
-            </Heading>
-            <Row border="bottom" marginBottom="4" />
-            <WeeklyTraffic websiteId={websiteId} />
-          </Panel>
-        </GridRow>
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
         </Panel>
