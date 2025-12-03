@@ -1,0 +1,39 @@
+.starWarsContainer {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 50%, rgba(0, 100, 200, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 100, 0, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #000814 0%, #001d3d 50%, #003566 100%);
+}
+
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, white, rgba(255, 255, 255, 0.2)),
+    radial-gradient(2px 2px at 60px 70px, white, rgba(255, 255, 255, 0.2)),
+    radial-gradient(1px 1px at 50px 50px, white, rgba(255, 255, 255, 0.2)),
+    radial-gradient(1px 1px at 130px 80px, white, rgba(255, 255, 255, 0.2)),
+    radial-gradient(2px 2px at 90px 10px, white, rgba(255, 255, 255, 0.2));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: twinkleStar 5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes twinkleStar {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.starWarsContainer > * {
+  position: relative;
+  z-index: 2;
+}
