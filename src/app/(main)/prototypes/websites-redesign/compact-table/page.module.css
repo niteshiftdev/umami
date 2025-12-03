@@ -1,0 +1,187 @@
+.container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel {
+  animation: fadeIn 0.4s ease-out 0.1s both;
+}
+
+.toolbar {
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--base-color-4);
+}
+
+.searchField {
+  max-width: 240px;
+}
+
+.countLabel {
+  white-space: nowrap;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.compactTable {
+  font-size: var(--font-size-2);
+}
+
+.compactTable :global(th) {
+  font-size: var(--font-size-1);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--base-color-9);
+  padding: var(--spacing-2) var(--spacing-3);
+}
+
+.compactTable :global(td) {
+  padding: var(--spacing-2) var(--spacing-3);
+  vertical-align: middle;
+}
+
+.compactTable :global(tr) {
+  transition: background-color 0.15s ease;
+}
+
+.compactTable :global(tr:hover) {
+  background-color: var(--base-color-3);
+}
+
+.nameCell {
+  min-width: 0;
+}
+
+.nameLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nameLink:hover {
+  color: var(--primary-color);
+}
+
+.domainText {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--font-size-1);
+}
+
+.visitorCount {
+  font-variant-numeric: tabular-nums;
+}
+
+.actionsRow {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.compactTable :global(tr:hover) .actionsRow {
+  opacity: 1;
+}
+
+.actionButton {
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-2);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--base-color-5);
+}
+
+/* Staggered row animations */
+.compactTable :global(tbody tr:nth-child(1)) {
+  animation: rowFadeIn 0.3s ease-out 0.05s both;
+}
+
+.compactTable :global(tbody tr:nth-child(2)) {
+  animation: rowFadeIn 0.3s ease-out 0.1s both;
+}
+
+.compactTable :global(tbody tr:nth-child(3)) {
+  animation: rowFadeIn 0.3s ease-out 0.15s both;
+}
+
+.compactTable :global(tbody tr:nth-child(4)) {
+  animation: rowFadeIn 0.3s ease-out 0.2s both;
+}
+
+.compactTable :global(tbody tr:nth-child(5)) {
+  animation: rowFadeIn 0.3s ease-out 0.25s both;
+}
+
+.compactTable :global(tbody tr:nth-child(6)) {
+  animation: rowFadeIn 0.3s ease-out 0.3s both;
+}
+
+.compactTable :global(tbody tr:nth-child(7)) {
+  animation: rowFadeIn 0.3s ease-out 0.35s both;
+}
+
+.compactTable :global(tbody tr:nth-child(8)) {
+  animation: rowFadeIn 0.3s ease-out 0.4s both;
+}
+
+.compactTable :global(tbody tr:nth-child(9)) {
+  animation: rowFadeIn 0.3s ease-out 0.45s both;
+}
+
+.compactTable :global(tbody tr:nth-child(10)) {
+  animation: rowFadeIn 0.3s ease-out 0.5s both;
+}
+
+@keyframes rowFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-2);
+  }
+
+  .searchField {
+    max-width: 100%;
+  }
+
+  .countLabel {
+    text-align: right;
+  }
+}

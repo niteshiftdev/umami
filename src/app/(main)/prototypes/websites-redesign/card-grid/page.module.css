@@ -1,0 +1,217 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--spacing-4);
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  background: var(--base-color-1);
+  border: 1px solid var(--base-color-4);
+  border-radius: var(--border-radius-3);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  animation: fadeSlideIn 0.4s ease forwards;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.card:hover {
+  border-color: var(--base-color-6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.card:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+}
+
+.faviconWrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--base-color-3);
+  border-radius: var(--border-radius-2);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.faviconWrapper img {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.faviconFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--base-color-8);
+}
+
+.headerInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.siteName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domain {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.externalIcon {
+  color: var(--base-color-7);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.card:hover .externalIcon {
+  opacity: 1;
+}
+
+.metricsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) 0;
+  border-top: 1px solid var(--base-color-3);
+  border-bottom: 1px solid var(--base-color-3);
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--base-color-11);
+}
+
+.metricIcon {
+  color: var(--base-color-8);
+}
+
+.metricValue {
+  font-weight: 600;
+  font-size: var(--font-size-3);
+}
+
+.metricLabel {
+  font-size: var(--font-size-1);
+  color: var(--base-color-9);
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  font-size: var(--font-size-2);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-2);
+}
+
+.trendUp {
+  color: #30a46c;
+  background: rgba(48, 164, 108, 0.1);
+}
+
+.trendDown {
+  color: #e5484d;
+  background: rgba(229, 72, 77, 0.1);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: var(--font-size-1);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-2);
+  background: var(--base-color-4);
+  color: var(--base-color-11);
+}
+
+.badgeShared {
+  background: rgba(0, 144, 255, 0.1);
+  color: #0090ff;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-2);
+  font-size: var(--font-size-3);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.addIcon {
+  font-size: var(--font-size-4);
+  font-weight: 400;
+  line-height: 1;
+}
