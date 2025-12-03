@@ -15,6 +15,7 @@ import { useMessages, useUpdateQuery } from '@/components/hooks';
 import { setUser } from '@/store/app';
 import { setClientAuthToken } from '@/lib/client';
 import { Logo } from '@/components/svg';
+import styles from './LoginForm.module.css';
 
 export function LoginForm() {
   const { formatMessage, labels, getErrorMessage } = useMessages();
@@ -38,10 +39,31 @@ export function LoginForm() {
 
   return (
     <Column justifyContent="center" alignItems="center" gap="6">
+      <div className={styles.crawlContainer}>
+        <div className={styles.crawl}>
+          <div className={styles.title}>
+            UMAMI
+          </div>
+          <div className={styles.subtitle}>
+            DATA ANALYTICS EMPIRE
+          </div>
+          <div className={styles.text}>
+            May the metrics be with you.
+            <br />
+            <br />
+            To access the Empire's secret analytics,
+            you must authenticate yourself.
+            <br />
+            <br />
+            Enter your credentials and prepare
+            to unlock the power of data.
+          </div>
+        </div>
+      </div>
       <Icon size="lg">
         <Logo />
       </Icon>
-      <Heading>umami</Heading>
+      <Heading className={styles.heading}>UMAMI</Heading>
       <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
         <FormField
           label={formatMessage(labels.username)}
@@ -49,7 +71,7 @@ export function LoginForm() {
           name="username"
           rules={{ required: formatMessage(labels.required) }}
         >
-          <TextField autoComplete="off" />
+          <TextField autoComplete="off" placeholder="Rebel Alliance Member" />
         </FormField>
         <FormField
           label={formatMessage(labels.password)}
@@ -57,7 +79,7 @@ export function LoginForm() {
           name="password"
           rules={{ required: formatMessage(labels.required) }}
         >
-          <PasswordField />
+          <PasswordField placeholder="Secret Passcode" />
         </FormField>
         <FormButtons>
           <FormSubmitButton
@@ -65,8 +87,9 @@ export function LoginForm() {
             variant="primary"
             style={{ flex: 1 }}
             isDisabled={false}
+            className={styles.submitButton}
           >
-            {formatMessage(labels.login)}
+            {formatMessage(labels.login)} 🚀
           </FormSubmitButton>
         </FormButtons>
       </Form>
