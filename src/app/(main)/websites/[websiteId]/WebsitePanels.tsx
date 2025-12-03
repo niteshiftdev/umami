@@ -83,7 +83,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
 
       <GridRow layout="two" {...rowProps}>
-        <Panel>
+        <Panel paddingY="4" paddingX={{ xs: '3', md: '4' }} gap="2">
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.environment)}
           </Heading>
