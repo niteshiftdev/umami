@@ -37,13 +37,13 @@ export function Panel({ title, allowFullscreen, style, children, ...props }: Pan
 
   return (
     <Column
-      paddingY="6"
-      paddingX={{ xs: '3', md: '6' }}
+      paddingY="4"
+      paddingX={{ xs: '3', md: '4' }}
       border
       borderRadius="3"
       backgroundColor
       position="relative"
-      gap
+      gap="2"
       {...props}
       style={{ ...style, ...(isFullscreen ? fullscreenStyles : {}) }}
     >
