@@ -57,7 +57,7 @@ const revenueBySegment = {
   ],
 };
 
-// Monthly revenue trend (last 12 months)
+// Monthly revenue trend (last 12 months) - using category axis instead of timeseries
 const monthlyRevenueTrend = {
   labels: [
     'Jan 2024',
@@ -77,18 +77,18 @@ const monthlyRevenueTrend = {
     {
       label: 'MRR',
       data: [
-        { x: '2024-01-01', y: 678000 },
-        { x: '2024-02-01', y: 695000 },
-        { x: '2024-03-01', y: 712000 },
-        { x: '2024-04-01', y: 738000 },
-        { x: '2024-05-01', y: 756000 },
-        { x: '2024-06-01', y: 774000 },
-        { x: '2024-07-01', y: 789000 },
-        { x: '2024-08-01', y: 802000 },
-        { x: '2024-09-01', y: 818000 },
-        { x: '2024-10-01', y: 829000 },
-        { x: '2024-11-01', y: 838000 },
-        { x: '2024-12-01', y: 847500 },
+        { x: 'Jan 2024', y: 678000 },
+        { x: 'Feb 2024', y: 695000 },
+        { x: 'Mar 2024', y: 712000 },
+        { x: 'Apr 2024', y: 738000 },
+        { x: 'May 2024', y: 756000 },
+        { x: 'Jun 2024', y: 774000 },
+        { x: 'Jul 2024', y: 789000 },
+        { x: 'Aug 2024', y: 802000 },
+        { x: 'Sep 2024', y: 818000 },
+        { x: 'Oct 2024', y: 829000 },
+        { x: 'Nov 2024', y: 838000 },
+        { x: 'Dec 2024', y: 847500 },
       ],
       backgroundColor: CHART_COLORS[0],
       borderColor: CHART_COLORS[0],
@@ -646,7 +646,7 @@ export default function RevenueOperationsDashboard() {
         {/* Revenue Trend Chart */}
         <Panel title="Monthly Revenue Trend">
           <div style={{ height: 300 }}>
-            <BarChart chartData={monthlyRevenueTrend} unit="month" currency="USD" />
+            <BarChart chartData={monthlyRevenueTrend} XAxisType="category" currency="USD" />
           </div>
         </Panel>
 

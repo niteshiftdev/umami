@@ -65,6 +65,8 @@ const topFeatures = [
 ];
 
 const engagementDates = generateDates(14);
+const engagementMinDate = new Date(engagementDates[0]);
+const engagementMaxDate = new Date(engagementDates[engagementDates.length - 1]);
 const engagementData = {
   labels: engagementDates,
   datasets: [
@@ -136,6 +138,8 @@ const revenueMetrics = {
 };
 
 const pipelineDates = generateDates(7);
+const pipelineMinDate = new Date(pipelineDates[0]);
+const pipelineMaxDate = new Date(pipelineDates[pipelineDates.length - 1]);
 const pipelineData = {
   labels: pipelineDates,
   datasets: [
@@ -301,7 +305,12 @@ export default function HybridDashboardPage() {
       <Grid columns={{ xs: '1fr', lg: '2fr 1fr' }} gap="4">
         <Panel title="User Engagement Trend">
           <Box style={{ height: '280px' }}>
-            <BarChart chartData={engagementData} unit="day" />
+            <BarChart
+              chartData={engagementData}
+              unit="day"
+              minDate={engagementMinDate}
+              maxDate={engagementMaxDate}
+            />
           </Box>
         </Panel>
         <Panel title="Top Features by Usage">
@@ -417,7 +426,13 @@ export default function HybridDashboardPage() {
       <Grid columns={{ xs: '1fr', lg: '1fr 1fr 1fr' }} gap="4">
         <Panel title="Pipeline Trend">
           <Box style={{ height: '240px' }}>
-            <BarChart chartData={pipelineData} unit="day" currency="USD" />
+            <BarChart
+              chartData={pipelineData}
+              unit="day"
+              minDate={pipelineMinDate}
+              maxDate={pipelineMaxDate}
+              currency="USD"
+            />
           </Box>
         </Panel>
         <Panel title="Customer Health Distribution">

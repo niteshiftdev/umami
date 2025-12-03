@@ -71,6 +71,15 @@ function generateSessionData(dates: string[]): { x: string; y: number }[] {
 
 const dates30 = generateDates(30);
 
+// Create date objects for chart bounds
+const getDateBounds = (dates: string[]) => {
+  const minDate = new Date(dates[0]);
+  const maxDate = new Date(dates[dates.length - 1]);
+  return { minDate, maxDate };
+};
+
+const dateBounds30 = getDateBounds(dates30);
+
 // Mock data for engagement trends
 const engagementTrendsData = {
   labels: dates30,
@@ -344,12 +353,22 @@ export default function ProductAnalyticsDashboard() {
         <Grid columns={{ xs: '1fr', lg: gridCols }} gap="6" style={{ marginTop: 'var(--spacing-6)' }}>
           <Panel title="Daily Active Users (30 days)">
             <Box style={{ height: 300 }}>
-              <BarChart chartData={engagementTrendsData} unit="day" />
+              <BarChart
+                chartData={engagementTrendsData}
+                unit="day"
+                minDate={dateBounds30.minDate}
+                maxDate={dateBounds30.maxDate}
+              />
             </Box>
           </Panel>
           <Panel title="Sessions per User Trend">
             <Box style={{ height: 300 }}>
-              <BarChart chartData={sessionsPerUserData} unit="day" />
+              <BarChart
+                chartData={sessionsPerUserData}
+                unit="day"
+                minDate={dateBounds30.minDate}
+                maxDate={dateBounds30.maxDate}
+              />
             </Box>
           </Panel>
         </Grid>

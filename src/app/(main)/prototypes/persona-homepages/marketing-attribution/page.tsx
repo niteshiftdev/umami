@@ -284,7 +284,6 @@ export default function MarketingAttributionPage() {
               <div style={{ height: 320 }}>
                 <BarChart
                   chartData={campaignPerformanceData}
-                  unit="day"
                   XAxisType="category"
                 />
               </div>
@@ -297,7 +296,7 @@ export default function MarketingAttributionPage() {
           <Panel title="Channel ROI Comparison">
             <Grid columns={{ xs: '1fr', md: '2fr 1fr' }} gap="6">
               <div style={{ height: 280 }}>
-                <BarChart chartData={channelROIData} unit="day" XAxisType="category" />
+                <BarChart chartData={channelROIData} XAxisType="category" />
               </div>
               <Column gap="4">
                 <Text size="3" weight="bold">ROI by Channel</Text>
