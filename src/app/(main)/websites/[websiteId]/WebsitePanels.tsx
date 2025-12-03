@@ -3,8 +3,6 @@ import { Panel } from '@/components/common/Panel';
 import { useMessages, useNavigation } from '@/components/hooks';
 import { EventsChart } from '@/components/metrics/EventsChart';
 import { MetricsTable } from '@/components/metrics/MetricsTable';
-import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
-import { WorldMap } from '@/components/metrics/WorldMap';
 import { Grid, Heading, Row, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
 import { useContext } from 'react';
 import { TypographyContext } from './WebsitePage';
@@ -37,20 +35,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
 
   return (
     <Grid gap="3">
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
-        <Panel>
-          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
-            {formatMessage(labels.traffic)}
-          </Heading>
-          <Row border="bottom" marginBottom="4" />
-          <WeeklyTraffic websiteId={websiteId} />
-        </Panel>
-      </GridRow>
-
       <GridRow layout="two" {...rowProps}>
         <Panel>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
