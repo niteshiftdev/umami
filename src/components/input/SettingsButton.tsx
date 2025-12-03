@@ -1,4 +1,3 @@
-import { Key } from 'react';
 import {
   Icon,
   Button,
@@ -9,7 +8,7 @@ import {
   MenuSeparator,
   MenuSection,
 } from '@umami/react-zen';
-import { useMessages, useLoginQuery, useNavigation, useConfig } from '@/components/hooks';
+import { useMessages, useLoginQuery, useConfig } from '@/components/hooks';
 import {
   LogOut,
   LockKeyhole,
@@ -24,22 +23,7 @@ import { DOCS_URL } from '@/lib/constants';
 export function SettingsButton() {
   const { formatMessage, labels } = useMessages();
   const { user } = useLoginQuery();
-  const { router } = useNavigation();
   const { cloudMode } = useConfig();
-
-  const handleAction = (id: Key) => {
-    const url = id.toString();
-
-    if (cloudMode) {
-      if (url === '/docs') {
-        window.open(DOCS_URL, '_blank');
-      } else {
-        window.location.href = url;
-      }
-    } else {
-      router.push(url);
-    }
-  };
 
   return (
     <MenuTrigger>
@@ -49,17 +33,29 @@ export function SettingsButton() {
         </Icon>
       </Button>
       <Popover placement="bottom end">
-        <Menu autoFocus="last" onAction={handleAction}>
+        <Menu autoFocus="last">
           <MenuSection title={user.username}>
             <MenuSeparator />
-            <MenuItem id="/settings" icon={<Settings />} label={formatMessage(labels.settings)} />
+            <MenuItem
+              id="settings"
+              href="/settings"
+              icon={<Settings />}
+              label={formatMessage(labels.settings)}
+            />
             {!cloudMode && user.isAdmin && (
-              <MenuItem id="/admin" icon={<LockKeyhole />} label={formatMessage(labels.admin)} />
+              <MenuItem
+                id="admin"
+                href="/admin"
+                icon={<LockKeyhole />}
+                label={formatMessage(labels.admin)}
+              />
             )}
             {cloudMode && (
               <>
                 <MenuItem
-                  id="/docs"
+                  id="docs"
+                  href={DOCS_URL}
+                  target="_blank"
                   icon={<BookText />}
                   label={formatMessage(labels.documentation)}
                 >
@@ -68,14 +64,20 @@ export function SettingsButton() {
                   </Icon>
                 </MenuItem>
                 <MenuItem
-                  id="/settings/support"
+                  id="support"
+                  href="/settings/support"
                   icon={<LifeBuoy />}
                   label={formatMessage(labels.support)}
                 />
               </>
             )}
             <MenuSeparator />
-            <MenuItem id="/logout" icon={<LogOut />} label={formatMessage(labels.logout)} />
+            <MenuItem
+              id="logout"
+              href="/logout"
+              icon={<LogOut />}
+              label={formatMessage(labels.logout)}
+            />
           </MenuSection>
         </Menu>
       </Popover>
