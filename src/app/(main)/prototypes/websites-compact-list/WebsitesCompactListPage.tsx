@@ -22,6 +22,46 @@ import { WebsiteAddButton } from '@/app/(main)/websites/WebsiteAddButton';
 import { LoadingPanel } from '@/components/common/LoadingPanel';
 import { Empty } from '@/components/common/Empty';
 
+// Mock data for demonstration
+const MOCK_WEBSITES = [
+  {
+    id: '1',
+    name: 'Tech Blog',
+    domain: 'techblog.example.com',
+    createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // 90 days ago
+  },
+  {
+    id: '2',
+    name: 'E-Commerce Store',
+    domain: 'shop.example.com',
+    createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), // 180 days ago
+  },
+  {
+    id: '3',
+    name: 'Portfolio',
+    domain: 'portfolio.example.com',
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+  },
+  {
+    id: '4',
+    name: 'SaaS Dashboard',
+    domain: 'app.example.com',
+    createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), // 1 year ago
+  },
+  {
+    id: '5',
+    name: 'Marketing Site',
+    domain: 'marketing.example.com',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
+  },
+  {
+    id: '6',
+    name: 'Community Forum',
+    domain: 'forum.example.com',
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+  },
+];
+
 interface ExpandedState {
   [key: string]: boolean;
 }
@@ -252,6 +292,17 @@ export function WebsitesCompactListPage() {
   const queryResult = useUserWebsitesQuery({ userId: user?.id, teamId });
   const { data, isLoading, isFetching, error } = queryResult;
 
+  // Use real data if available, otherwise use mock data
+  const displayData = data?.data && data.data.length > 0
+    ? data
+    : { data: MOCK_WEBSITES, count: MOCK_WEBSITES.length };
+
+  // Create a modified query result that uses mock data as fallback
+  const effectiveQueryResult = {
+    ...queryResult,
+    data: displayData,
+  };
+
   return (
     <PageBody>
       <Column gap="6" margin="2">
@@ -263,7 +314,7 @@ export function WebsitesCompactListPage() {
         {/* Content Panel */}
         <Panel>
           <DataGrid
-            query={queryResult}
+            query={effectiveQueryResult}
             allowSearch
             allowPaging
             renderEmpty={() => (

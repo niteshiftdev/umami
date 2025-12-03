@@ -10,6 +10,46 @@ import { DataGrid } from '@/components/common/DataGrid';
 import { Empty } from '@/components/common/Empty';
 import { useState, useMemo } from 'react';
 
+// Mock data for demonstration
+const MOCK_WEBSITES = [
+  {
+    id: '1',
+    name: 'Tech Blog',
+    domain: 'techblog.example.com',
+    createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // 90 days ago
+  },
+  {
+    id: '2',
+    name: 'E-Commerce Store',
+    domain: 'shop.example.com',
+    createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), // 180 days ago
+  },
+  {
+    id: '3',
+    name: 'Portfolio',
+    domain: 'portfolio.example.com',
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+  },
+  {
+    id: '4',
+    name: 'SaaS Dashboard',
+    domain: 'app.example.com',
+    createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), // 1 year ago
+  },
+  {
+    id: '5',
+    name: 'Marketing Site',
+    domain: 'marketing.example.com',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
+  },
+  {
+    id: '6',
+    name: 'Community Forum',
+    domain: 'forum.example.com',
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+  },
+];
+
 export function WebsitesCardGridPage() {
   const { teamId } = useNavigation();
   const { formatMessage, labels } = useMessages();
@@ -17,11 +57,14 @@ export function WebsitesCardGridPage() {
   const queryResult = useUserWebsitesQuery({ userId: user?.id, teamId });
   const [search, setSearch] = useState('');
 
-  const filteredData = useMemo(() => {
-    if (!queryResult.data?.data) return { ...queryResult.data, data: [] };
+  // Use real data if available, otherwise use mock data
+  const displayData = queryResult.data?.data && queryResult.data.data.length > 0
+    ? queryResult.data.data
+    : MOCK_WEBSITES;
 
+  const filteredData = useMemo(() => {
     const searchLower = search.toLowerCase();
-    const filtered = queryResult.data.data.filter(website =>
+    const filtered = displayData.filter(website =>
       website.name.toLowerCase().includes(searchLower) ||
       website.domain.toLowerCase().includes(searchLower)
     );
@@ -31,7 +74,7 @@ export function WebsitesCardGridPage() {
       data: filtered,
       count: filtered.length,
     };
-  }, [queryResult.data, search]);
+  }, [displayData, search, queryResult.data]);
 
   return (
     <PageBody>

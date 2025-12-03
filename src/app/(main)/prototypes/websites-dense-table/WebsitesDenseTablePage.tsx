@@ -13,6 +13,46 @@ import { SquarePen, Trash2 } from '@/components/icons';
 import { formatDate } from '@/lib/date';
 import { WebsiteAddButton } from '../../../(main)/websites/WebsiteAddButton';
 
+// Mock data for demonstration
+const MOCK_WEBSITES = [
+  {
+    id: '1',
+    name: 'Tech Blog',
+    domain: 'techblog.example.com',
+    createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // 90 days ago
+  },
+  {
+    id: '2',
+    name: 'E-Commerce Store',
+    domain: 'shop.example.com',
+    createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), // 180 days ago
+  },
+  {
+    id: '3',
+    name: 'Portfolio',
+    domain: 'portfolio.example.com',
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+  },
+  {
+    id: '4',
+    name: 'SaaS Dashboard',
+    domain: 'app.example.com',
+    createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), // 1 year ago
+  },
+  {
+    id: '5',
+    name: 'Marketing Site',
+    domain: 'marketing.example.com',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
+  },
+  {
+    id: '6',
+    name: 'Community Forum',
+    domain: 'forum.example.com',
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+  },
+];
+
 export function WebsitesDenseTablePage() {
   const { teamId } = useNavigation();
   const { formatMessage, labels } = useMessages();
@@ -21,6 +61,11 @@ export function WebsitesDenseTablePage() {
   const { renderUrl } = useNavigation();
   const [sortField, setSortField] = useState<'name' | 'domain' | 'created'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Use real data if available, otherwise use mock data
+  const displayData = queryResult.data?.data && queryResult.data.data.length > 0
+    ? queryResult.data.data
+    : MOCK_WEBSITES;
 
   const handleSort = (field: 'name' | 'domain' | 'created') => {
     if (sortField === field) {
@@ -152,7 +197,7 @@ export function WebsitesDenseTablePage() {
                 </Row>
 
                 {/* Dense Table Rows */}
-                {sortedData(data?.results || []).map((row, index) => (
+                {sortedData(data?.results?.length > 0 ? data.results : displayData).map((row, index) => (
                   <Row
                     key={row.id}
                     paddingX="4"
