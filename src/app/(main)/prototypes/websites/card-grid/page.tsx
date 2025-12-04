@@ -2,9 +2,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Column, Row, Button, Text, Icon, Grid } from '@umami/react-zen';
-import { PageBody, PageHeader, Favicon, LinkButton, Empty } from '@/components/common';
+import { PageBody } from '@/components/common/PageBody';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Favicon } from '@/components/common/Favicon';
+import { LinkButton } from '@/components/common/LinkButton';
+import { Empty } from '@/components/common/Empty';
 import { useMessages, useNavigation } from '@/components/hooks';
-import { Globe, Eye, Settings, ExternalLink, BarChart3, Clock } from '@/components/icons';
+import { Globe, Eye, Settings, BarChart3, Clock } from '@/components/icons';
 
 // Sample website data for prototype demonstration
 const sampleWebsites = [

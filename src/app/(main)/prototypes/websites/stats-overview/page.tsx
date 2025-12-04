@@ -8,7 +8,7 @@ import { Panel } from '@/components/common/Panel';
 import { Favicon } from '@/components/common/Favicon';
 import { LinkButton } from '@/components/common/LinkButton';
 import { MetricCard } from '@/components/metrics/MetricCard';
-import { Globe, Clock, Activity, TrendingUp, ExternalLink } from 'lucide-react';
+import { Globe, Clock, Activity, TrendingUp, ExternalLink } from '@/components/icons';
 
 // Sample website data - realistic portfolio of sites
 const SAMPLE_WEBSITES = [
