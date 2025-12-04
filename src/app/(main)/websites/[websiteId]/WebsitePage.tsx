@@ -1,11 +1,13 @@
 'use client';
-import { Column } from '@umami/react-zen';
+import { Column, Heading, Row } from '@umami/react-zen';
 import { Panel } from '@/components/common/Panel';
 import { WebsiteChart } from './WebsiteChart';
 import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
+import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
+import { useMessages } from '@/components/hooks';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
 
@@ -22,6 +24,8 @@ export const TypographyContext = createContext<{
 }>({});
 
 export function WebsitePage({ websiteId }: { websiteId: string }) {
+  const { formatMessage, labels } = useMessages();
+
   // Metric Typography Controls
   const metricLabelSize = useDynamicVariant('metric-label-size', {
     label: 'Metric Label Size',
@@ -118,6 +122,26 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
+        </Panel>
+        <Panel>
+          <Heading
+            size={typographyConfig.sectionHeadingSize as any}
+            style={{
+              fontWeight:
+                typographyConfig.sectionHeadingWeight === 'normal'
+                  ? 400
+                  : typographyConfig.sectionHeadingWeight === 'medium'
+                    ? 500
+                    : typographyConfig.sectionHeadingWeight === 'semibold'
+                      ? 600
+                      : 700,
+              color: typographyConfig.sectionHeadingColor,
+            }}
+          >
+            {formatMessage(labels.traffic)}
+          </Heading>
+          <Row border="bottom" marginBottom="4" />
+          <WeeklyTraffic websiteId={websiteId} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
