@@ -12,9 +12,8 @@ const CHART_COLORS = ['#2680eb', '#9256d9', '#44b556', '#e68619', '#e34850', '#f
 
 // Generate realistic pageview data for the last 14 days
 function generatePageviewData() {
-  const labels: string[] = [];
-  const data: { x: string; y: number }[] = [];
-  const baseDate = new Date('2024-11-20');
+  const data: { x: number; y: number }[] = [];
+  const baseDate = new Date('2024-11-20T00:00:00Z');
 
   const dailyValues = [
     3245, 2987, 3521, 3876, 4012, 3654, 2134,
@@ -24,13 +23,10 @@ function generatePageviewData() {
   for (let i = 0; i < 14; i++) {
     const date = new Date(baseDate);
     date.setDate(date.getDate() + i);
-    const dateStr = date.toISOString().split('T')[0];
-    labels.push(dateStr);
-    data.push({ x: dateStr, y: dailyValues[i] });
+    data.push({ x: date.getTime(), y: dailyValues[i] });
   }
 
   return {
-    labels,
     datasets: [
       {
         label: 'Pageviews',
