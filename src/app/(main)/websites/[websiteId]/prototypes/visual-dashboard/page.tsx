@@ -412,15 +412,15 @@ export default function VisualDashboardPage() {
         <Row
           justifyContent="space-between"
           alignItems="center"
-          flexWrap="wrap"
           gap="4"
+          style={{ flexWrap: 'wrap' }}
         >
           <Column gap="1">
             <Heading size="5">Analytics Dashboard</Heading>
             <Text color="muted" size="2">November 20 - December 3, 2024</Text>
           </Column>
 
-          <Row gap="2" flexWrap="wrap">
+          <Row gap="2" style={{ flexWrap: 'wrap' }}>
             {metricsData.map((metric, index) => (
               <Box key={metric.label} style={{ animationDelay: `${index * 0.1}s` }}>
                 <MetricBadge {...metric} />
