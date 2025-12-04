@@ -1,0 +1,206 @@
+/* Hero Card */
+.heroCard {
+  position: relative;
+  border-radius: var(--border-radius-4);
+  background: var(--base-color-1);
+  border: 1px solid var(--base-color-4);
+  overflow: hidden;
+  animation: heroSlideIn 0.5s ease-out forwards;
+}
+
+@keyframes heroSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--primary-color-400) 50%,
+    var(--primary-color) 100%
+  );
+  background-size: 200% 100%;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+}
+
+.heroContent {
+  padding: var(--spacing-8);
+}
+
+.heroFavicon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--base-color-3);
+  border-radius: var(--border-radius-3);
+  border: 1px solid var(--base-color-5);
+}
+
+.heroFavicon img {
+  width: 32px;
+  height: 32px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--primary-color-100);
+  color: var(--primary-color);
+  border-radius: var(--border-radius-2);
+  font-size: var(--font-size-1);
+  font-weight: 500;
+}
+
+.heroTitle {
+  letter-spacing: -0.02em;
+}
+
+.heroStats {
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-5);
+  border-top: 1px solid var(--base-color-4);
+}
+
+/* Other Websites Section */
+.otherSection {
+  animation: fadeIn 0.4s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--spacing-2);
+  background: var(--base-color-4);
+  color: var(--base-color-10);
+  border-radius: 10px;
+  font-size: var(--font-size-1);
+  font-weight: 500;
+}
+
+.listContainer {
+  border: 1px solid var(--base-color-4);
+  border-radius: var(--border-radius-3);
+  background: var(--base-color-1);
+  overflow: hidden;
+}
+
+.listItem {
+  padding: var(--spacing-4) var(--spacing-5);
+  border-bottom: 1px solid var(--base-color-3);
+  transition: background-color 0.15s ease;
+  animation: itemSlideIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes itemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background: var(--base-color-2);
+}
+
+.listFavicon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--base-color-3);
+  border-radius: var(--border-radius-2);
+  flex-shrink: 0;
+}
+
+.listFavicon img {
+  width: 20px;
+  height: 20px;
+}
+
+.listItemName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listStats {
+  min-width: 80px;
+}
+
+.listAction {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.listItem:hover .listAction {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .heroContent {
+    padding: var(--spacing-5);
+  }
+
+  .heroStats {
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+  }
+
+  .listStats {
+    display: none;
+  }
+
+  .listItem {
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+}
