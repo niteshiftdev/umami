@@ -1,6 +1,6 @@
 'use client';
 
-import { Column, Grid, Row, Text, Heading, Badge } from '@umami/react-zen';
+import { Column, Grid, Row, Text, Heading } from '@umami/react-zen';
 import { Panel } from '@/components/common/Panel';
 import { MetricsTable } from '@/components/metrics/MetricsTable';
 import { MetricsBar } from '@/components/metrics/MetricsBar';
@@ -116,9 +116,14 @@ function TableSection({
           {title}
         </Heading>
         {count !== undefined && (
-          <Badge variant="outline" style={{ fontSize: 'var(--font-size-1)' }}>
+          <Text size="1" style={{
+            border: '1px solid var(--base-color-5)',
+            padding: '2px 8px',
+            borderRadius: 'var(--border-radius-2)',
+            fontWeight: 500
+          }}>
             {count} rows
-          </Badge>
+          </Text>
         )}
       </Row>
       {children}

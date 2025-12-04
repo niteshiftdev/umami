@@ -6,7 +6,7 @@ import { useMessages, useWebsiteMetricsQuery, useCountryNames, useLocale } from 
 import { MetricsTable } from '@/components/metrics/MetricsTable';
 import { WeeklyTraffic } from '@/components/metrics/WeeklyTraffic';
 import { WorldMap } from '@/components/metrics/WorldMap';
-import { Grid, Heading, Row, Column, Tab, TabList, TabPanel, Tabs, Text, Badge } from '@umami/react-zen';
+import { Grid, Heading, Row, Column, Tab, TabList, TabPanel, Tabs, Text } from '@umami/react-zen';
 import { WebsiteControls } from '../../WebsiteControls';
 import { WebsiteMetricsBar } from '../../WebsiteMetricsBar';
 import { WebsiteChart } from '../../WebsiteChart';
@@ -133,9 +133,14 @@ function CountryOverlay({ websiteId }: { websiteId: string }) {
         <Text size="2" weight="bold" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {formatMessage(labels.countries)}
         </Text>
-        <Badge variant="faded">
+        <Text size="1" style={{
+          backgroundColor: 'var(--base-color-3)',
+          padding: '2px 8px',
+          borderRadius: 'var(--border-radius-2)',
+          fontWeight: 500
+        }}>
           {formatLongNumber(totalVisitors)} total
-        </Badge>
+        </Text>
       </Row>
 
       <Column gap="1">
@@ -373,7 +378,12 @@ export default function MapHeroPage() {
                 <Heading size="3" style={{ fontWeight: 600 }}>
                   {formatMessage(labels.regions)}
                 </Heading>
-                <Badge>Geographic Detail</Badge>
+                <Text size="1" style={{
+                  backgroundColor: 'var(--base-color-3)',
+                  padding: '2px 8px',
+                  borderRadius: 'var(--border-radius-2)',
+                  fontWeight: 500
+                }}>Geographic Detail</Text>
               </Row>
               <MetricsTable
                 websiteId={websiteId}
@@ -389,7 +399,12 @@ export default function MapHeroPage() {
                 <Heading size="3" style={{ fontWeight: 600 }}>
                   {formatMessage(labels.cities)}
                 </Heading>
-                <Badge>Geographic Detail</Badge>
+                <Text size="1" style={{
+                  backgroundColor: 'var(--base-color-3)',
+                  padding: '2px 8px',
+                  borderRadius: 'var(--border-radius-2)',
+                  fontWeight: 500
+                }}>Geographic Detail</Text>
               </Row>
               <MetricsTable
                 websiteId={websiteId}

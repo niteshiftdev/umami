@@ -11,9 +11,7 @@ import { WebsiteControls } from '../../WebsiteControls';
 import { useMessages, useDateRange } from '@/components/hooks';
 import { useWebsiteStatsQuery } from '@/components/hooks/queries/useWebsiteStatsQuery';
 import { formatShortTime, formatLongNumber } from '@/lib/format';
-
-// Sample website ID for prototype - in production this comes from route params
-const SAMPLE_WEBSITE_ID = 'demo-website-compact';
+import { useParams } from 'next/navigation';
 
 function CompactMetricsRow({ websiteId }: { websiteId: string }) {
   const { isAllTime } = useDateRange();
@@ -162,7 +160,8 @@ function CompactPanel({
 }
 
 export default function CompactGridDashboard() {
-  const websiteId = SAMPLE_WEBSITE_ID;
+  const params = useParams();
+  const websiteId = params.websiteId as string;
   const { formatMessage, labels } = useMessages();
 
   const compactTableProps = {
