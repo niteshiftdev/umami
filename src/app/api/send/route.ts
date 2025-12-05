@@ -1,3 +1,16 @@
+// Analytics Event Collection Endpoint (/api/send)
+// Primary data ingestion point for the Umami tracking script
+// Receives pageviews, custom events, identifications, and converts them to database records
+// Supports multiple backends: PostgreSQL and ClickHouse (high-performance alternative)
+//
+// Data Flow:
+// 1. Client script sends event to this endpoint
+// 2. Request validated and parsed
+// 3. Session created or loaded from cache
+// 4. Client info enriched (device, browser, geolocation)
+// 5. Event saved to database
+// 6. Cache token returned for next events
+
 import { z } from 'zod';
 import { isbot } from 'isbot';
 import { startOfHour, startOfMonth } from 'date-fns';
@@ -14,13 +27,17 @@ import { safeDecodeURI, safeDecodeURIComponent } from '@/lib/url';
 import { createSession, saveEvent, saveSessionData } from '@/queries/sql';
 import { serializeError } from 'serialize-error';
 
+// Cache structure: JWT token containing session info to avoid database lookups
+// for subsequent events from same visitor (optimization for high-traffic sites)
 interface Cache {
-  websiteId: string;
-  sessionId: string;
-  visitId: string;
-  iat: number;
+  websiteId: string;    // Cached website ID
+  sessionId: string;    // Cached session ID (identifies unique visitor)
+  visitId: string;      // Cached visit ID (resets every 30 minutes)
+  iat: number;          // Issue at timestamp (for visit expiration)
 }
 
+// Zod schema for validating incoming event payload
+// Ensures type safety and prevents malformed data from being stored
 const schema = z.object({
   type: z.enum(['event', 'identify']),
   payload: z
@@ -55,8 +72,16 @@ const schema = z.object({
     ),
 });
 
+// POST /api/send
+// Main event collection handler for tracking script
+// No authentication required (public endpoint) - websites are identified by UUID
+//
+// @param request - NextJS Request with event data in body
+// @returns JSON with cache token and session info for optimization
 export async function POST(request: Request) {
   try {
+    // Parse and validate request body against schema
+    // skipAuth: true because tracking script has no user session
     const { body, error } = await parseRequest(request, schema, { skipAuth: true });
 
     if (error) {
