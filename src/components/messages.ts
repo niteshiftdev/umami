@@ -442,6 +442,10 @@ export const messages = defineMessages({
     id: 'message.no-websites-configured',
     defaultMessage: 'You do not have any websites configured.',
   },
+  websitesInfo: {
+    id: 'message.websites-info',
+    defaultMessage: 'Track and analyze visitor activity across all your websites.',
+  },
   noTeamWebsites: {
     id: 'message.no-team-websites',
     defaultMessage: 'This team does not have any websites.',
