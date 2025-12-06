@@ -57,8 +57,8 @@ export function BarChart({
         x: {
           type: XAxisType,
           stacked: true,
-          min: formatDate(minDate, DATE_FORMATS[unit], locale),
-          max: formatDate(maxDate, DATE_FORMATS[unit], locale),
+          min: minDate ? formatDate(minDate, DATE_FORMATS[unit], locale) : undefined,
+          max: maxDate ? formatDate(maxDate, DATE_FORMATS[unit], locale) : undefined,
           offset: true,
           time: {
             unit,
