@@ -20,12 +20,14 @@ const STYLES = {
 export function ChangeLabel({
   value,
   size,
+  weight,
   reverseColors,
   children,
   ...props
 }: {
   value: number;
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
   title?: string;
   reverseColors?: boolean;
   showPercentage?: boolean;
@@ -54,7 +56,7 @@ export function ChangeLabel({
           <ArrowRight />
         </Icon>
       )}
-      <Text>{children || value}</Text>
+      <Text weight={weight}>{children || value}</Text>
     </Row>
   );
 }

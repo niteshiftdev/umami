@@ -17,6 +17,7 @@ export interface MetricCardProps {
   valueSize?: '4' | '5' | '6' | '7' | '8' | '9';
   labelWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
   valueWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  changeWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
   labelColor?: string;
   valueColor?: string;
 }
@@ -33,6 +34,7 @@ export const MetricCard = ({
   valueSize,
   labelWeight,
   valueWeight,
+  changeWeight,
   labelColor,
   valueColor,
 }: MetricCardProps) => {
@@ -69,7 +71,7 @@ export const MetricCard = ({
         <AnimatedDiv title={value?.toString()}>{props?.x?.to(x => formatValue(x))}</AnimatedDiv>
       </Text>
       {showChange && (
-        <ChangeLabel value={change} title={formatValue(change)} reverseColors={reverseColors}>
+        <ChangeLabel value={change} weight={changeWeight} title={formatValue(change)} reverseColors={reverseColors}>
           <AnimatedDiv>{changeProps?.x?.to(x => `${Math.abs(~~x)}%`)}</AnimatedDiv>
         </ChangeLabel>
       )}
