@@ -25,11 +25,13 @@ export function FunnelEditForm({
   websiteId,
   onSave,
   onClose,
+  initialSteps,
 }: {
   id?: string;
   websiteId: string;
   onSave?: () => void;
   onClose?: () => void;
+  initialSteps?: { type: string; value: string }[];
 }) {
   const { formatMessage, labels } = useMessages();
   const { data } = useReportQuery(id);
@@ -39,9 +41,9 @@ export function FunnelEditForm({
     await mutateAsync(
       { ...data, id, name, type: 'funnel', websiteId, parameters },
       {
-        onSuccess: async () => {
+        onSuccess: async result => {
           touch('reports:funnel');
-          touch(`report:${id}`);
+          touch(`report:${id || result?.id}`);
           onSave?.();
           onClose?.();
         },
@@ -56,7 +58,7 @@ export function FunnelEditForm({
   const defaultValues = {
     name: data?.name || '',
     window: data?.parameters?.window || 60,
-    steps: data?.parameters?.steps || [{ type: 'path', value: '/' }],
+    steps: initialSteps || data?.parameters?.steps || [{ type: 'path', value: '/' }],
   };
 
   return (
