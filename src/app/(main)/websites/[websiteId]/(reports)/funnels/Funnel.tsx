@@ -106,7 +106,7 @@ export function Funnel({ id, name, type, parameters, websiteId }) {
                         <User />
                       </Icon>
                       <Text title={visitors.toString()} transform="lowercase">
-                        {`${formatLongNumber(visitors)} ${formatMessage(labels.visitors)}`}
+                        {`${formatLongNumber(visitors)}${index > 0 ? ` (-${Math.round(dropoff * 100)}%)` : ''} ${formatMessage(labels.visitors)}`}
                       </Text>
                     </Row>
                   </Row>
