@@ -9,6 +9,18 @@
 </p>
 
 <p align="center">
+  <i>"Privacy is not an option, and it shouldn't be the price we accept for just getting on the Internet." — Gary Kovacs</i>
+</p>
+
+<p align="center">
+  <i>"In God we trust. All others must bring data." — W. Edwards Deming</i>
+</p>
+
+<p align="center">
+  <i>"Data is the new oil. It's valuable, but if unrefined it cannot really be used." — Clive Humby</i>
+</p>
+
+<p align="center">
   <i>Umami is a simple, fast, privacy-focused alternative to Google Analytics.</i>
 </p>
 
