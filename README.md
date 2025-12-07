@@ -25,6 +25,16 @@
 
 ---
 
+## 💡 Inspiration
+
+> "The goal is to turn data into information, and information into insight." - Carly Fiorina
+
+> "Without data, you're just another person with an opinion." - W. Edwards Deming
+
+> "Privacy is not an option, and it shouldn't be the price we accept for just getting on the Internet." - Gary Kovacs
+
+---
+
 ## 🚀 Getting Started
 
 A detailed getting started guide can be found at [umami.is/docs](https://umami.is/docs/).
