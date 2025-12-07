@@ -15,7 +15,7 @@ export function Empty({ message }: EmptyProps) {
       justifyContent="center"
       width="100%"
       height="100%"
-      minHeight="70px"
+      minHeight="80px"
       flexGrow={1}
     >
       {message || formatMessage(messages.noDataAvailable)}

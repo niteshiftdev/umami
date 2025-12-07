@@ -9,7 +9,7 @@ export function DashboardPage() {
 
   return (
     <PageBody>
-      <Column margin="2">
+      <Column margin="3">
         <PageHeader title={formatMessage(labels.dashboard)}></PageHeader>
       </Column>
     </PageBody>

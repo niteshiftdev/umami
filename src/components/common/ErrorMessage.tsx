@@ -6,7 +6,7 @@ export function ErrorMessage() {
   const { formatMessage, messages } = useMessages();
 
   return (
-    <Row alignItems="center" justifyContent="center" gap>
+    <Row alignItems="center" justifyContent="center" gap color="error">
       <Icon>
         <AlertTriangle />
       </Icon>

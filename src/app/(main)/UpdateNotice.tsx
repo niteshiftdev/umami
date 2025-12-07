@@ -47,8 +47,8 @@ export function UpdateNotice({ user, config }) {
   }
 
   return (
-    <Column justifyContent="center" alignItems="center" position="fixed" top="10px" width="100%">
-      <Row width="600px">
+    <Column justifyContent="center" alignItems="center" position="fixed" top="15px" width="100%">
+      <Row width="650px">
         <AlertBanner title={formatMessage(messages.newVersionAvailable, { version: `v${latest}` })}>
           <Button variant="primary" onPress={handleViewClick}>
             {formatMessage(labels.viewDetails)}

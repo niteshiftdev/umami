@@ -8,6 +8,7 @@ export default {
           flexbox: 'no-2009',
         },
         stage: 3,
+        preserve: false,
         features: {
           'custom-properties': false,
         },

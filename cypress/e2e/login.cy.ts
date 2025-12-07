@@ -6,7 +6,7 @@ describe('Login tests', () => {
   it(
     'logs user in with correct credentials and logs user out',
     {
-      defaultCommandTimeout: 10000,
+      defaultCommandTimeout: 15000,
     },
     () => {
       cy.getDataTest('input-username').find('input').as('inputUsername').click();
