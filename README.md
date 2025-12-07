@@ -5,6 +5,10 @@
 <h1 align="center">Umami</h1>
 
 <p align="center">
+  <i>"What gets measured gets managed." — Peter Drucker</i>
+</p>
+
+<p align="center">
   <i>Umami is a simple, fast, privacy-focused alternative to Google Analytics.</i>
 </p>
 
