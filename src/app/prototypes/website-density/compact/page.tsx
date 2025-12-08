@@ -93,7 +93,7 @@ const SAMPLE_DEVICES = [
 function CompactMetricCard({ label, value }: { label: string; value: string | number }) {
   return (
     <Column gap="1" paddingX="3" paddingY="2">
-      <Text size="0" weight="medium" style={{ color: '#666' }}>
+      <Text size="1" weight="medium" style={{ color: '#666' }}>
         {label}
       </Text>
       <Text size="5" weight="bold">
@@ -117,7 +117,7 @@ function CompactTable({
 }) {
   return (
     <Column gap="2">
-      <Heading size="1" weight="semibold" style={{ paddingBottom: '8px', borderBottom: '1px solid #e5e5e5' }}>
+      <Heading size="1" weight="semi-bold" style={{ paddingBottom: '8px', borderBottom: '1px solid #e5e5e5' }}>
         {title}
       </Heading>
       <Column gap="0" style={{ fontSize: '13px' }}>
@@ -158,7 +158,7 @@ function CompactTable({
                     {item.views?.toLocaleString()}
                   </Text>
                 )}
-                <Text size="0" style={{ color: '#999', minWidth: '35px', textAlign: 'right' }}>
+                <Text size="1" style={{ color: '#999', minWidth: '35px', textAlign: 'right' }}>
                   {percentage}%
                 </Text>
               </Row>
@@ -185,7 +185,7 @@ function CompactChart() {
   return (
     <Column gap="2">
       <Row justifyContent="space-between" alignItems="center">
-        <Heading size="1" weight="semibold">
+        <Heading size="1" weight="semi-bold">
           Visitors
         </Heading>
         <Text size="1" style={{ color: '#666' }}>
@@ -338,7 +338,7 @@ export default function CompactDensityPage() {
         {/* Additional space for future metrics */}
         <Panel paddingY="3" paddingX="3">
           <Column gap="2">
-            <Heading size="1" weight="semibold" style={{ paddingBottom: '8px', borderBottom: '1px solid #e5e5e5' }}>
+            <Heading size="1" weight="semi-bold" style={{ paddingBottom: '8px', borderBottom: '1px solid #e5e5e5' }}>
               Operating Systems
             </Heading>
             <Column gap="0" style={{ fontSize: '13px' }}>
@@ -381,7 +381,7 @@ export default function CompactDensityPage() {
                       <Text size="1" weight="medium" style={{ minWidth: '50px', textAlign: 'right' }}>
                         {item.visitors.toLocaleString()}
                       </Text>
-                      <Text size="0" style={{ color: '#999', minWidth: '35px', textAlign: 'right' }}>
+                      <Text size="1" style={{ color: '#999', minWidth: '35px', textAlign: 'right' }}>
                         {percentage}%
                       </Text>
                     </Row>
