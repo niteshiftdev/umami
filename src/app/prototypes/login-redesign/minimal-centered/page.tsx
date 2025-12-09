@@ -40,24 +40,34 @@ export default function MinimalCenteredLogin() {
         </Column>
 
         {/* Form Container */}
-        <Box className={styles.formContainer}>
+        <div className={styles.formContainer}>
           <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
-            <FormField
-              label={formatMessage(labels.username)}
-              data-test="input-username"
-              name="username"
-              rules={{ required: formatMessage(labels.required) }}
-            >
-              <TextField autoComplete="off" className={styles.input} />
-            </FormField>
-            <FormField
-              label={formatMessage(labels.password)}
-              data-test="input-password"
-              name="password"
-              rules={{ required: formatMessage(labels.required) }}
-            >
-              <PasswordField className={styles.input} />
-            </FormField>
+            <div className={styles.formSection}>
+              <label className={styles.label}>{formatMessage(labels.username)}</label>
+              <FormField
+                data-test="input-username"
+                name="username"
+                rules={{ required: formatMessage(labels.required) }}
+              >
+                <TextField
+                  autoComplete="off"
+                  className={styles.input}
+                  placeholder="your-email@example.com"
+                />
+              </FormField>
+            </div>
+
+            <div className={styles.formSection}>
+              <label className={styles.label}>{formatMessage(labels.password)}</label>
+              <FormField
+                data-test="input-password"
+                name="password"
+                rules={{ required: formatMessage(labels.required) }}
+              >
+                <PasswordField className={styles.input} />
+              </FormField>
+            </div>
+
             <FormSubmitButton
               data-test="button-submit"
               variant="primary"
@@ -65,8 +75,13 @@ export default function MinimalCenteredLogin() {
             >
               {formatMessage(labels.login)}
             </FormSubmitButton>
+
+            <div className={styles.securityBadge}>
+              <span className={styles.securityIcon}>🔒</span>
+              <span>Your login is secure and encrypted</span>
+            </div>
           </Form>
-        </Box>
+        </div>
 
         {/* Footer */}
         <Text className={styles.footer}>Self-hosted analytics for modern teams</Text>
