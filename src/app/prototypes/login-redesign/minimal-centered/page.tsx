@@ -27,7 +27,7 @@ export default function MinimalCenteredLogin() {
 
   return (
     <div className={styles.container}>
-      <Column alignItems="center" justifyContent="center" height="100vh" gap="8">
+      <Column alignItems="center" gap="8">
         {/* Logo and Brand */}
         <Column alignItems="center" gap="4">
           <div className={styles.logoCircle}>
