@@ -1,33 +1,40 @@
 'use client';
-import { Column, Icon, Heading, Form, FormField, TextField, PasswordField, FormButtons, Row } from '@umami/react-zen';
+import { Column, Icon, Heading, Row } from '@umami/react-zen';
 import { Logo } from '@/components/svg';
 import { useState } from 'react';
 
 export default function HeroCenteredLogin() {
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get('username');
-    const password = formData.get('password');
-
     try {
       const res = await fetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
         setError('Invalid credentials');
+      } else {
+        const data = await res.json();
+        if (data.token) {
+          window.location.href = '/websites';
+        }
       }
     } catch (err) {
-      setError('An error occurred');
+      setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -160,22 +167,70 @@ export default function HeroCenteredLogin() {
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <Column gap="4" style={{ width: '100%' }}>
-            <FormField label="Username" name="username">
-              <TextField
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '6px',
+                color: '#333',
+              }}>
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
                 placeholder="admin"
                 autoComplete="off"
                 required
-                style={{ borderRadius: '8px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#147af3'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
               />
-            </FormField>
+            </div>
 
-            <FormField label="Password" name="password">
-              <PasswordField
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '6px',
+                color: '#333',
+              }}>
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="••••••"
                 required
-                style={{ borderRadius: '8px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#147af3'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
               />
-            </FormField>
+            </div>
 
             {error && (
               <div style={{

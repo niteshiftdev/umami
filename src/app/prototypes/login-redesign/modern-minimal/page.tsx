@@ -1,33 +1,40 @@
 'use client';
-import { Column, Icon, Heading, Form, FormField, TextField, PasswordField, FormButtons, FormSubmitButton } from '@umami/react-zen';
+import { Column, Icon, Heading } from '@umami/react-zen';
 import { Logo } from '@/components/svg';
 import { useState } from 'react';
 
 export default function ModernMinimalLogin() {
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get('username');
-    const password = formData.get('password');
-
     try {
       const res = await fetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
         setError('Invalid credentials');
+      } else {
+        const data = await res.json();
+        if (data.token) {
+          window.location.href = '/websites';
+        }
       }
     } catch (err) {
-      setError('An error occurred');
+      setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -65,13 +72,70 @@ export default function ModernMinimalLogin() {
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <Column gap="4" style={{ width: '100%' }}>
-            <FormField label="Username" name="username">
-              <TextField placeholder="Enter username" autoComplete="off" required />
-            </FormField>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '6px',
+                color: '#333',
+              }}>
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="admin"
+                autoComplete="off"
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#147af3'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
+              />
+            </div>
 
-            <FormField label="Password" name="password">
-              <PasswordField placeholder="Enter password" required />
-            </FormField>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '6px',
+                color: '#333',
+              }}>
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••"
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#147af3'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
+              />
+            </div>
 
             {error && (
               <div style={{
@@ -85,29 +149,27 @@ export default function ModernMinimalLogin() {
               </div>
             )}
 
-            <FormButtons>
-              <button
-                type="submit"
-                disabled={isLoading}
-                style={{
-                  width: '100%',
-                  padding: '10px 16px',
-                  background: '#147af3',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
-                  opacity: isLoading ? 0.7 : 1,
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={(e) => !isLoading && (e.currentTarget.style.background = '#0d66cc')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#147af3')}
-              >
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </button>
-            </FormButtons>
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '10px 16px',
+                background: '#147af3',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                opacity: isLoading ? 0.7 : 1,
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => !isLoading && (e.currentTarget.style.background = '#0d66cc')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#147af3')}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </button>
           </Column>
         </form>
 
