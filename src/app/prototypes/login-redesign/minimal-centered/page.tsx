@@ -42,31 +42,27 @@ export default function MinimalCenteredLogin() {
         {/* Form Container */}
         <div className={styles.formContainer}>
           <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
-            <div className={styles.formSection}>
-              <label className={styles.label}>{formatMessage(labels.username)}</label>
-              <FormField
-                data-test="input-username"
-                name="username"
-                rules={{ required: formatMessage(labels.required) }}
-              >
-                <TextField
-                  autoComplete="off"
-                  className={styles.input}
-                  placeholder="your-email@example.com"
-                />
-              </FormField>
-            </div>
+            <FormField
+              label={formatMessage(labels.username)}
+              data-test="input-username"
+              name="username"
+              rules={{ required: formatMessage(labels.required) }}
+            >
+              <TextField
+                autoComplete="off"
+                className={styles.input}
+                placeholder="your-email@example.com"
+              />
+            </FormField>
 
-            <div className={styles.formSection}>
-              <label className={styles.label}>{formatMessage(labels.password)}</label>
-              <FormField
-                data-test="input-password"
-                name="password"
-                rules={{ required: formatMessage(labels.required) }}
-              >
-                <PasswordField className={styles.input} />
-              </FormField>
-            </div>
+            <FormField
+              label={formatMessage(labels.password)}
+              data-test="input-password"
+              name="password"
+              rules={{ required: formatMessage(labels.required) }}
+            >
+              <PasswordField className={styles.input} />
+            </FormField>
 
             <FormSubmitButton
               data-test="button-submit"

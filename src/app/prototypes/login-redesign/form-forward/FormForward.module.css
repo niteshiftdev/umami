@@ -59,13 +59,6 @@
   margin-bottom: var(--spacing-8);
 }
 
-.fieldLabel {
-  font-size: var(--font-size-3);
-  font-weight: 600;
-  color: #202020;
-  display: block;
-  margin-bottom: var(--spacing-2);
-}
 
 .largeInput {
   width: 100%;

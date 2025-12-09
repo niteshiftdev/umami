@@ -53,7 +53,6 @@ export default function FormForwardLogin() {
             <div className={styles.formCard}>
               <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
                 <div className={styles.formGroup}>
-                  <Text className={styles.fieldLabel}>Email or Username</Text>
                   <FormField
                     label={formatMessage(labels.username)}
                     data-test="input-username"
@@ -71,21 +70,20 @@ export default function FormForwardLogin() {
 
                 <div className={styles.formGroup}>
                   <Row justifyContent="space-between" alignItems="center" gap="4">
-                    <Text className={styles.fieldLabel}>Password</Text>
+                    <FormField
+                      label={formatMessage(labels.password)}
+                      data-test="input-password"
+                      name="password"
+                      rules={{ required: formatMessage(labels.required) }}
+                      layout="vertical"
+                    >
+                      <PasswordField
+                        className={styles.largeInput}
+                        autoComplete="current-password"
+                      />
+                    </FormField>
                     <a href="#" className={styles.forgotLink}>Forgot?</a>
                   </Row>
-                  <FormField
-                    label={formatMessage(labels.password)}
-                    data-test="input-password"
-                    name="password"
-                    rules={{ required: formatMessage(labels.required) }}
-                    layout="vertical"
-                  >
-                    <PasswordField
-                      className={styles.largeInput}
-                      autoComplete="current-password"
-                    />
-                  </FormField>
                 </div>
 
                 <FormSubmitButton
