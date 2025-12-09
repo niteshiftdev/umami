@@ -6,7 +6,6 @@ import { WebsiteMetricsBar } from './WebsiteMetricsBar';
 import { WebsitePanels } from './WebsitePanels';
 import { WebsiteControls } from './WebsiteControls';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
-import { WorldMap } from '@/components/metrics/WorldMap';
 import { useDynamicVariant, useDynamicColor } from '@niteshift/dials';
 import { createContext } from 'react';
 
@@ -115,9 +114,6 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
   return (
     <TypographyContext.Provider value={typographyConfig}>
       <Column gap>
-        <Panel paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <WebsitePanels websiteId={websiteId} />
