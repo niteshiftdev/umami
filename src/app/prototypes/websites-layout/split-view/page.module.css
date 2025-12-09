@@ -1,0 +1,135 @@
+.listPanel {
+  width: 280px;
+  border-right: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary, #f9f9f9);
+  overflow: hidden;
+}
+
+.listContainer {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.listItem {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.listItem:hover {
+  background-color: rgba(20, 122, 243, 0.05);
+}
+
+.listItem.active {
+  background-color: var(--primary-color, #147af3);
+}
+
+.listItem.active .listItemName,
+.listItem.active .listItemDomain {
+  color: white;
+}
+
+.listItemContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--primary-color, #147af3), var(--accent-color, #5b38e8));
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.listItemText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.listItemName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color, #1a1a1a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.listItem.active .listItemName {
+  color: white;
+}
+
+.listItemDomain {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.listItem.active .listItemDomain {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.detailPanel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  background: var(--bg-color, #ffffff);
+}
+
+.detailIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, var(--primary-color, #147af3), var(--accent-color, #5b38e8));
+  color: white;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.detailName {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color, #1a1a1a);
+}
+
+.detailDomain {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  color: var(--text-secondary, #666);
+}
+
+.actionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actionGroup a {
+  text-decoration: none;
+}
