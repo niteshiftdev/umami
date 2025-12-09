@@ -21,11 +21,16 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-10);
+  padding: var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
 }
 
 .heroSection {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-6);
 }
 
 .mainHeading {
@@ -43,22 +48,33 @@
 
 .formCard {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--border-radius-3);
-  padding: var(--spacing-8);
+  padding: var(--spacing-6);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-7);
+  margin-bottom: var(--spacing-5);
 }
 
 .formGroup:last-of-type {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-6);
 }
 
+
+.passwordHeader {
+  margin-bottom: var(--spacing-2);
+}
+
+.passwordLabel {
+  font-size: var(--font-size-3);
+  font-weight: 600;
+  color: #202020;
+  display: block;
+}
 
 .largeInput {
   width: 100%;
@@ -110,16 +126,23 @@
   font-weight: 600;
   border-radius: var(--border-radius-2);
   border: none;
-  background-color: #147af3;
+  background: linear-gradient(180deg, #1e86ff 0%, #147af3 100%);
   color: #ffffff;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
   margin-top: var(--spacing-2);
+  box-shadow: 0 2px 8px rgba(20, 122, 243, 0.15);
 }
 
 .largeButton:hover:not(:disabled) {
-  background-color: #2680eb;
-  box-shadow: 0 4px 12px rgba(20, 122, 243, 0.2);
+  background: linear-gradient(180deg, #2680eb 0%, #2680eb 100%);
+  box-shadow: 0 4px 16px rgba(20, 122, 243, 0.25);
+  transform: translateY(-1px);
+}
+
+.largeButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(20, 122, 243, 0.15);
 }
 
 .largeButton:disabled {
@@ -148,9 +171,9 @@
 
 .trustRow {
   width: 100%;
-  max-width: 420px;
-  padding: var(--spacing-10) 0;
-  margin-top: var(--spacing-10);
+  max-width: 400px;
+  padding: var(--spacing-8) 0;
+  margin-top: var(--spacing-8);
   border-top: 1px solid rgba(0, 0, 0, 0.04);
   justify-content: center;
   flex-wrap: wrap;

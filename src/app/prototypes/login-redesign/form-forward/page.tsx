@@ -69,21 +69,21 @@ export default function FormForwardLogin() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <Row justifyContent="space-between" alignItems="center" gap="4">
-                    <FormField
-                      label={formatMessage(labels.password)}
-                      data-test="input-password"
-                      name="password"
-                      rules={{ required: formatMessage(labels.required) }}
-                      layout="vertical"
-                    >
-                      <PasswordField
-                        className={styles.largeInput}
-                        autoComplete="current-password"
-                      />
-                    </FormField>
+                  <Row justifyContent="space-between" alignItems="flex-start" gap="4" className={styles.passwordHeader}>
+                    <label className={styles.passwordLabel}>{formatMessage(labels.password)}</label>
                     <a href="#" className={styles.forgotLink}>Forgot?</a>
                   </Row>
+                  <FormField
+                    data-test="input-password"
+                    name="password"
+                    rules={{ required: formatMessage(labels.required) }}
+                    layout="vertical"
+                  >
+                    <PasswordField
+                      className={styles.largeInput}
+                      autoComplete="current-password"
+                    />
+                  </FormField>
                 </div>
 
                 <FormSubmitButton
