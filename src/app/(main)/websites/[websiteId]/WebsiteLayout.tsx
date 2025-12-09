@@ -5,6 +5,16 @@ import { WebsiteProvider } from '@/app/(main)/websites/WebsiteProvider';
 import { PageBody } from '@/components/common/PageBody';
 import { WebsiteHeader } from './WebsiteHeader';
 import { WebsiteNav } from './WebsiteNav';
+import { Panel } from '@/components/common/Panel';
+import { WorldMap } from '@/components/metrics/WorldMap';
+
+function WebsiteMapSection({ websiteId }: { websiteId: string }) {
+  return (
+    <Panel paddingX="0" paddingY="0">
+      <WorldMap websiteId={websiteId} />
+    </Panel>
+  );
+}
 
 export function WebsiteLayout({ websiteId, children }: { websiteId: string; children: ReactNode }) {
   return (
@@ -21,6 +31,7 @@ export function WebsiteLayout({ websiteId, children }: { websiteId: string; chil
           <WebsiteNav websiteId={websiteId} />
         </Column>
         <PageBody gap>
+          <WebsiteMapSection websiteId={websiteId} />
           <WebsiteHeader showActions />
           <Column>{children}</Column>
         </PageBody>

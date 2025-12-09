@@ -116,10 +116,10 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
       <Column gap>
         <WebsiteControls websiteId={websiteId} />
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
+        <WebsitePanels websiteId={websiteId} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
         </Panel>
-        <WebsitePanels websiteId={websiteId} />
         <ExpandedViewModal websiteId={websiteId} />
       </Column>
     </TypographyContext.Provider>
