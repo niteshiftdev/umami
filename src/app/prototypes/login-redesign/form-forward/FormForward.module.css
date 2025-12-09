@@ -1,29 +1,31 @@
 .container {
-  background: #ffffff;
+  background: linear-gradient(135deg, #fafbfc 0%, #f5f6f8 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  border-bottom: 1px solid #e8e8e8;
-  background: #fcfcfc;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .headerBrand {
   font-size: var(--font-size-6);
   font-weight: 700;
   color: #202020;
+  letter-spacing: -0.5px;
 }
 
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-8);
+  padding: var(--spacing-10);
 }
 
 .heroSection {
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
 }
 
 .mainHeading {
@@ -42,15 +44,15 @@
 .formCard {
   width: 100%;
   max-width: 420px;
-  background: #fcfcfc;
-  border: 1px solid #e8e8e8;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--border-radius-3);
   padding: var(--spacing-8);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-7);
 }
 
 .formGroup:last-of-type {
@@ -67,7 +69,7 @@
 
 .largeInput {
   width: 100%;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #d9d9d9;
   border-radius: var(--border-radius-2);
   padding: var(--spacing-4) var(--spacing-4);
   font-size: var(--font-size-4);
@@ -78,9 +80,9 @@
 
 .largeInput:focus {
   border-color: #147af3;
-  box-shadow: 0 0 0 3px rgba(20, 122, 243, 0.1);
+  background-color: #fafbfc;
+  box-shadow: 0 0 0 3px rgba(20, 122, 243, 0.08);
   outline: none;
-  background-color: #ffffff;
 }
 
 .largeInput::placeholder {
@@ -119,11 +121,12 @@
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s, box-shadow 0.2s;
+  margin-top: var(--spacing-2);
 }
 
 .largeButton:hover:not(:disabled) {
   background-color: #2680eb;
-  box-shadow: 0 4px 12px rgba(20, 122, 243, 0.25);
+  box-shadow: 0 4px 12px rgba(20, 122, 243, 0.2);
 }
 
 .largeButton:disabled {
@@ -134,9 +137,14 @@
 .securityNotice {
   text-align: center;
   margin-top: var(--spacing-6);
-  padding: var(--spacing-4);
-  background: #f0f8ff;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: #f0f6ff;
+  border-left: 3px solid #147af3;
   border-radius: var(--border-radius-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
 }
 
 .securityText {
@@ -148,7 +156,9 @@
 .trustRow {
   width: 100%;
   max-width: 420px;
-  padding: var(--spacing-8) 0;
+  padding: var(--spacing-10) 0;
+  margin-top: var(--spacing-10);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -156,7 +166,7 @@
 .divider {
   width: 1px;
   height: 40px;
-  background: #e8e8e8;
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .trustLabel {
@@ -173,10 +183,11 @@
 }
 
 .footer {
-  border-top: 1px solid #e8e8e8;
-  background: #fcfcfc;
-  padding: var(--spacing-6);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  padding: var(--spacing-8);
   text-align: center;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .footerText {

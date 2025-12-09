@@ -97,9 +97,8 @@ export default function FormForwardLogin() {
                 </FormSubmitButton>
 
                 <div className={styles.securityNotice}>
-                  <Text className={styles.securityText}>
-                    🔒 Your login is secure and encrypted
-                  </Text>
+                  <span>🔒</span>
+                  <span className={styles.securityText}>Your login is secure and encrypted</span>
                 </div>
               </Form>
             </div>
