@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Grid, Column, Row, Heading, Text, Icon, Divider } from '@umami/react-zen';
+import { Grid, Column, Row, Heading, Text, Icon } from '@umami/react-zen';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
@@ -69,7 +69,7 @@ export default function WebsitesSplitViewPage() {
                       </LinkButton>
                     </Row>
 
-                    <Divider />
+                    <div style={{ height: '1px', backgroundColor: 'var(--gray-4)' }} />
 
                     <Column gap="4">
                       <Column gap="2">
