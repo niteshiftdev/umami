@@ -1,6 +1,6 @@
 import { Icon, Text, Row } from '@umami/react-zen';
 import { PageHeader } from '@/components/common/PageHeader';
-import { Share, Edit } from '@/components/icons';
+import { Share, Edit, Activity } from '@/components/icons';
 import { Favicon } from '@/components/common/Favicon';
 import { ActiveUsers } from '@/components/metrics/ActiveUsers';
 import { WebsiteShareForm } from '@/app/(main)/websites/[websiteId]/settings/WebsiteShareForm';
@@ -28,6 +28,12 @@ export function WebsiteHeader({ showActions }: { showActions?: boolean }) {
             alignItems="center"
             gap
           >
+            <LinkButton href={renderUrl(`/websites/${website.id}/live-pulse`, false)} variant="primary">
+              <Icon>
+                <Activity />
+              </Icon>
+              <Text>Live Pulse</Text>
+            </LinkButton>
             <ShareButton websiteId={website.id} shareId={website.shareId} />
             <LinkButton href={renderUrl(`/websites/${website.id}/settings`, false)}>
               <Icon>
