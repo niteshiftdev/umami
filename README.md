@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <i>"Privacy is not an option, and it shouldn't be the price we accept for just getting on the Internet." — Gary Kovacs</i>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases">
     <img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" />
   </a>
