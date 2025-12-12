@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Column, Row, Text, Card, Button, Icon } from '@umami/react-zen';
+import { Column, Row, Text, Icon } from '@umami/react-zen';
 import { LinkButton } from '@/components/common/LinkButton';
 import { useNavigation } from '@/components/hooks';
 import { SquarePen, Globe } from '@/components/icons';
@@ -27,7 +27,14 @@ export function WebsitesCard({ data, renderLink, showActions }: WebsitesCardProp
   return (
     <Column gap="3">
       {data.map((website) => (
-        <Card key={website.id} padding="4" border borderRadius="2">
+        <Column
+          key={website.id}
+          padding="4"
+          border
+          borderRadius="2"
+          backgroundColor
+          gap="0"
+        >
           <Row justifyContent="space-between" alignItems="start" gap="4">
             <Row alignItems="start" gap="3" flex={1}>
               <Icon size="lg" color="muted" style={{ marginTop: '2px' }}>
@@ -56,7 +63,7 @@ export function WebsitesCard({ data, renderLink, showActions }: WebsitesCardProp
               </LinkButton>
             )}
           </Row>
-        </Card>
+        </Column>
       ))}
     </Column>
   );
