@@ -6,7 +6,7 @@ import { Column, Row, Text } from '@umami/react-zen';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Panel } from '@/components/common/Panel';
 import { PageBody } from '@/components/common/PageBody';
-import { Devices } from '@/components/icons';
+import { Globe } from '@/components/icons';
 
 export function WebsitesPage() {
   const { teamId } = useNavigation();
@@ -18,7 +18,7 @@ export function WebsitesPage() {
         <PageHeader
           title={formatMessage(labels.websites)}
           description="Track analytics and monitor performance across all your websites in one place"
-          icon={<Devices />}
+          icon={<Globe />}
         >
           <WebsiteAddButton teamId={teamId} />
         </PageHeader>
