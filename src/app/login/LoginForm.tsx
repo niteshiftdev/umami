@@ -15,6 +15,7 @@ import { useMessages, useUpdateQuery } from '@/components/hooks';
 import { setUser } from '@/store/app';
 import { setClientAuthToken } from '@/lib/client';
 import { Logo } from '@/components/svg';
+import styles from './LoginForm.module.css';
 
 export function LoginForm() {
   const { formatMessage, labels, getErrorMessage } = useMessages();
@@ -37,12 +38,15 @@ export function LoginForm() {
   };
 
   return (
-    <Column justifyContent="center" alignItems="center" gap="6">
-      <Icon size="lg">
-        <Logo />
-      </Icon>
-      <Heading>umami</Heading>
-      <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
+    <Column justifyContent="center" alignItems="center" gap="6" className={styles.container}>
+      <div className={styles.titleGlow}>
+        <h1 className={styles.starWarsTitle}>IMPERIAL ANALYTICS</h1>
+        <p className={styles.subtitle}>Enforce your data dominion</p>
+      </div>
+
+      <Form onSubmit={handleSubmit} error={getErrorMessage(error)} className={styles.form}>
+        <div className={styles.formTitle}>AUTHENTICATION PROTOCOL</div>
+
         <FormField
           label={formatMessage(labels.username)}
           data-test="input-username"
@@ -63,13 +67,17 @@ export function LoginForm() {
           <FormSubmitButton
             data-test="button-submit"
             variant="primary"
-            style={{ flex: 1 }}
+            className={styles.submitButton}
             isDisabled={false}
           >
             {formatMessage(labels.login)}
           </FormSubmitButton>
         </FormButtons>
       </Form>
+
+      <div className={styles.footer}>
+        <p>\"Do or do not login. There is no try.\"</p>
+      </div>
     </Column>
   );
 }
