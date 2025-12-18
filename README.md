@@ -17,6 +17,10 @@
 </p>
 
 <p align="center">
+  <i>"Understanding your users shouldn't mean compromising their trust."</i>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases">
     <img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" />
   </a>
