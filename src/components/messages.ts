@@ -164,6 +164,7 @@ export const labels = defineMessages({
   sessionData: { id: 'label.session-data', defaultMessage: 'Session data' },
   funnel: { id: 'label.funnel', defaultMessage: 'Funnel' },
   funnels: { id: 'label.funnels', defaultMessage: 'Funnels' },
+  createFunnel: { id: 'label.create-funnel', defaultMessage: 'Create Funnel' },
   funnelDescription: {
     id: 'label.funnel-description',
     defaultMessage: 'Understand the conversion and drop-off rate of users.',
