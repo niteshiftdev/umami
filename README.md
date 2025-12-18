@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <i>"Data is a responsibility, not a commodity."</i>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases">
     <img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" />
   </a>
