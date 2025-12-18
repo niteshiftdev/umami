@@ -13,6 +13,10 @@
 </p>
 
 <p align="center">
+  <strong>"Data-driven insights without compromising user privacy."</strong>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases">
     <img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" />
   </a>
