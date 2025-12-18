@@ -1,0 +1,33 @@
+.container {
+  background: linear-gradient(135deg, var(--color-base-2) 0%, var(--color-base-3) 100%);
+}
+
+.card {
+  background: var(--color-base-1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-base-4);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12);
+  border-color: var(--color-base-5);
+}
+
+.logoContainer {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  background: linear-gradient(135deg, var(--color-blue-3), var(--color-blue-4));
+  box-shadow: 0 4px 16px rgba(32, 133, 235, 0.15);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-base-4);
+  width: 100%;
+}
