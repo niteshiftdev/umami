@@ -38,6 +38,12 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
   return (
     <Grid gap="3">
       <GridRow layout="two" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
+      </GridRow>
+
+      <GridRow layout="two" {...rowProps}>
         <Panel>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.pages)}
@@ -138,11 +144,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
         </Panel>
       </GridRow>
 
-      <GridRow layout="two" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-      </GridRow>
       {isSharePage && (
         <GridRow layout="two-one" {...rowProps}>
           <Panel>
