@@ -128,17 +128,19 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
         </Panel>
       </GridRow>
 
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
-        <Panel>
+      <GridRow layout="two" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.traffic)}
           </Heading>
           <Row border="bottom" marginBottom="4" />
           <WeeklyTraffic websiteId={websiteId} />
+        </Panel>
+      </GridRow>
+
+      <GridRow layout="two" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
         </Panel>
       </GridRow>
       {isSharePage && (
