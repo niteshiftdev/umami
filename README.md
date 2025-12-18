@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <strong>"Privacy is not just a feature, it's a fundamental right."</strong>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases">
     <img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" />
   </a>
