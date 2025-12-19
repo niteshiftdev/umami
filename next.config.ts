@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 
 const TRACKER_SCRIPT = '/script.js';
 
@@ -177,9 +177,6 @@ export default {
   },
   basePath,
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -64,7 +64,7 @@ function disableLogin(request: NextRequest) {
   }
 }
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   const fns = [customCollectEndpoint, customScriptName, customScriptUrl, disableLogin];
 
   for (const fn of fns) {
