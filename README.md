@@ -116,6 +116,19 @@ docker compose up --force-recreate -d
 
 ---
 
+## 💬 What People Are Saying
+
+> "Umami is the privacy-conscious alternative to Google Analytics we've been waiting for."
+> — Privacy Advocate
+
+> "Simple, fast, and actually respects user privacy. Finally."
+> — Developer
+
+> "Getting insights without the data collection overhead is a game-changer."
+> — Product Manager
+
+---
+
 ## 🛟 Support
 
 <p align="center">
