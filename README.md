@@ -5,7 +5,7 @@
 <h1 align="center">Umami</h1>
 
 <p align="center">
-  <i>Umami is a simple, fast, privacy-focused alternative to Google Analytics.</i>
+  <i>Umami is a simple, fast, privacy-first alternative to Google Analytics.</i>
 </p>
 
 <p align="center">
