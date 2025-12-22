@@ -167,6 +167,7 @@ if (cloudMode) {
 export default {
   reactStrictMode: false,
   devIndicators: false,
+  allowedDevOrigins: ['*.niteshift.local'],
   env: {
     basePath,
     cloudMode,
