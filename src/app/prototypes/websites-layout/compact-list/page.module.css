@@ -1,0 +1,106 @@
+.listContainer {
+  background: var(--bg-color, #ffffff);
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.compactRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.compactRow:hover {
+  background-color: var(--bg-secondary, #f9f9f9);
+}
+
+.rowIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--primary-color, #147af3), var(--accent-color, #5b38e8));
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.rowContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rowName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color, #1a1a1a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowDomain {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.actionLink {
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--primary-color, #147af3);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.actionLink:hover {
+  background-color: var(--primary-color, #147af3);
+  color: white;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-secondary, #666);
+  border-radius: 0.375rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  background-color: var(--primary-color, #147af3);
+  color: white;
+}
+
+.divider {
+  height: 1px;
+  background-color: #f0f0f0;
+}
