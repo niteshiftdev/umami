@@ -19,7 +19,7 @@
 
 ## 🚀 Getting Started
 
-A detailed getting started guide can be found at [umami.is/docs](https://umami.is/docs/).
+A detailed getting started guide is available at [umami.is/docs](https://umami.is/docs/).
 
 ---
 
