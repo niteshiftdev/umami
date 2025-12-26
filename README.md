@@ -66,7 +66,7 @@ The build step creates tables in your database if you are installing for the fir
 pnpm run start
 ```
 
-By default, this starts the app on `http://localhost:3000`. You will need to either [proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) requests from your web server or change the [port](https://nextjs.org/docs/api-reference/cli#production) to serve the application directly.
+By default, this starts the application on `http://localhost:3000`. You will need to either [proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) requests from your web server or change the [port](https://nextjs.org/docs/api-reference/cli#production) to serve the application directly.
 
 ### Start in development mode
 
@@ -74,7 +74,7 @@ By default, this starts the app on `http://localhost:3000`. You will need to eit
 pnpm run dev
 ```
 
-By default, this starts the app on `http://localhost:3001`.
+By default, this starts the application on `http://localhost:3001`.
 
 ---
 
