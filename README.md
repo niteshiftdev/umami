@@ -68,6 +68,14 @@ pnpm run start
 
 By default, this will launch the application on `http://localhost:3000`. You will need to either [proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) requests from your web server or change the [port](https://nextjs.org/docs/api-reference/cli#production) to serve the application directly.
 
+### Development mode
+
+```bash
+pnpm run dev
+```
+
+By default, this will launch the application on `http://localhost:3001`.
+
 ---
 
 ## 🐳 Installing with Docker
