@@ -80,7 +80,7 @@ By default, this will launch the application on `http://localhost:3001`.
 
 ## 🐳 Installing with Docker
 
-Umami provides Docker images as well as a Docker compose file for easy deployment.
+Umami provides Docker images as well as a Docker Compose file for easy deployment.
 
 Docker image:
 
@@ -88,7 +88,7 @@ Docker image:
 docker pull docker.umami.is/umami-software/umami:latest
 ```
 
-Docker compose (Runs Umami with a PostgreSQL database):
+Docker Compose (Runs Umami with a PostgreSQL database):
 
 ```bash
 docker compose up -d
