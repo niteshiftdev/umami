@@ -28,7 +28,7 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 ### Requirements
 
 - A server with Node.js version 18.18+ (Node.js 20 LTS recommended).
-- A PostgreSQL database version v12.14+.
+- A PostgreSQL database version 12.14+.
 
 ### Get the source code and install packages
 
