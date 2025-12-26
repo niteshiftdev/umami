@@ -52,7 +52,7 @@ The connection URL format:
 postgresql://username:mypassword@localhost:5432/mydb
 ```
 
-### Build the Application
+### Build the application
 
 ```bash
 pnpm run build
@@ -60,7 +60,7 @@ pnpm run build
 
 The build step will create tables in your database if you are installing for the first time. It will also create a login user with username **admin** and password **umami**.
 
-### Start the Application
+### Start the application
 
 ```bash
 pnpm run start
