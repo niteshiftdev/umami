@@ -80,7 +80,7 @@ By default, this will launch the application on `http://localhost:3001`.
 
 ## 🐳 Installing with Docker
 
-Umami provides Docker images as well as a Docker Compose file for easy deployment.
+Umami provides Docker images and a Docker Compose file for easy deployment.
 
 Docker image:
 
