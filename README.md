@@ -19,7 +19,7 @@
 
 ## 🚀 Getting Started
 
-A detailed getting started guide can be found at [umami.is/docs](https://umami.is/docs/).
+A detailed getting started guide is available at [umami.is/docs](https://umami.is/docs/).
 
 ---
 
@@ -28,9 +28,9 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 ### Requirements
 
 - A server with Node.js version 18.18+ (Node.js 20 LTS recommended).
-- A PostgreSQL database version v12.14+.
+- A PostgreSQL database version 12.14+.
 
-### Get the source code and install packages
+### Get the source code and install dependencies
 
 ```bash
 git clone https://github.com/umami-software/umami.git
@@ -38,9 +38,9 @@ cd umami
 pnpm install
 ```
 
-### Configure Umami
+### Configure Umami (environment)
 
-Create an `.env` file with the following:
+Create an `.env` file with:
 
 ```bash
 DATABASE_URL=connection-url
@@ -52,27 +52,35 @@ The connection URL format:
 postgresql://username:mypassword@localhost:5432/mydb
 ```
 
-### Build the Application
+### Build the application
 
 ```bash
 pnpm run build
 ```
 
-The build step will create tables in your database if you are installing for the first time. It will also create a login user with username **admin** and password **umami**.
+The build step creates tables in your database if you are installing for the first time. It also creates a login user with the username **admin** and password **umami**.
 
-### Start the Application
+### Start the application
 
 ```bash
 pnpm run start
 ```
 
-By default, this will launch the application on `http://localhost:3000`. You will need to either [proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) requests from your web server or change the [port](https://nextjs.org/docs/api-reference/cli#production) to serve the application directly.
+By default, this starts the application on `http://localhost:3000`. You will need to either [proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) requests from your web server or change the [port](https://nextjs.org/docs/api-reference/cli#production) to serve the application directly.
+
+### Start in development mode
+
+```bash
+pnpm run dev
+```
+
+By default, this starts the application on `http://localhost:3001`.
 
 ---
 
 ## 🐳 Installing with Docker
 
-Umami provides Docker images as well as a Docker compose file for easy deployment.
+Umami provides Docker images and a Docker Compose file for easy deployment.
 
 Docker image:
 
@@ -80,7 +88,7 @@ Docker image:
 docker pull docker.umami.is/umami-software/umami:latest
 ```
 
-Docker compose (Runs Umami with a PostgreSQL database):
+Docker Compose (runs Umami with a PostgreSQL database):
 
 ```bash
 docker compose up -d
@@ -95,7 +103,7 @@ To get the latest features, simply do a pull, install any new dependencies, and 
 ```bash
 git pull
 pnpm install
-pnpm build
+pnpm run build
 ```
 
 To update the Docker image, simply pull the new images and rebuild:
@@ -115,18 +123,3 @@ docker compose up --force-recreate -d
   <a href="https://linkedin.com/company/umami-software"><img src="https://img.shields.io/badge/LinkedIn--blue?style=social&logo=linkedin" alt="LinkedIn" /></a>
   <a href="https://umami.is/discord"><img src="https://img.shields.io/badge/Discord--blue?style=social&logo=discord" alt="Discord" /></a>
 </p>
-
-[release-shield]: https://img.shields.io/github/release/umami-software/umami.svg
-[releases-url]: https://github.com/umami-software/umami/releases
-[license-shield]: https://img.shields.io/github/license/umami-software/umami.svg
-[license-url]: https://github.com/umami-software/umami/blob/master/LICENSE
-[build-shield]: https://img.shields.io/github/actions/workflow/status/umami-software/umami/ci.yml
-[build-url]: https://github.com/umami-software/umami/actions
-[github-shield]: https://img.shields.io/badge/GitHub--blue?style=social&logo=github
-[github-url]: https://github.com/umami-software/umami
-[twitter-shield]: https://img.shields.io/badge/Twitter--blue?style=social&logo=twitter
-[twitter-url]: https://twitter.com/umami_software
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn--blue?style=social&logo=linkedin
-[linkedin-url]: https://linkedin.com/company/umami-software
-[discord-shield]: https://img.shields.io/badge/Discord--blue?style=social&logo=discord
-[discord-url]: https://discord.com/invite/4dz4zcXYrQ
