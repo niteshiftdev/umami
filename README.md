@@ -103,7 +103,7 @@ To get the latest features, simply do a pull, install any new dependencies, and 
 ```bash
 git pull
 pnpm install
-pnpm build
+pnpm run build
 ```
 
 To update the Docker image, simply pull the new images and rebuild:
