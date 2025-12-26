@@ -40,7 +40,7 @@ pnpm install
 
 ### Configure Umami
 
-Create an `.env` file with the following:
+Create an `.env` file with:
 
 ```bash
 DATABASE_URL=connection-url
