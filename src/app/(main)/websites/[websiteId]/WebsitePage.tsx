@@ -116,14 +116,14 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     <TypographyContext.Provider value={typographyConfig}>
       <Column gap>
         <WebsiteControls websiteId={websiteId} />
-        <Panel paddingX="0" paddingY="0" minHeight="400px">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
         </Panel>
         <WebsitePanels websiteId={websiteId} />
+        <Panel paddingX="0" paddingY="0" minHeight="400px">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
         <ExpandedViewModal websiteId={websiteId} />
       </Column>
     </TypographyContext.Provider>
