@@ -4,6 +4,7 @@ import { Column } from '@umami/react-zen';
 import { createContext } from 'react';
 import { ExpandedViewModal } from '@/app/(main)/websites/[websiteId]/ExpandedViewModal';
 import { Panel } from '@/components/common/Panel';
+import { WorldMap } from '@/components/metrics/WorldMap';
 import { WebsiteChart } from './WebsiteChart';
 import { WebsiteControls } from './WebsiteControls';
 import { WebsiteMetricsBar } from './WebsiteMetricsBar';
@@ -115,6 +116,9 @@ export function WebsitePage({ websiteId }: { websiteId: string }) {
     <TypographyContext.Provider value={typographyConfig}>
       <Column gap>
         <WebsiteControls websiteId={websiteId} />
+        <Panel paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
         <WebsiteMetricsBar websiteId={websiteId} showChange={true} />
         <Panel minHeight="520px">
           <WebsiteChart websiteId={websiteId} />
