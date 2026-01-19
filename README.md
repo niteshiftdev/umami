@@ -9,6 +9,11 @@
 </p>
 
 <p align="center">
+  <i>"Privacy is not something that I'm merely entitled to, it's an absolute prerequisite."</i><br/>
+  <sub>— Marlon Brando</sub>
+</p>
+
+<p align="center">
   <a href="https://github.com/umami-software/umami/releases"><img src="https://img.shields.io/github/release/umami-software/umami.svg" alt="GitHub Release" /></a>
   <a href="https://github.com/umami-software/umami/blob/master/LICENSE"><img src="https://img.shields.io/github/license/umami-software/umami.svg" alt="MIT License" /></a>
   <a href="https://github.com/umami-software/umami/actions"><img src="https://img.shields.io/github/actions/workflow/status/umami-software/umami/ci.yml" alt="Build Status" /></a>
