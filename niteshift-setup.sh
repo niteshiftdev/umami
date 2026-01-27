@@ -1,8 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
-# niteshift-setup.sh - Setup script for niteshiftdev/umami
-# This script sets up the Umami analytics application with all required dependencies
+# niteshift-setup.sh - Runtime setup script for niteshiftdev/umami
+#
+# This script is minimal because the heavy lifting is done at image build time:
+# - Repository already cloned to /root/umami
+# - Dependencies already installed (pnpm install)
+# - Prisma client already generated (build-db)
+# - Tracker script already built (build-tracker)
+# - Geo database already built (build-geo)
+#
+# At runtime, we only need to:
+# 1. Apply database migrations (requires runtime DATABASE_URL)
+# 2. Start the dev server
 
 # Logging setup
 LOG_FILE="${NITESHIFT_LOG_FILE:-/dev/stdout}"
@@ -17,205 +27,41 @@ log_error() {
   echo "ERROR: $*" >&2
 }
 
-# Track high-level phase durations using bash's SECONDS counter.
-# SECONDS starts at 0 for each shell, so this gives us simple per-run timings
-# without relying on external time utilities inside the sandbox image.
+# Track timing for benchmarking
 SCRIPT_START_SECONDS=${SECONDS:-0}
-PNPM_INSTALL_DURATION_S=0
+DB_MIGRATE_DURATION_S=0
 DEV_SERVER_TO_PREVIEW_DURATION_S=0
 
-DB_SETUP_SENTINEL="${DB_SETUP_SENTINEL:-$(pwd)/.niteshift-db-setup-complete}"
-PREBAKE_SYNC_SENTINEL="${PREBAKE_SYNC_SENTINEL:-$(pwd)/.niteshift-prebake-sync-complete}"
-
-# Pre-flight checks
 log "Starting niteshift setup for umami..."
 
-USE_PREBAKED_SETUP=0
-if [[ "${UMAMI_PREBAKED:-0}" == "1" ]]; then
-  if [[ -f "$PREBAKE_SYNC_SENTINEL" ]]; then
-    USE_PREBAKED_SETUP=1
-    log "Prebaked sync sentinel detected, skipping umami-prebake-sync"
-  elif command -v umami-prebake-sync >/dev/null 2>&1; then
-    log "Prebaked Modal image detected, syncing cached artifacts..."
-    if umami-prebake-sync "$(pwd)"; then
-      USE_PREBAKED_SETUP=1
-      log "✓ Prebaked dependencies and artifacts restored"
-      if ! touch "$PREBAKE_SYNC_SENTINEL"; then
-        log_error "Failed to write prebake sync sentinel at $PREBAKE_SYNC_SENTINEL"
-      fi
-    else
-      log_error "Prebaked sync failed, falling back to full setup"
-    fi
-  else
-    log_error "UMAMI_PREBAKED=1 but umami-prebake-sync is missing; falling back to full setup"
-  fi
-fi
-
-# 1. Check DATABASE_URL is set
+# 1. Check DATABASE_URL is set (only runtime requirement)
 if [ -z "${DATABASE_URL:-}" ]; then
   log_error "DATABASE_URL environment variable is not set"
-  log_error "This script assumes DATABASE_URL is already configured"
   exit 1
 fi
 log "✓ DATABASE_URL is set"
 
-# 2. Check Node.js version
-if ! command -v node &> /dev/null; then
-  log_error "Node.js is not installed"
+# 2. Apply database migrations
+# This must happen at runtime because it needs the actual database connection
+DB_MIGRATE_START_SECONDS=$SECONDS
+log "Applying database migrations..."
+if ! pnpm run check-db; then
+  log_error "Database migration failed"
   exit 1
 fi
+DB_MIGRATE_DURATION_S=$((SECONDS - DB_MIGRATE_START_SECONDS))
+log "✓ Database migrations applied (${DB_MIGRATE_DURATION_S}s)"
 
-NODE_VERSION=$(node -v | sed 's/v//')
-NODE_MAJOR=$(echo "$NODE_VERSION" | cut -d. -f1)
-if [ "$NODE_MAJOR" -lt 18 ]; then
-  log_error "Node.js 18.18+ is required, found version $NODE_VERSION"
-  exit 1
-fi
-log "✓ Node.js $NODE_VERSION is installed"
-
-# 3. Enable corepack for pnpm
-if ! command -v pnpm &> /dev/null; then
-  log "Enabling corepack for pnpm..."
-  corepack enable
-  if ! command -v pnpm &> /dev/null; then
-    log_error "Failed to enable pnpm via corepack"
-    exit 1
-  fi
-fi
-log "✓ pnpm is available"
-
-# 4. Install dependencies
-PNPM_INSTALL_START_SECONDS=$SECONDS
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Installing dependencies with pnpm..."
-  if ! pnpm install --package-import-method=copy --frozen-lockfile; then
-    log_error "Failed to install dependencies"
-    exit 1
-  fi
-  log "✓ Dependencies installed"
-else
-  log "Linking dependencies from prebaked pnpm store..."
-  if [ -d node_modules ]; then
-    log "node_modules already present, skipping pnpm install for prebaked setup"
-  elif pnpm install --package-import-method=copy --frozen-lockfile --offline; then
-    log "✓ Dependencies installed (offline)"
-  else
-    log_error "Offline install failed, falling back to full pnpm install"
-    if ! pnpm install --package-import-method=copy --frozen-lockfile; then
-      log_error "Failed to install dependencies even after fallback"
-      exit 1
-    fi
-    log "✓ Dependencies installed via fallback"
-  fi
-fi
-PNPM_INSTALL_DURATION_S=$((SECONDS - PNPM_INSTALL_START_SECONDS))
-log "pnpm install phase duration: ${PNPM_INSTALL_DURATION_S}s"
-
-# 5. Build only what's needed for dev (skip production Next.js build)
-# For dev mode we need:
-# - check-env: validates environment variables
-# - build-db: generates Prisma client and builds database
-# - check-db: verifies database connection and applies migrations
-# - build-tracker: bundles tracker script (needed for tracking functionality)
-# - build-geo: processes geographic data (needed for geo features)
-# We skip build-app (production Next.js build) since dev mode compiles on-the-fly
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Validating environment..."
-  if ! pnpm run check-env; then
-    log_error "Environment validation failed"
-    exit 1
-  fi
-  log "✓ Environment validated"
-else
-  log "Skipping check-env (prebaked fast path)"
-fi
-
-PREBAKED_DB_SETUP_DONE=0
-if [[ "$USE_PREBAKED_SETUP" -eq 1 ]] && [ -f "$DB_SETUP_SENTINEL" ]; then
-  PREBAKED_DB_SETUP_DONE=1
-fi
-
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building database client..."
-  if ! pnpm run build-db; then
-    log_error "Database client build failed"
-    exit 1
-  fi
-  log "✓ Database client built"
-else
-  if [[ "$PREBAKED_DB_SETUP_DONE" -eq 1 ]]; then
-    log "Skipping build-db (prebaked Prisma client detected; db setup already done)"
-  else
-    log "Building database client (prebaked image, first run)..."
-    if ! pnpm run build-db; then
-      log_error "Database client build failed"
-      exit 1
-    fi
-    log "✓ Database client built"
-  fi
-fi
-
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Checking database and applying migrations..."
-  if ! pnpm run check-db; then
-    log_error "Database check failed"
-    exit 1
-  fi
-  log "✓ Database migrations applied"
-else
-  if [[ "$PREBAKED_DB_SETUP_DONE" -eq 1 ]]; then
-    log "Skipping check-db (prebaked fast path; db setup already done)"
-  else
-    log "Checking database and applying migrations (prebaked image, first run)..."
-    if ! pnpm run check-db; then
-      log_error "Database check failed"
-      exit 1
-    fi
-    log "✓ Database migrations applied"
-    if ! touch "$DB_SETUP_SENTINEL"; then
-      log_error "Failed to write db setup sentinel at $DB_SETUP_SENTINEL"
-      exit 1
-    fi
-    PREBAKED_DB_SETUP_DONE=1
-  fi
-fi
-
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building tracker script..."
-  if ! pnpm run build-tracker; then
-    log_error "Tracker build failed"
-    exit 1
-  fi
-  log "✓ Tracker script built"
-else
-  log "Skipping tracker build (prebaked bundle detected)"
-fi
-
-if [[ "$USE_PREBAKED_SETUP" -eq 0 ]]; then
-  log "Building geo database..."
-  if ! pnpm run build-geo; then
-    log_error "Geo build failed"
-    exit 1
-  fi
-  log "✓ Geo database built"
-else
-  log "Skipping geo build (prebaked GeoLite database detected)"
-fi
-
-# 6. Start the dev server in the background
+# 3. Start the dev server in the background
 DEV_PHASE_START_SECONDS=$SECONDS
-log "Starting development server on port 3001 (with hot reload)..."
-# Log dev server output to NITESHIFT_LOG_FILE (or stdout if not set)
+log "Starting development server on port 3001..."
 pnpm run dev >> "$LOG_FILE" 2>&1 &
 SERVER_PID=$!
 log "✓ Dev server started with PID $SERVER_PID"
 
-# 7. Warm up the main application routes
-# Use a single blocking curl to capture an accurate "dev run -> preview ready"
-# duration while still honoring a configurable max wait.
+# 4. Warm up the main application routes
 MAX_DEV_WAIT_SECONDS=${UMAMI_DEV_WAIT_SECONDS:-60}
 log "Warming up main application routes (max ${MAX_DEV_WAIT_SECONDS}s)..."
-DEV_WARMUP_START_SECONDS=$SECONDS
 DEV_SERVER_READY=0
 for ((i=1; i<=MAX_DEV_WAIT_SECONDS; i++)); do
   if curl -s -o /dev/null --max-time 5 http://localhost:3001/ 2>/dev/null; then
@@ -227,9 +73,9 @@ done
 
 DEV_SERVER_TO_PREVIEW_DURATION_S=$((SECONDS - DEV_PHASE_START_SECONDS))
 if [[ "$DEV_SERVER_READY" -eq 1 ]]; then
-  log "✓ Main routes pre-compiled (ready after ${DEV_SERVER_TO_PREVIEW_DURATION_S}s)"
+  log "✓ Server ready (${DEV_SERVER_TO_PREVIEW_DURATION_S}s)"
 else
-  log "Warning: Route warm-up failed or timed out after ${DEV_SERVER_TO_PREVIEW_DURATION_S}s (non-critical)"
+  log "Warning: Route warm-up timed out after ${DEV_SERVER_TO_PREVIEW_DURATION_S}s (non-critical)"
 fi
 
 log ""
@@ -246,17 +92,11 @@ if [ "$LOG_FILE" != "/dev/stdout" ]; then
   log "Server logs: $LOG_FILE"
 fi
 log ""
-log "Hot reload is enabled - changes will be reflected automatically"
-log ""
-log "To stop the server: kill $SERVER_PID"
-log ""
 
-# Emit a final structured timing summary that external tools (like the
-# Niteshift benchmark CLI) can parse from logs to build a detailed timing
-# table for sandbox provisioning and runtime behavior.
+# Emit timing summary for benchmarking tools
 SCRIPT_TOTAL_DURATION_S=$((SECONDS - SCRIPT_START_SECONDS))
-TIMING_JSON=$(printf '{"pnpm_install_s":%s,"dev_run_to_preview_s":%s,"script_total_s":%s}' \
-  "${PNPM_INSTALL_DURATION_S:-0}" \
+TIMING_JSON=$(printf '{"db_migrate_s":%s,"dev_run_to_preview_s":%s,"script_total_s":%s}' \
+  "${DB_MIGRATE_DURATION_S:-0}" \
   "${DEV_SERVER_TO_PREVIEW_DURATION_S:-0}" \
   "${SCRIPT_TOTAL_DURATION_S}")
 log "NITESHIFT_TIMING_JSON=${TIMING_JSON}"
