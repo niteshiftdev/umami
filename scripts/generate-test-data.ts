@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import 'dotenv/config';
-import { PrismaClient } from '../src/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import crypto from 'crypto';
-import { startOfMonth, startOfHour, subDays, addHours, addSeconds, startOfDay } from 'date-fns';
+import { addHours, addSeconds, startOfDay, startOfHour, startOfMonth, subDays } from 'date-fns';
 import readline from 'readline';
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
+import { PrismaClient } from '../src/generated/prisma/client';
 
 // ============================================================================
 // Configuration
@@ -267,11 +267,16 @@ function getWeekdayMultiplier(dayOfWeek) {
   return 1.0; // Monday-Thursday
 }
 
-function getWeekMultiplier(weekNum, totalWeeks) {
-  // Week 1: 90%, Week 2-3: 100%, Week 4+: 110%
-  if (weekNum === 0) return 0.9;
-  if (weekNum >= totalWeeks - 1) return 1.1;
-  return 1.0;
+function getTrendMultiplier(day, totalDays) {
+  // Create upward trend from ~60% to ~140% with daily noise
+  // This gives roughly 2.3x growth over the period, looking like organic growth
+  const progress = day / (totalDays - 1); // 0 to 1
+  const baseMultiplier = 0.6 + progress * 0.8; // Linear from 0.6 to 1.4
+
+  // Add daily noise: ±18% random variation for realistic fluctuation
+  const noise = (Math.random() - 0.5) * 0.36;
+
+  return baseMultiplier + noise;
 }
 
 function shouldBounce(pagePath) {
@@ -1271,12 +1276,11 @@ async function main() {
     for (let day = 0; day < scale.days; day++) {
       const currentDay = addHours(startDate, day * 24);
       const dayOfWeek = currentDay.getDay();
-      const weekNum = Math.floor(day / 7);
       const isToday = day === scale.days - 1;
 
-      const weekMultiplier = getWeekMultiplier(weekNum, Math.ceil(totalDays / 7));
+      const trendMultiplier = getTrendMultiplier(day, totalDays);
       const dayMultiplier = getWeekdayMultiplier(dayOfWeek);
-      const sessionsToday = Math.round(scale.avgSessionsPerDay * weekMultiplier * dayMultiplier);
+      const sessionsToday = Math.round(scale.avgSessionsPerDay * trendMultiplier * dayMultiplier);
 
       for (let sessionIdx = 0; sessionIdx < sessionsToday; sessionIdx++) {
         // Distribute sessions across 24 hours with realistic pattern
