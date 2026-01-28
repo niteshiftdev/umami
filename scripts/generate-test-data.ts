@@ -1221,9 +1221,9 @@ async function main() {
   const cleanArg = args.includes('--clean');
   const appendArg = args.includes('--append');
 
-  const scale = SCALES[scaleArg] || SCALES.small;
+  const scale = SCALES[scaleArg] || SCALES.full;
 
-  console.log(`📊 Scale: ${scaleArg || 'small'} (${scale.description})\n`);
+  console.log(`📊 Scale: ${scaleArg || 'full'} (${scale.description})\n`);
 
   // Setup Prisma
   const prisma = await setupPrisma();
