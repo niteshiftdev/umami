@@ -166,7 +166,6 @@ if (cloudMode) {
 /** @type {import('next').NextConfig} */
 export default {
   reactStrictMode: false,
-  devIndicators: false,
   env: {
     basePath,
     cloudMode,
@@ -177,9 +176,6 @@ export default {
   },
   basePath,
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
