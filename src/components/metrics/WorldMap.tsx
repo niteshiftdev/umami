@@ -69,7 +69,8 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const handleClick = (code: string) => {
     if (code === 'AQ') return;
-    router.replace(updateParams({ country: `eq.${code}` }));
+    const newCountry = selectedCountry === code ? undefined : `eq.${code}`;
+    router.replace(updateParams({ country: newCountry }));
   };
 
   return (
