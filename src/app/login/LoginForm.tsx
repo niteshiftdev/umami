@@ -38,9 +38,9 @@ export function LoginForm() {
 
   return (
     <Column justifyContent="center" alignItems="center" gap="6">
-      <Icon size="lg">
+      <div style={{ width: 192, height: 192 }}>
         <SaltShaker />
-      </Icon>
+      </div>
       <Heading>salty</Heading>
       <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
         <FormField

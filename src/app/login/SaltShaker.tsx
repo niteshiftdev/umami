@@ -4,8 +4,8 @@ export function SaltShaker() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 64 64"
       fill="currentColor"
-      width="1em"
-      height="1em"
+      width="100%"
+      height="100%"
     >
       {/* Cap */}
       <rect x="18" y="6" width="28" height="10" rx="3" />
