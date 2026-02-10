@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -24,6 +25,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
+  const { router, updateParams } = useNavigation();
   const { countryNames } = useCountryNames(locale);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
@@ -64,6 +66,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleClick = (code: string) => {
+    if (code === 'AQ') return;
+    router.replace(updateParams({ country: `eq.${code}` }));
+  };
+
   return (
     <Column
       {...props}
@@ -85,13 +92,14 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     fill={getFillColor(code)}
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
-                    style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
-                      pressed: { outline: 'none' },
-                    }}
+                    onClick={() => handleClick(code)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    style={{
+                      default: { outline: 'none', cursor: 'pointer' },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
+                      pressed: { outline: 'none' },
+                    }}
                   />
                 );
               });
