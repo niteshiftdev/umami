@@ -1,6 +1,6 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
@@ -66,10 +66,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
-  const handleClick = (code: string) => {
-    if (code === 'AQ') return;
-    router.replace(updateParams({ country: `eq.${code}` }));
-  };
+  const handleClick = useCallback(
+    (code: string) => {
+      if (code === 'AQ') return;
+      router.replace(updateParams({ country: `eq.${code}` }));
+    },
+    [router, updateParams],
+  );
 
   return (
     <Column
@@ -94,7 +97,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none', cursor: code !== 'AQ' ? 'pointer' : 'default' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
+                      hover: {
+                        outline: 'none',
+                        fill: code !== 'AQ' ? colors.map.hoverColor : undefined,
+                        cursor: code !== 'AQ' ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onClick={() => handleClick(code)}
