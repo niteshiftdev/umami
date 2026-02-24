@@ -52,6 +52,8 @@ export * from './queries/useWebsiteSessionQuery';
 export * from './queries/useWebsiteSessionStatsQuery';
 export * from './queries/useWebsiteSessionsQuery';
 export * from './queries/useWebsiteStatsQuery';
+export * from './queries/useWebsiteComparisonPageviewsQuery';
+export * from './queries/useWebsiteComparisonQuery';
 export * from './queries/useWebsitesQuery';
 export * from './queries/useWebsiteValuesQuery';
 export * from './queries/useWeeklyTrafficQuery';
