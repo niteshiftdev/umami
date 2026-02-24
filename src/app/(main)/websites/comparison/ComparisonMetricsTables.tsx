@@ -38,9 +38,6 @@ export function ComparisonMetricsTables({ websites }: { websites: WebsiteInfo[] 
     query: { view = 'path' },
   } = useNavigation();
 
-  // BUG 2: Stale closure - metricData is captured in the useEffect closure
-  // but the dependency array references `websites` which is an object that
-  // gets a new reference on each render, causing infinite re-renders
   const [metricData, setMetricData] = useState<Record<string, any[]>>({});
   const [activeWebsiteIndex, setActiveWebsiteIndex] = useState(0);
 
@@ -48,7 +45,7 @@ export function ComparisonMetricsTables({ websites }: { websites: WebsiteInfo[] 
     // Reset metric data when websites change
     const newData: Record<string, any[]> = {};
     websites.forEach(website => {
-      newData[website.id] = metricData[website.id] || [];
+      newData[website.id] = [];
     });
     setMetricData(newData);
   }, [websites]);
@@ -111,9 +108,7 @@ export function ComparisonMetricsTables({ websites }: { websites: WebsiteInfo[] 
       if (otherMatches === 0) return null;
       const avgOther = totalOtherCount / otherMatches;
 
-      // BUG 3: Using index in .map() key below AND wrong conditional rendering
-      // with &&  where count could be 0, rendering "0" to the DOM
-      return count && (
+      return count > 0 && (
         <Text
           size="0"
           style={{
@@ -154,10 +149,9 @@ export function ComparisonMetricsTables({ websites }: { websites: WebsiteInfo[] 
           gap="6"
           height="100%"
         >
-          {/* BUG 3 (continued): Using array index as key instead of website.id */}
           {websites.map((website, index) => (
             <Column
-              key={index}
+              key={website.id}
               gap="4"
               {...(index > 0 ? { border: 'left' as any, paddingLeft: '6' } : {})}
             >

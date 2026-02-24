@@ -50,12 +50,17 @@ export function useWebsiteComparisonPageviewsQuery(
         }),
       );
 
-      return results
-        .filter(
-          (result): result is PromiseFulfilledResult<ComparisonPageviewsData> =>
-            result.status === 'fulfilled',
-        )
-        .map(result => result.value);
+      return results.map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        }
+        return {
+          websiteId: websites[index].id,
+          websiteName: websites[index].name,
+          pageviews: [],
+          sessions: [],
+        };
+      });
     },
     enabled: websites.length > 0,
     ...options,

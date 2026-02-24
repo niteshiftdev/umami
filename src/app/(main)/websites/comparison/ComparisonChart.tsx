@@ -59,7 +59,7 @@ export function ComparisonChart({
       __id: Date.now(),
       datasets,
     };
-  }, [data, startDate, endDate, unit, locale, metric]);
+  }, [data, startDate, endDate, unit, dateLocale, metric]);
 
   const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
 

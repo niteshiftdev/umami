@@ -15,11 +15,9 @@ interface ComparisonMetric {
   reverseColors?: boolean;
 }
 
-// BUG 1: Off-by-one in percentage change calculation
-// The getChange function divides by the current value instead of previous value
 function getChange(current: number, previous: number): number {
   if (previous === 0) return current > 0 ? 100 : 0;
-  return ((current - previous) / current) * 100;
+  return ((current - previous) / previous) * 100;
 }
 
 function getMetricDefinitions(labels: any, formatMessage: any): ComparisonMetric[] {
