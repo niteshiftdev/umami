@@ -3,6 +3,7 @@ import { SideMenu } from '@/components/common/SideMenu';
 import { useMessages, useNavigation } from '@/components/hooks';
 import {
   AlignEndHorizontal,
+  BarChart3,
   ChartPie,
   Clock,
   Eye,
@@ -77,6 +78,12 @@ export function WebsiteNav({
           label: formatMessage(labels.breakdown),
           icon: <Sheet />,
           path: renderPath('/breakdown'),
+        },
+        {
+          id: 'compare-websites',
+          label: 'Compare Websites',
+          icon: <BarChart3 />,
+          path: renderUrl('/websites/comparison'),
         },
       ],
     },

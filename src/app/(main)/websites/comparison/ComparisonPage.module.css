@@ -1,0 +1,238 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 12px;
+}
+
+.emptyIcon {
+  color: var(--font-color-muted);
+  opacity: 0.6;
+}
+
+.selectorPanel {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--background-color);
+}
+
+.metricsGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.metricsGrid.columns2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.metricsGrid.columns3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.metricsGrid.columns4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.scorecard {
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.scorecard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.leader {
+  position: relative;
+}
+
+.leader::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--success-color);
+  border-radius: 3px 3px 0 0;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 12px;
+  color: white;
+}
+
+.rankBadge.rank1 {
+  background-color: var(--success-color);
+}
+
+.rankBadge.rank2 {
+  background-color: var(--primary-color);
+}
+
+.rankBadge.rank3 {
+  background-color: var(--warning-color);
+}
+
+.rankBadge.rank4 {
+  background-color: var(--font-color-muted);
+}
+
+.metricRow {
+  border-bottom: 1px solid var(--base-color-2);
+  padding-bottom: 8px;
+}
+
+.metricRow:last-child {
+  border-bottom: none;
+}
+
+.metricLabel {
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.metricValue {
+  flex: 1;
+  text-align: center;
+}
+
+.websiteTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--base-color-3);
+  border-radius: 6px;
+  background: var(--background-color);
+  transition: background 0.15s ease;
+}
+
+.websiteTag:hover {
+  background: var(--base-color-1);
+}
+
+.websiteTagRemove {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  color: var(--font-color-muted);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.websiteTagRemove:hover {
+  color: var(--danger-color);
+  background: color-mix(in srgb, var(--danger-color), var(--background-color) 90%);
+}
+
+.chartControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.chartToggle {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--base-color-3);
+  background: transparent;
+  color: var(--font-color);
+  transition: all 0.15s ease;
+}
+
+.chartToggle:hover {
+  background: var(--base-color-1);
+}
+
+.chartToggle.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.comparisonTable {
+  display: grid;
+  gap: 24px;
+}
+
+.comparisonTableColumn {
+  min-width: 0;
+}
+
+.comparisonTableColumn + .comparisonTableColumn {
+  border-left: 1px solid var(--base-color-3);
+  padding-left: 24px;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--font-color-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .metricsGrid.columns2,
+  .metricsGrid.columns3,
+  .metricsGrid.columns4 {
+    grid-template-columns: 1fr;
+  }
+
+  .comparisonTable {
+    grid-template-columns: 1fr !important;
+  }
+
+  .comparisonTableColumn + .comparisonTableColumn {
+    border-left: none;
+    border-top: 1px solid var(--base-color-3);
+    padding-left: 0;
+    padding-top: 24px;
+  }
+
+  .chartControls {
+    flex-wrap: wrap;
+  }
+
+  .websiteTag {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .selectorPanel {
+    position: relative;
+  }
+
+  .scorecard {
+    padding: 12px;
+  }
+
+  .rankBadge {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+}
