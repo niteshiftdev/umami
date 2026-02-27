@@ -11,7 +11,7 @@ set -euo pipefail
 # - Geo database already built (build-geo)
 #
 # At runtime, we only need to:
-# 1. Apply database migrations (requires runtime DATABASE_URL)
+# 1. Verify database connectivity (migrations already applied at build time)
 # 2. Start the dev server
 
 # Logging setup
@@ -41,16 +41,15 @@ if [ -z "${DATABASE_URL:-}" ]; then
 fi
 log "✓ DATABASE_URL is set"
 
-# 2. Apply database migrations
-# This must happen at runtime because it needs the actual database connection
+# 2. Verify database connectivity (skip migrations — already applied at image build time)
 DB_MIGRATE_START_SECONDS=$SECONDS
-log "Applying database migrations..."
-if ! pnpm run check-db; then
-  log_error "Database migration failed"
+log "Checking database connectivity..."
+if ! SKIP_DB_MIGRATION=1 pnpm run check-db; then
+  log_error "Database connectivity check failed"
   exit 1
 fi
 DB_MIGRATE_DURATION_S=$((SECONDS - DB_MIGRATE_START_SECONDS))
-log "✓ Database migrations applied (${DB_MIGRATE_DURATION_S}s)"
+log "✓ Database connected (${DB_MIGRATE_DURATION_S}s)"
 
 # 3. Start the dev server in the background
 DEV_PHASE_START_SECONDS=$SECONDS
