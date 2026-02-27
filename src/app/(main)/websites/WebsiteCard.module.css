@@ -1,0 +1,101 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border: 1px solid var(--base-color-200);
+  border-radius: 10px;
+  background: var(--base-color-0);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card:hover {
+  border-color: var(--base-color-400);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.favicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--base-color-100);
+  flex-shrink: 0;
+}
+
+.favicon img {
+  width: 22px;
+  height: 22px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--base-color-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.domain {
+  font-size: 12px;
+  color: var(--base-color-500);
+  margin-top: 1px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .actions {
+  opacity: 1;
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--base-color-500);
+  text-decoration: none;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.editButton:hover {
+  background-color: var(--base-color-100);
+  color: var(--base-color-800);
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  color: var(--base-color-300);
+  flex-shrink: 0;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.card:hover .arrow {
+  color: var(--base-color-500);
+  transform: translateX(2px);
+}
