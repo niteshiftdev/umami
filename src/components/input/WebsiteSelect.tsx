@@ -1,7 +1,8 @@
 import { ListItem, Row, Select, type SelectProps, Text } from '@umami/react-zen';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Empty } from '@/components/common/Empty';
 import {
+  useDefaultRepository,
   useLoginQuery,
   useMessages,
   useUserWebsitesQuery,
@@ -20,7 +21,9 @@ export function WebsiteSelect({
   includeTeams?: boolean;
 } & SelectProps) {
   const { formatMessage, messages } = useMessages();
-  const { data: website } = useWebsiteQuery(websiteId);
+  const { resolveDefaultWebsiteId } = useDefaultRepository();
+  const effectiveWebsiteId = websiteId || resolveDefaultWebsiteId();
+  const { data: website } = useWebsiteQuery(effectiveWebsiteId);
   const [name, setName] = useState<string>(website?.name);
   const [search, setSearch] = useState('');
   const { user } = useLoginQuery();
@@ -29,6 +32,12 @@ export function WebsiteSelect({
     { search, pageSize: 10, includeTeams },
   );
   const listItems: { id: string; name: string }[] = data?.data || [];
+
+  useEffect(() => {
+    if (website?.name) {
+      setName(website.name);
+    }
+  }, [website?.name]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -55,7 +64,7 @@ export function WebsiteSelect({
     <Select
       {...props}
       items={listItems}
-      value={websiteId}
+      value={effectiveWebsiteId}
       isLoading={isLoading}
       allowSearch={true}
       searchValue={search}

@@ -5,14 +5,14 @@ import { useEffect } from 'react';
 import { MobileNav } from '@/app/(main)/MobileNav';
 import { SideNav } from '@/app/(main)/SideNav';
 import { useConfig, useLoginQuery, useNavigation } from '@/components/hooks';
-import { LAST_TEAM_CONFIG } from '@/lib/constants';
+import { LAST_TEAM_CONFIG, LAST_WEBSITE_CONFIG } from '@/lib/constants';
 import { removeItem, setItem } from '@/lib/storage';
 import { UpdateNotice } from './UpdateNotice';
 
 export function App({ children }) {
   const { user, isLoading, error } = useLoginQuery();
   const config = useConfig();
-  const { pathname, teamId } = useNavigation();
+  const { pathname, teamId, websiteId } = useNavigation();
 
   useEffect(() => {
     if (teamId) {
@@ -21,6 +21,12 @@ export function App({ children }) {
       removeItem(LAST_TEAM_CONFIG);
     }
   }, [teamId]);
+
+  useEffect(() => {
+    if (websiteId) {
+      setItem(LAST_WEBSITE_CONFIG, websiteId);
+    }
+  }, [websiteId]);
 
   if (isLoading || !config) {
     return <Loading placement="absolute" />;

@@ -62,6 +62,7 @@ export * from './useConfig';
 export * from './useCountryNames';
 export * from './useDateParameters';
 export * from './useDateRange';
+export * from './useDefaultRepository';
 export * from './useDocumentClick';
 export * from './useEscapeKey';
 export * from './useFields';

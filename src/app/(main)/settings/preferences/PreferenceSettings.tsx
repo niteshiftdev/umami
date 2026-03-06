@@ -1,6 +1,7 @@
 import { Column, Label } from '@umami/react-zen';
 import { useLoginQuery, useMessages } from '@/components/hooks';
 import { DateRangeSetting } from './DateRangeSetting';
+import { DefaultRepositorySetting } from './DefaultRepositorySetting';
 import { LanguageSetting } from './LanguageSetting';
 import { ThemeSetting } from './ThemeSetting';
 import { TimezoneSetting } from './TimezoneSetting';
@@ -15,6 +16,10 @@ export function PreferenceSettings() {
 
   return (
     <Column width="400px" gap="6">
+      <Column>
+        <Label>{formatMessage(labels.defaultRepository)}</Label>
+        <DefaultRepositorySetting />
+      </Column>
       <Column>
         <Label>{formatMessage(labels.defaultDateRange)}</Label>
         <DateRangeSetting />

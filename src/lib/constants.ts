@@ -6,6 +6,8 @@ export const DATE_RANGE_CONFIG = 'umami.date-range';
 export const THEME_CONFIG = 'umami.theme';
 export const DASHBOARD_CONFIG = 'umami.dashboard';
 export const LAST_TEAM_CONFIG = 'umami.last-team';
+export const LAST_WEBSITE_CONFIG = 'umami.last-website';
+export const DEFAULT_REPOSITORY_CONFIG = 'umami.default-repository';
 export const VERSION_CHECK = 'umami.version-check';
 export const SHARE_TOKEN_HEADER = 'x-umami-share-token';
 export const HOMEPAGE_URL = 'https://umami.is';
@@ -16,6 +18,8 @@ export const TELEMETRY_PIXEL = 'https://i.umami.is/a.png';
 export const FAVICON_URL = 'https://icons.duckduckgo.com/ip3/{{domain}}.ico';
 export const LINKS_URL = `${globalThis?.location?.origin}/q`;
 export const PIXELS_URL = `${globalThis?.location?.origin}/p`;
+
+export const DEFAULT_REPOSITORY_LAST_USED = 'last-used';
 
 export const DEFAULT_LOCALE = 'en-US';
 export const DEFAULT_THEME = 'light';
