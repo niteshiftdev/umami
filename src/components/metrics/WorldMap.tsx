@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,8 +26,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams, query } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
+  const selectedCountry = query.country?.replace('eq.', '');
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
@@ -64,6 +67,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleClick = (code: string) => {
+    if (code === 'AQ') return;
+    const newCountry = selectedCountry === code ? undefined : `eq.${code}`;
+    router.replace(updateParams({ country: newCountry }));
+  };
+
   return (
     <Column
       {...props}
@@ -83,15 +92,17 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     key={geo.rsmKey}
                     geography={geo}
                     fill={getFillColor(code)}
-                    stroke={colors.map.strokeColor}
+                    stroke={selectedCountry === code ? colors.map.hoverColor : colors.map.strokeColor}
+                    strokeWidth={selectedCountry === code ? 2 : 0.5}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: { outline: 'none', cursor: code !== 'AQ' ? 'pointer' : 'default' },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
