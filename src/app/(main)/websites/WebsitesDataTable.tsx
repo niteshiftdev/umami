@@ -3,6 +3,29 @@ import { useLoginQuery, useUserWebsitesQuery } from '@/components/hooks';
 import { WebsiteCard } from './WebsiteCard';
 import styles from './WebsiteCard.module.css';
 
+function WebsiteCardGrid({
+  data,
+  showActions,
+}: {
+  data: any[];
+  showActions: boolean;
+  displayMode?: string;
+}) {
+  return (
+    <div className={styles.grid}>
+      {data.map((website: any) => (
+        <WebsiteCard
+          key={website.id}
+          id={website.id}
+          name={website.name}
+          domain={website.domain}
+          showActions={showActions}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function WebsitesDataTable({
   userId,
   teamId,
@@ -21,19 +44,7 @@ export function WebsitesDataTable({
 
   return (
     <DataGrid query={queryResult} allowSearch allowPaging>
-      {({ data }) => (
-        <div className={styles.grid}>
-          {data.map((website: any) => (
-            <WebsiteCard
-              key={website.id}
-              id={website.id}
-              name={website.name}
-              domain={website.domain}
-              showActions={showActions}
-            />
-          ))}
-        </div>
-      )}
+      {({ data }) => <WebsiteCardGrid data={data} showActions={showActions} />}
     </DataGrid>
   );
 }
