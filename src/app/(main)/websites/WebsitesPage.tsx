@@ -2,7 +2,6 @@
 import { Column } from '@umami/react-zen';
 import { PageBody } from '@/components/common/PageBody';
 import { PageHeader } from '@/components/common/PageHeader';
-import { Panel } from '@/components/common/Panel';
 import { useMessages, useNavigation } from '@/components/hooks';
 import { WebsiteAddButton } from './WebsiteAddButton';
 import { WebsitesDataTable } from './WebsitesDataTable';
@@ -17,9 +16,7 @@ export function WebsitesPage() {
         <PageHeader title={formatMessage(labels.websites)}>
           <WebsiteAddButton teamId={teamId} />
         </PageHeader>
-        <Panel>
-          <WebsitesDataTable teamId={teamId} />
-        </Panel>
+        <WebsitesDataTable teamId={teamId} />
       </Column>
     </PageBody>
   );

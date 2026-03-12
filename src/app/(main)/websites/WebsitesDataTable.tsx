@@ -1,9 +1,7 @@
-import { Icon, Row } from '@umami/react-zen';
-import Link from 'next/link';
 import { DataGrid } from '@/components/common/DataGrid';
-import { useLoginQuery, useNavigation, useUserWebsitesQuery } from '@/components/hooks';
-import { Favicon } from '@/index';
-import { WebsitesTable } from './WebsitesTable';
+import { useLoginQuery, useUserWebsitesQuery } from '@/components/hooks';
+import { WebsiteCard } from './WebsiteCard';
+import styles from './WebsiteCard.module.css';
 
 export function WebsitesDataTable({
   userId,
@@ -20,27 +18,21 @@ export function WebsitesDataTable({
 }) {
   const { user } = useLoginQuery();
   const queryResult = useUserWebsitesQuery({ userId: userId || user?.id, teamId });
-  const { renderUrl } = useNavigation();
-
-  const renderLink = (row: any) => (
-    <Row alignItems="center" gap="3">
-      <Icon size="md" color="muted">
-        <Favicon domain={row.domain} />
-      </Icon>
-      <Link href={renderUrl(`/websites/${row.id}`, false)}>{row.name}</Link>
-    </Row>
-  );
 
   return (
     <DataGrid query={queryResult} allowSearch allowPaging>
       {({ data }) => (
-        <WebsitesTable
-          data={data}
-          showActions={showActions}
-          allowEdit={allowEdit}
-          allowView={allowView}
-          renderLink={renderLink}
-        />
+        <div className={styles.grid}>
+          {data.map((website: any) => (
+            <WebsiteCard
+              key={website.id}
+              id={website.id}
+              name={website.name}
+              domain={website.domain}
+              showActions={showActions}
+            />
+          ))}
+        </div>
       )}
     </DataGrid>
   );
