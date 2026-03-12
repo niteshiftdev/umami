@@ -1,4 +1,4 @@
-import { Column, Text } from '@umami/react-zen';
+import { Column } from '@umami/react-zen';
 import { SideMenu } from '@/components/common/SideMenu';
 import { useMessages, useNavigation } from '@/components/hooks';
 import {
@@ -155,14 +155,6 @@ export function WebsiteNav({
     router.push(renderUrl(`/websites/${value}`));
   };
 
-  const renderValue = (value: any) => {
-    return (
-      <Text truncate style={{ maxWidth: 160, lineHeight: 1 }}>
-        {value?.selectedItem?.name}
-      </Text>
-    );
-  };
-
   const selectedKey = items
     .flatMap(e => e.items)
     .find(({ path }) => path && pathname.endsWith(path.split('?')[0]))?.id;
@@ -173,8 +165,13 @@ export function WebsiteNav({
         websiteId={websiteId}
         teamId={teamId}
         onChange={handleChange}
-        renderValue={renderValue}
-        buttonProps={{ style: { outline: 'none' } }}
+        buttonProps={{
+          style: {
+            outline: 'none',
+            padding: '8px 12px',
+            minHeight: '48px',
+          },
+        }}
       />
       <SideMenu
         items={items}
