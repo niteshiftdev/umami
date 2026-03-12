@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -27,6 +28,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { countryNames } = useCountryNames(locale);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
+  const { router, updateParams } = useNavigation();
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
@@ -52,6 +54,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const getOpacity = (code: string) => {
     return code === 'AQ' ? 0 : 1;
+  };
+
+  const handleClick = (code: string) => {
+    if (code === 'AQ') return;
+    router.replace(updateParams({ country: `eq.${code}` }));
   };
 
   const handleHover = (code: string) => {
@@ -86,10 +93,18 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: {
+                        outline: 'none',
+                        cursor: code !== 'AQ' ? 'pointer' : 'default',
+                      },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: 'pointer',
+                      },
                       pressed: { outline: 'none' },
                     }}
+                    onClick={() => handleClick(code)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />
