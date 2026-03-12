@@ -1,6 +1,7 @@
 import { Grid, Heading, Row, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
 import { useContext } from 'react';
 import { GridRow } from '@/components/common/GridRow';
+import { LazyLoad } from '@/components/common/LazyLoad';
 import { Panel } from '@/components/common/Panel';
 import { useMessages, useNavigation } from '@/components/hooks';
 import { EventsChart } from '@/components/metrics/EventsChart';
@@ -82,65 +83,77 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
         </Panel>
       </GridRow>
 
-      <GridRow layout="two" {...rowProps}>
-        <Panel>
-          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
-            {formatMessage(labels.environment)}
-          </Heading>
-          <Tabs>
-            <TabList>
-              <Tab id="browser">{formatMessage(labels.browsers)}</Tab>
-              <Tab id="os">{formatMessage(labels.os)}</Tab>
-              <Tab id="device">{formatMessage(labels.devices)}</Tab>
-            </TabList>
-            <TabPanel id="browser">
-              <MetricsTable type="browser" title={formatMessage(labels.browser)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="os">
-              <MetricsTable type="os" title={formatMessage(labels.os)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="device">
-              <MetricsTable type="device" title={formatMessage(labels.device)} {...tableProps} />
-            </TabPanel>
-          </Tabs>
-        </Panel>
+      <LazyLoad placeholder={<div style={{ minHeight: '570px' }} />}>
+        <GridRow layout="two" {...rowProps}>
+          <Panel>
+            <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+              {formatMessage(labels.environment)}
+            </Heading>
+            <Tabs>
+              <TabList>
+                <Tab id="browser">{formatMessage(labels.browsers)}</Tab>
+                <Tab id="os">{formatMessage(labels.os)}</Tab>
+                <Tab id="device">{formatMessage(labels.devices)}</Tab>
+              </TabList>
+              <TabPanel id="browser">
+                <MetricsTable
+                  type="browser"
+                  title={formatMessage(labels.browser)}
+                  {...tableProps}
+                />
+              </TabPanel>
+              <TabPanel id="os">
+                <MetricsTable type="os" title={formatMessage(labels.os)} {...tableProps} />
+              </TabPanel>
+              <TabPanel id="device">
+                <MetricsTable type="device" title={formatMessage(labels.device)} {...tableProps} />
+              </TabPanel>
+            </Tabs>
+          </Panel>
 
-        <Panel>
-          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
-            {formatMessage(labels.location)}
-          </Heading>
-          <Tabs>
-            <TabList>
-              <Tab id="country">{formatMessage(labels.countries)}</Tab>
-              <Tab id="region">{formatMessage(labels.regions)}</Tab>
-              <Tab id="city">{formatMessage(labels.cities)}</Tab>
-            </TabList>
-            <TabPanel id="country">
-              <MetricsTable type="country" title={formatMessage(labels.country)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="region">
-              <MetricsTable type="region" title={formatMessage(labels.region)} {...tableProps} />
-            </TabPanel>
-            <TabPanel id="city">
-              <MetricsTable type="city" title={formatMessage(labels.city)} {...tableProps} />
-            </TabPanel>
-          </Tabs>
-        </Panel>
-      </GridRow>
+          <Panel>
+            <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+              {formatMessage(labels.location)}
+            </Heading>
+            <Tabs>
+              <TabList>
+                <Tab id="country">{formatMessage(labels.countries)}</Tab>
+                <Tab id="region">{formatMessage(labels.regions)}</Tab>
+                <Tab id="city">{formatMessage(labels.cities)}</Tab>
+              </TabList>
+              <TabPanel id="country">
+                <MetricsTable
+                  type="country"
+                  title={formatMessage(labels.country)}
+                  {...tableProps}
+                />
+              </TabPanel>
+              <TabPanel id="region">
+                <MetricsTable type="region" title={formatMessage(labels.region)} {...tableProps} />
+              </TabPanel>
+              <TabPanel id="city">
+                <MetricsTable type="city" title={formatMessage(labels.city)} {...tableProps} />
+              </TabPanel>
+            </Tabs>
+          </Panel>
+        </GridRow>
+      </LazyLoad>
 
-      <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
+      <LazyLoad placeholder={<div style={{ minHeight: '570px' }} />}>
+        <GridRow layout="two-one" {...rowProps}>
+          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+            <WorldMap websiteId={websiteId} />
+          </Panel>
 
-        <Panel>
-          <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
-            {formatMessage(labels.traffic)}
-          </Heading>
-          <Row border="bottom" marginBottom="4" />
-          <WeeklyTraffic websiteId={websiteId} />
-        </Panel>
-      </GridRow>
+          <Panel>
+            <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
+              {formatMessage(labels.traffic)}
+            </Heading>
+            <Row border="bottom" marginBottom="4" />
+            <WeeklyTraffic websiteId={websiteId} />
+          </Panel>
+        </GridRow>
+      </LazyLoad>
       {isSharePage && (
         <GridRow layout="two-one" {...rowProps}>
           <Panel>
