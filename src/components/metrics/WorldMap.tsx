@@ -4,8 +4,10 @@ import { useMemo, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
+  useFilters,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,8 +27,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
+  const { filters } = useFilters();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
+  const activeCountryFilter = filters.find(
+    ({ name, operator }) => name === 'country' && operator === 'eq',
+  );
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
@@ -54,6 +61,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     return code === 'AQ' ? 0 : 1;
   };
 
+  const isSelected = (code: string) => {
+    return activeCountryFilter?.value === code;
+  };
+
   const handleHover = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
@@ -61,6 +72,18 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
       `${countryNames[code] || unknownLabel}: ${formatLongNumber(
         country?.y || 0,
       )} ${visitorsLabel}` as any,
+    );
+  };
+
+  const handleClick = (code: string) => {
+    if (code === 'AQ') return;
+
+    router.push(
+      updateParams({
+        country: isSelected(code) ? undefined : `eq.${code}`,
+        region: undefined,
+        city: undefined,
+      }),
     );
   };
 
@@ -83,13 +106,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     key={geo.rsmKey}
                     geography={geo}
                     fill={getFillColor(code)}
-                    stroke={colors.map.strokeColor}
+                    stroke={isSelected(code) ? colors.map.baseColor : colors.map.strokeColor}
+                    strokeWidth={isSelected(code) ? 1.5 : 0.5}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
+                      default: { outline: 'none', cursor: code === 'AQ' ? 'default' : 'pointer' },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
+                    onClick={() => handleClick(code)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />
