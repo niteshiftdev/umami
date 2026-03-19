@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { App } from './App';
 
-export default function ({ children }) {
+export default function ({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
       <App>{children}</App>

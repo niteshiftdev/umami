@@ -10,3 +10,7 @@ export default async function ({ params }: { params: Promise<{ websiteId: string
 export const metadata: Metadata = {
   title: 'Websites',
 };
+
+export function generateStaticParams() {
+  return [];
+}
