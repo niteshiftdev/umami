@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { v4, v5, v7 } from 'uuid';
+import { getDatabaseUrl } from './db';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
@@ -53,7 +54,7 @@ export function md5(...args: string[]) {
 }
 
 export function secret() {
-  return hash(process.env.APP_SECRET || process.env.DATABASE_URL);
+  return hash(process.env.APP_SECRET || getDatabaseUrl());
 }
 
 export function uuid(...args: any) {

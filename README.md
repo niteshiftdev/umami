@@ -44,6 +44,8 @@ Create an `.env` file with the following:
 
 ```bash
 DATABASE_URL=connection-url
+# Or, when using Neon directly:
+NEON_DATABASE_URL=connection-url
 ```
 
 The connection URL format:

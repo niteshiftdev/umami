@@ -3,6 +3,7 @@ import { readReplicas } from '@prisma/extension-read-replicas';
 import debug from 'debug';
 import { PrismaClient } from '@/generated/prisma/client';
 import { DEFAULT_PAGE_SIZE, FILTER_COLUMNS, OPERATORS, SESSION_COLUMNS } from './constants';
+import { getDatabaseUrl } from './db';
 import { filtersObjectToArray } from './params';
 import type { Operator, QueryFilters, QueryOptions } from './types';
 
@@ -294,16 +295,26 @@ function transaction(input: any, options?: any) {
 }
 
 function getSchema() {
-  const connectionUrl = new URL(process.env.DATABASE_URL);
+  const url = getDatabaseUrl();
+
+  if (!url) {
+    return null;
+  }
+
+  const connectionUrl = new URL(url);
 
   return connectionUrl.searchParams.get('schema');
 }
 
 function getClient() {
-  const url = process.env.DATABASE_URL;
+  const url = getDatabaseUrl();
   const replicaUrl = process.env.DATABASE_REPLICA_URL;
   const logQuery = process.env.LOG_QUERY;
   const schema = getSchema();
+
+  if (!url) {
+    throw new Error('DATABASE_URL or NEON_DATABASE_URL is not defined.');
+  }
 
   const baseAdapter = new PrismaPg({ connectionString: url }, { schema });
 

@@ -11,7 +11,7 @@ set -euo pipefail
 # - Geo database already built (build-geo)
 #
 # At runtime, we only need to:
-# 1. Apply database migrations (requires runtime DATABASE_URL)
+# 1. Apply database migrations (requires runtime DATABASE_URL or NEON_DATABASE_URL)
 # 2. Start the dev server
 
 # Logging setup
@@ -35,11 +35,15 @@ DEV_SERVER_TO_PREVIEW_DURATION_S=0
 log "Starting niteshift setup for umami..."
 
 # 1. Check DATABASE_URL is set (only runtime requirement)
+if [ -z "${DATABASE_URL:-}" ] && [ -n "${NEON_DATABASE_URL:-}" ]; then
+  export DATABASE_URL="$NEON_DATABASE_URL"
+fi
+
 if [ -z "${DATABASE_URL:-}" ]; then
-  log_error "DATABASE_URL environment variable is not set"
+  log_error "DATABASE_URL or NEON_DATABASE_URL environment variable is not set"
   exit 1
 fi
-log "✓ DATABASE_URL is set"
+log "✓ Database URL is set"
 
 # 2. Apply database migrations
 # This must happen at runtime because it needs the actual database connection
