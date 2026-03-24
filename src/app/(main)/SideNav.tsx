@@ -9,6 +9,7 @@ import {
 } from '@umami/react-zen';
 import Link from 'next/link';
 import type { Key } from 'react';
+import { GeocitiesSidebarFooter } from '@/components/common/GeocitiesElements';
 import { useGlobalState, useMessages, useNavigation } from '@/components/hooks';
 import { Globe, Grid2x2, LinkIcon, PanelLeft } from '@/components/icons';
 import { LanguageButton } from '@/components/input/LanguageButton';
@@ -29,18 +30,21 @@ export function SideNav(props: SidebarProps) {
       label: formatMessage(labels.websites),
       path: '/websites',
       icon: <Globe />,
+      emoji: '\u{1F30D}',
     },
     {
       id: 'links',
       label: formatMessage(labels.links),
       path: '/links',
       icon: <LinkIcon />,
+      emoji: '\u{1F517}',
     },
     {
       id: 'pixels',
       label: formatMessage(labels.pixels),
       path: '/pixels',
       icon: <Grid2x2 />,
+      emoji: '\u{1F4BB}',
     },
   ];
 
@@ -63,11 +67,11 @@ export function SideNav(props: SidebarProps) {
         <NavButton showText={!hasNav && !isCollapsed} onAction={handleSelect} />
       </SidebarSection>
       <SidebarSection flexGrow={1}>
-        {links.map(({ id, path, label, icon }) => {
+        {links.map(({ id, path, label, icon, emoji }) => {
           return (
             <Link key={id} href={renderUrl(path, false)} role="button">
               <SidebarItem
-                label={label}
+                label={`${emoji} ${label}`}
                 icon={icon}
                 isSelected={pathname.includes(path)}
                 role="button"
@@ -82,6 +86,11 @@ export function SideNav(props: SidebarProps) {
           <ThemeButton />
         </Row>
       </SidebarSection>
+      {!isCollapsed && !hasNav && (
+        <SidebarSection>
+          <GeocitiesSidebarFooter />
+        </SidebarSection>
+      )}
     </Sidebar>
   );
 }

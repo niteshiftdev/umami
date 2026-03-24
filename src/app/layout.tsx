@@ -9,6 +9,7 @@ import '@umami/react-zen/styles.css';
 import '@niteshift/dials/styles.css';
 import '@/styles/global.css';
 import '@/styles/variables.css';
+import '@/styles/geocities.css';
 
 export default function ({ children }) {
   if (process.env.DISABLE_UI) {
