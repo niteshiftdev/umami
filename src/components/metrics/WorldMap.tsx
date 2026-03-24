@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -77,6 +79,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const isClickable = code && code !== 'AQ';
 
                 return (
                   <Geography
@@ -86,12 +89,30 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: { outline: 'none', cursor: isClickable ? 'pointer' : 'default' },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: isClickable ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
+                    role={isClickable ? 'button' : undefined}
+                    tabIndex={isClickable ? 0 : -1}
+                    aria-label={isClickable ? countryNames[code] || code : undefined}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => {
+                      if (isClickable) {
+                        router.replace(updateParams({ country: `eq.${code}` }));
+                      }
+                    }}
+                    onKeyDown={e => {
+                      if ((e.key === 'Enter' || e.key === ' ') && isClickable) {
+                        e.preventDefault();
+                        router.replace(updateParams({ country: `eq.${code}` }));
+                      }
+                    }}
                   />
                 );
               });
