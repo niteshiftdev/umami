@@ -84,6 +84,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const isClickable = code !== 'AQ';
 
                 return (
                   <Geography
@@ -93,8 +94,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: 'pointer' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
+                      default: { outline: 'none', cursor: isClickable ? 'pointer' : 'default' },
+                      hover: {
+                        outline: 'none',
+                        fill: isClickable ? colors.map.hoverColor : undefined,
+                        cursor: isClickable ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
