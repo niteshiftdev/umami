@@ -8,6 +8,8 @@ import { PrismaClient } from '../generated/prisma/client.js';
 
 const MIN_VERSION = '9.4.0';
 
+process.env.DATABASE_URL ||= process.env.NEON_DATABASE_URL;
+
 if (process.env.SKIP_DB_CHECK) {
   console.log('Skipping database check.');
   process.exit(0);
@@ -32,9 +34,9 @@ function error(msg) {
 
 async function checkEnv() {
   if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is not defined.');
+    throw new Error('DATABASE_URL or NEON_DATABASE_URL is not defined.');
   } else {
-    success('DATABASE_URL is defined.');
+    success('Database URL is defined.');
   }
 
   if (process.env.REDIS_URL) {
@@ -48,7 +50,7 @@ async function checkConnection() {
 
     success('Database connection successful.');
   } catch (e) {
-    throw new Error('Unable to connect to the database: ' + e.message);
+    throw new Error(`Unable to connect to the database: ${e.message}`);
   }
 }
 

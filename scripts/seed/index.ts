@@ -270,12 +270,12 @@ async function generateSiteData(
 }
 
 function createPrismaClient(): PrismaClient {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
   if (!url) {
     throw new Error(
-      'DATABASE_URL environment variable is not set.\n' +
-        'Please set DATABASE_URL in your .env file or environment.\n' +
-        'Example: DATABASE_URL=postgresql://user:password@localhost:5432/umami',
+      'DATABASE_URL or NEON_DATABASE_URL environment variable is not set.\n' +
+        'Please set DATABASE_URL or NEON_DATABASE_URL in your .env file or environment.\n' +
+        'Example: NEON_DATABASE_URL=postgresql://user:password@localhost:5432/umami',
     );
   }
 
@@ -285,7 +285,7 @@ function createPrismaClient(): PrismaClient {
     schema = connectionUrl.searchParams.get('schema') ?? undefined;
   } catch {
     throw new Error(
-      'DATABASE_URL is not a valid URL.\n' +
+      'DATABASE_URL or NEON_DATABASE_URL is not a valid URL.\n' +
         'Expected format: postgresql://user:password@host:port/database\n' +
         `Received: ${url.substring(0, 30)}...`,
     );

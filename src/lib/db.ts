@@ -4,12 +4,16 @@ export const CLICKHOUSE = 'clickhouse';
 export const KAFKA = 'kafka';
 export const KAFKA_PRODUCER = 'kafka-producer';
 
+export function getDatabaseUrl() {
+  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+}
+
 // Fixes issue with converting bigint values
 BigInt.prototype.toJSON = function () {
   return Number(this);
 };
 
-export function getDatabaseType(url = process.env.DATABASE_URL) {
+export function getDatabaseType(url = getDatabaseUrl()) {
   const type = url?.split(':')[0];
 
   if (type === 'postgres') {

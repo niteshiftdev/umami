@@ -746,7 +746,13 @@ function generateRevenue(event, session) {
 // ============================================================================
 
 async function setupPrisma() {
-  const url = new URL(process.env.DATABASE_URL);
+  const connectionString = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error('DATABASE_URL or NEON_DATABASE_URL is not defined.');
+  }
+
+  const url = new URL(connectionString);
   const adapter = new PrismaPg(
     { connectionString: url.toString() },
     { schema: url.searchParams.get('schema') },
