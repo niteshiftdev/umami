@@ -8,7 +8,7 @@ import { PrismaClient } from '../generated/prisma/client.js';
 
 const MIN_VERSION = '9.4.0';
 
-process.env.DATABASE_URL ??= process.env.NEON_DATABASE_URL;
+process.env.DATABASE_URL ||= process.env.NEON_DATABASE_URL;
 
 if (process.env.SKIP_DB_CHECK) {
   console.log('Skipping database check.');
