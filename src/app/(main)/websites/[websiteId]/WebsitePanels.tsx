@@ -129,10 +129,6 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
 
       <GridRow layout="two-one" {...rowProps}>
-        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
-          <WorldMap websiteId={websiteId} />
-        </Panel>
-
         <Panel>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.traffic)}
@@ -162,6 +158,12 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Panel>
         </GridRow>
       )}
+
+      <GridRow layout="two-one" {...rowProps}>
+        <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} paddingX="0" paddingY="0">
+          <WorldMap websiteId={websiteId} />
+        </Panel>
+      </GridRow>
     </Grid>
   );
 }
