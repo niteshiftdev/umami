@@ -1,0 +1,64 @@
+.grid {
+  min-height: 200px;
+}
+
+.gridItem {
+  opacity: 0;
+  animation: fadeSlideIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background-color: var(--base-color-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-3);
+  padding: var(--spacing-5);
+  height: 100%;
+  min-height: 140px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.faviconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--base-color-3);
+  border-radius: var(--border-radius-2);
+  flex-shrink: 0;
+}
+
+.faviconWrapper img {
+  width: 20px;
+  height: 20px;
+}
+
+.nameLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.nameLink:hover {
+  color: var(--primary-color);
+}
