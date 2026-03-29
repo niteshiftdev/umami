@@ -37,19 +37,49 @@ export function LoginForm() {
   };
 
   return (
-    <Column justifyContent="center" alignItems="center" gap="6">
-      <Icon size="lg">
+    <Column
+      justifyContent="center"
+      alignItems="center"
+      gap="6"
+      style={{
+        color: '#eeeeee',
+      }}
+    >
+      <Icon size="lg" style={{ color: '#0090ff' }}>
         <Logo />
       </Icon>
-      <Heading>umami</Heading>
-      <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
+      <Heading style={{ color: '#eeeeee', fontSize: '2.5rem', fontWeight: '700' }}>
+        umami
+      </Heading>
+      <Form
+        onSubmit={handleSubmit}
+        error={getErrorMessage(error)}
+        style={{
+          backgroundColor: '#1a1a1a',
+          padding: '2rem',
+          borderRadius: '12px',
+          border: '1px solid #313131',
+          minWidth: '320px',
+        }}
+      >
         <FormField
           label={formatMessage(labels.username)}
           data-test="input-username"
           name="username"
           rules={{ required: formatMessage(labels.required) }}
+          style={{
+            color: '#eeeeee',
+          }}
         >
-          <TextField autoComplete="username" />
+          <TextField
+            autoComplete="username"
+            style={{
+              backgroundColor: '#222222',
+              color: '#eeeeee',
+              borderColor: '#313131',
+              padding: '10px 12px',
+            }}
+          />
         </FormField>
 
         <FormField
@@ -57,8 +87,19 @@ export function LoginForm() {
           data-test="input-password"
           name="password"
           rules={{ required: formatMessage(labels.required) }}
+          style={{
+            color: '#eeeeee',
+          }}
         >
-          <PasswordField autoComplete="current-password" />
+          <PasswordField
+            autoComplete="current-password"
+            style={{
+              backgroundColor: '#222222',
+              color: '#eeeeee',
+              borderColor: '#313131',
+              padding: '10px 12px',
+            }}
+          />
         </FormField>
         <FormButtons>
           <FormSubmitButton
