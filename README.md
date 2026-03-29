@@ -23,6 +23,39 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 
 ---
 
+## 💻 Local Development
+
+For a local development setup, install dependencies, configure `DATABASE_URL`, and start the app with:
+
+```bash
+pnpm install
+pnpm build
+pnpm start
+```
+
+On first build, Umami creates the default login:
+
+- Username: `admin`
+- Password: `umami`
+
+If you want richer local analytics data to explore dashboards, filters, and reports, generate sample data with:
+
+```bash
+pnpm seed-data
+```
+
+Useful options:
+
+```bash
+pnpm seed-data -- --days 90
+pnpm seed-data -- --clear
+pnpm seed-data -- --verbose
+```
+
+The sample data generator is intended for local development only and creates demo websites with realistic traffic patterns for testing reporting and filtering flows.
+
+---
+
 ## 🛠 Installing from Source
 
 ### Requirements
