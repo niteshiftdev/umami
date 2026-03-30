@@ -25,7 +25,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
-  const { router, updateParams } = useNavigation();
+  const { router, query, updateParams } = useNavigation();
   const { countryNames } = useCountryNames(locale);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
@@ -68,7 +68,8 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const handleClick = (code: string) => {
     if (code === 'AQ') return;
-    router.replace(updateParams({ country: `eq.${code}` }));
+    const value = `eq.${code}`;
+    router.push(updateParams({ country: query.country === value ? undefined : value }));
   };
 
   return (
@@ -93,8 +94,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: 'pointer' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
+                      default: { outline: 'none', cursor: code === 'AQ' ? 'default' : 'pointer' },
+                      hover: {
+                        outline: 'none',
+                        fill: code === 'AQ' ? undefined : colors.map.hoverColor,
+                        cursor: code === 'AQ' ? 'default' : 'pointer',
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onClick={() => handleClick(code)}
