@@ -35,10 +35,15 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
     color: typography.sectionHeadingColor,
   };
 
+  const panelPadding = {
+    paddingX: typography.panelPaddingX as any,
+    paddingY: typography.panelPaddingY as any,
+  };
+
   return (
     <Grid gap="3">
       <GridRow layout="two" {...rowProps}>
-        <Panel>
+        <Panel {...panelPadding}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.pages)}
           </Heading>
@@ -59,7 +64,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
             </TabPanel>
           </Tabs>
         </Panel>
-        <Panel>
+        <Panel {...panelPadding}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.sources)}
           </Heading>
@@ -83,7 +88,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
 
       <GridRow layout="two" {...rowProps}>
-        <Panel>
+        <Panel {...panelPadding}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.environment)}
           </Heading>
@@ -105,7 +110,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           </Tabs>
         </Panel>
 
-        <Panel>
+        <Panel {...panelPadding}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.location)}
           </Heading>
@@ -133,7 +138,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
           <WorldMap websiteId={websiteId} />
         </Panel>
 
-        <Panel>
+        <Panel {...panelPadding}>
           <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
             {formatMessage(labels.traffic)}
           </Heading>
@@ -143,7 +148,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
       </GridRow>
       {isSharePage && (
         <GridRow layout="two-one" {...rowProps}>
-          <Panel>
+          <Panel {...panelPadding}>
             <Heading size={typography.sectionHeadingSize as any} style={headingStyle}>
               {formatMessage(labels.events)}
             </Heading>
@@ -157,7 +162,7 @@ export function WebsitePanels({ websiteId }: { websiteId: string }) {
               filterLink={false}
             />
           </Panel>
-          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }}>
+          <Panel gridColumn={{ xs: 'span 1', md: 'span 2' }} {...panelPadding}>
             <EventsChart websiteId={websiteId} />
           </Panel>
         </GridRow>
