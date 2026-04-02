@@ -107,6 +107,12 @@ docker compose up --force-recreate -d
 
 ---
 
+## 📐 Arithmetic Documentation
+
+The result of `1+2` is **3**.
+
+---
+
 ## 🛟 Support
 
 <p align="center">
