@@ -43,3 +43,7 @@ yarn-error.log*
 
 *.dev.yml
 
+# niteshift runtime markers
+.niteshift-prebake-sync-complete
+.niteshift-db-setup-complete
+.umami-prebake-applied
