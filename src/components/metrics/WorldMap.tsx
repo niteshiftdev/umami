@@ -67,7 +67,6 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   };
 
   const handleClick = (code: string) => {
-    if (code === 'AQ') return;
     router.replace(updateParams({ country: `eq.${code}` }));
   };
 
@@ -84,6 +83,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const isInteractive = code !== 'AQ';
 
                 return (
                   <Geography
@@ -93,13 +93,17 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: code !== 'AQ' ? 'pointer' : 'default' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor: 'pointer' },
+                      default: { outline: 'none', cursor: isInteractive ? 'pointer' : 'default' },
+                      hover: {
+                        outline: 'none',
+                        fill: isInteractive ? colors.map.hoverColor : undefined,
+                        cursor: isInteractive ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
-                    onMouseOver={() => handleHover(code)}
-                    onMouseOut={() => setTooltipPopup(null)}
-                    onClick={() => handleClick(code)}
+                    onMouseOver={isInteractive ? () => handleHover(code) : undefined}
+                    onMouseOut={isInteractive ? () => setTooltipPopup(null) : undefined}
+                    onClick={isInteractive ? () => handleClick(code) : undefined}
                   />
                 );
               });
