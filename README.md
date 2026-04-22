@@ -116,7 +116,6 @@ docker compose up --force-recreate -d
   <a href="https://umami.is/discord"><img src="https://img.shields.io/badge/Discord--blue?style=social&logo=discord" alt="Discord" /></a>
 </p>
 
-[release-shield]: https://img.shields.io/github/release/umami-software/umami.svg
 [releases-url]: https://github.com/umami-software/umami/releases
 [license-shield]: https://img.shields.io/github/license/umami-software/umami.svg
 [license-url]: https://github.com/umami-software/umami/blob/master/LICENSE
