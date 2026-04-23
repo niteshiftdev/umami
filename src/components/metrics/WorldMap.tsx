@@ -57,7 +57,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   };
 
   const handleClick = (code: string) => {
-    if (!code || code === 'AQ') return;
+    if (!code) return;
     router.replace(updateParams({ country: `eq.${code}` }));
   };
 
@@ -95,7 +95,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     style={{
                       default: {
                         outline: 'none',
-                        cursor: code && code !== 'AQ' ? 'pointer' : 'default',
+                        cursor: code ? 'pointer' : 'default',
                       },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
