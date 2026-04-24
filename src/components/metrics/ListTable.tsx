@@ -67,14 +67,14 @@ export function ListTable({
   };
 
   return (
-    <Column gap>
+    <Column gap="2">
       <Grid alignItems="center" justifyContent="space-between" paddingLeft="2" columns="1fr 100px">
         <Text weight="bold">{title}</Text>
         <Text weight="bold" align="center">
           {metric}
         </Text>
       </Grid>
-      <Column gap="1">
+      <Column gap="0">
         {data?.length === 0 && <Empty />}
         {virtualize && data.length > 0 ? (
           <FixedSizeList
