@@ -71,8 +71,8 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
       data-for="world-map-tooltip"
       style={{ margin: 'auto 0', overflow: 'hidden' }}
     >
-      <ComposableMap projection="geoMercator">
-        <ZoomableGroup zoom={0.8} minZoom={0.7} center={[0, 40]}>
+      <ComposableMap projection="geoEqualEarth">
+        <ZoomableGroup zoom={1} minZoom={0.7} center={[0, 10]}>
           <Geographies geography={`${process.env.basePath || ''}${MAP_FILE}`}>
             {({ geographies }) => {
               return geographies.map(geo => {

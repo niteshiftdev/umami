@@ -12,6 +12,14 @@ html[style*="padding-right"] {
   padding-right: 0 !important;
 }
 
+[class*="Tabs_tabs"] {
+  gap: var(--spacing-3);
+}
+
+[class*="Tabs_list"] {
+  gap: var(--spacing-4);
+}
+
 a,
 a:active,
 a:hover {
