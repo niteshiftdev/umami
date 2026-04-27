@@ -117,7 +117,6 @@ docker compose up --force-recreate -d
 </p>
 
 [release-shield]: https://img.shields.io/github/release/umami-software/umami.svg
-[releases-url]: https://github.com/umami-software/umami/releases
 [license-shield]: https://img.shields.io/github/license/umami-software/umami.svg
 [license-url]: https://github.com/umami-software/umami/blob/master/LICENSE
 [build-shield]: https://img.shields.io/github/actions/workflow/status/umami-software/umami/ci.yml
