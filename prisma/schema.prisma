@@ -159,6 +159,7 @@ model EventData {
   @@index([websiteId])
   @@index([websiteEventId])
   @@index([websiteId, createdAt])
+  @@index([websiteId, websiteEventId, createdAt])
   @@index([websiteId, createdAt, dataKey])
   @@map("event_data")
 }

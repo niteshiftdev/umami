@@ -243,7 +243,7 @@ async function pagedRawQuery(
   name?: string,
   options: { defaultOrderBy?: string } = {},
 ) {
-  const { page = 1, pageSize, orderBy, sortDescending = false } = filters;
+  const { page = 1, pageSize, orderBy, sortDescending = false, search } = filters;
   const size = +pageSize || DEFAULT_PAGE_SIZE;
   const offset = +size * (+page - 1);
   const direction = sortDescending ? 'desc' : 'asc';
@@ -270,7 +270,7 @@ async function pagedRawQuery(
   const count = rows[0] ? Number(rows[0].__total) : 0;
   const data = rows.map(({ __total, ...row }) => row);
 
-  return { data, count, page: +page, pageSize: size, orderBy };
+  return { data, count, page: +page, pageSize: size, orderBy, search };
 }
 
 function getSearchParameters(query: string, filters: Record<string, any>[]) {

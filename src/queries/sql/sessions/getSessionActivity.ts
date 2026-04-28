@@ -29,11 +29,15 @@ async function relationalQuery(websiteId: string, sessionId: string, filters: Qu
       event_type as "eventType",
       event_name as "eventName",
       visit_id as "visitId",
-      event_id IN (select website_event_id 
-                   from event_data
-                   where website_id = {{websiteId::uuid}}
-                      and created_at between {{startDate}} and {{endDate}}) AS "hasData"
+      coalesce(event_data_flags."hasData", 0) as "hasData"
     from website_event
+    left join (
+      select distinct website_event_id, 1 as "hasData"
+      from event_data
+      where website_id = {{websiteId::uuid}}
+        and created_at between {{startDate}} and {{endDate}}
+    ) as event_data_flags
+      on event_data_flags.website_event_id = website_event.event_id
     where website_id = {{websiteId::uuid}}
       and session_id = {{sessionId::uuid}}
       and created_at between {{startDate}} and {{endDate}}
@@ -60,12 +64,16 @@ async function clickhouseQuery(websiteId: string, sessionId: string, filters: Qu
       event_type as eventType,
       event_name as eventName,
       visit_id as visitId,
-      event_id IN (select event_id 
-                   from event_data 
-                   where website_id = {websiteId:UUID} 
-                    and session_id = {sessionId:UUID}
-                    and created_at between {startDate:DateTime64} and {endDate:DateTime64}) AS hasData
+      ifNull(event_data_flags.hasData, 0) as hasData
     from website_event
+    left join (
+      select distinct event_id, toUInt8(1) as hasData
+      from event_data
+      where website_id = {websiteId:UUID}
+        and session_id = {sessionId:UUID}
+        and created_at between {startDate:DateTime64} and {endDate:DateTime64}
+    ) as event_data_flags
+      on event_data_flags.event_id = website_event.event_id
     where website_id = {websiteId:UUID}
       and session_id = {sessionId:UUID} 
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
