@@ -182,24 +182,34 @@ async function pagedRawQuery(
   queryParams: Record<string, any>,
   filters: QueryFilters,
   name?: string,
+  options: { defaultOrderBy?: string } = {},
 ) {
   const { page = 1, pageSize, orderBy, sortDescending = false, search } = filters;
   const size = +pageSize || DEFAULT_PAGE_SIZE;
   const offset = +size * (+page - 1);
   const direction = sortDescending ? 'desc' : 'asc';
+  const orderQuery = orderBy
+    ? `order by ${orderBy} ${direction}`
+    : options.defaultOrderBy
+      ? `order by ${options.defaultOrderBy}`
+      : '';
 
-  const statements = [
-    orderBy && `order by ${orderBy} ${direction}`,
-    +size > 0 && `limit ${+size} offset ${+offset}`,
-  ]
+  const statements = [orderQuery, +size > 0 && `limit ${+size} offset ${+offset}`]
     .filter(n => n)
     .join('\n');
 
-  const count = await rawQuery(`select count(*) as num from (${query}) t`, queryParams).then(
-    res => res[0].num,
+  const rows = await rawQuery<{ __total: number }[]>(
+    `
+    select t.*, count(*) over() as __total
+    from (${query}) t
+    ${statements}
+    `,
+    queryParams,
+    name,
   );
 
-  const data = await rawQuery(`${query}${statements}`, queryParams, name);
+  const count = rows[0]?.__total ?? 0;
+  const data = rows.map(({ __total, ...row }) => row);
 
   return { data, count, page: +page, pageSize: size, orderBy, search };
 }

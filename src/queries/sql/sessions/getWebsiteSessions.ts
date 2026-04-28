@@ -68,11 +68,13 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
       session.country, 
       session.region, 
       session.city
-    order by max(website_event.created_at) desc
     `,
     queryParams,
     filters,
     FUNCTION_NAME,
+    {
+      defaultOrderBy: '"createdAt" desc',
+    },
   );
 }
 
@@ -120,7 +122,6 @@ async function clickhouseQuery(websiteId: string, filters: QueryFilters) {
     ${filterQuery}
     ${searchQuery}
     group by session_id, website_id, hostname, browser, os, device, screen, language, country, region, city
-    order by lastAt desc
     `;
   } else {
     sql = `
@@ -148,9 +149,10 @@ async function clickhouseQuery(websiteId: string, filters: QueryFilters) {
     ${filterQuery}
     ${searchQuery}
     group by session_id, website_id, hostname, browser, os, device, screen, language, country, region, city
-    order by lastAt desc
     `;
   }
 
-  return pagedRawQuery(sql, queryParams, filters, FUNCTION_NAME);
+  return pagedRawQuery(sql, queryParams, filters, FUNCTION_NAME, {
+    defaultOrderBy: 'createdAt desc',
+  });
 }

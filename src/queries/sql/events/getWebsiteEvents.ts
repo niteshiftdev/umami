@@ -58,11 +58,13 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
     ${dateQuery}
     ${filterQuery}
     ${searchQuery}
-    order by website_event.created_at desc
     `,
     queryParams,
     filters,
     FUNCTION_NAME,
+    {
+      defaultOrderBy: '"createdAt" desc',
+    },
   );
 }
 
@@ -110,10 +112,12 @@ async function clickhouseQuery(websiteId: string, filters: QueryFilters) {
     ${dateQuery}
     ${filterQuery}
     ${searchQuery}
-    order by created_at desc
     `,
     queryParams,
     filters,
     FUNCTION_NAME,
+    {
+      defaultOrderBy: 'createdAt desc',
+    },
   );
 }
