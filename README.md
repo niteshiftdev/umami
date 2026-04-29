@@ -23,7 +23,6 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 
 ---
 ## 🛠 Installing from Source
-
 ### Requirements
 
 - A server with Node.js version 18.18+ (Node.js 20 LTS recommended).
