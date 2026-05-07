@@ -1,6 +1,7 @@
 <p align="center">
   <img src="https://content.umami.is/website/images/umami-logo.png" alt="Umami Logo" width="100">
 </p>
+
 <h1 align="center">Umami</h1>
 
 <p align="center">
