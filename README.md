@@ -25,20 +25,9 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 
 ## 🛠 Installing from Source
 
-### Requirements
-
-- A server with Node.js version 18.18+ (Node.js 20 LTS recommended).
-- A PostgreSQL database version v12.14+.
-
-### Get the source code and install packages
-
-```bash
-git clone https://github.com/umami-software/umami.git
-cd umami
-pnpm install
-```
 
 ### Configure Umami
+
 
 Create an `.env` file with the following:
 
@@ -115,6 +104,10 @@ docker compose up --force-recreate -d
   <a href="https://linkedin.com/company/umami-software"><img src="https://img.shields.io/badge/LinkedIn--blue?style=social&logo=linkedin" alt="LinkedIn" /></a>
   <a href="https://umami.is/discord"><img src="https://img.shields.io/badge/Discord--blue?style=social&logo=discord" alt="Discord" /></a>
 </p>
+
+---
+
+## 🙌 Credits
 
 [release-shield]: https://img.shields.io/github/release/umami-software/umami.svg
 [releases-url]: https://github.com/umami-software/umami/releases
