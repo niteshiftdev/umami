@@ -28,6 +28,7 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 
 ### Configure Umami
 
+
 Create an `.env` file with the following:
 
 ```bash
