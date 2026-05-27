@@ -26,14 +26,6 @@ A detailed getting started guide can be found at [umami.is/docs](https://umami.i
 ## 🛠 Installing from Source
 
 
-### Get the source code and install packages
-
-```bash
-git clone https://github.com/umami-software/umami.git
-cd umami
-pnpm install
-```
-
 ### Configure Umami
 
 Create an `.env` file with the following:
