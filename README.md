@@ -106,6 +106,10 @@ docker compose up --force-recreate -d
 
 ---
 
+## Credits
+
+---
+
 ## 🛟 Support
 
 <p align="center">
