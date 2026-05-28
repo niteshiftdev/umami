@@ -17,13 +17,15 @@
 
 ---
 
-## 🚀 Getting Started
+
+
+## Getting Started
 
 A detailed getting started guide can be found at [umami.is/docs](https://umami.is/docs/).
 
 ---
 
-## 🛠 Installing from Source
+## Installing from Source
 
 ### Requirements
 
@@ -70,7 +72,7 @@ By default, this will launch the application on `http://localhost:3000`. You wil
 
 ---
 
-## 🐳 Installing with Docker
+## Installing with Docker
 
 Umami provides Docker images as well as a Docker compose file for easy deployment.
 
@@ -88,7 +90,7 @@ docker compose up -d
 
 ---
 
-## 🔄 Getting Updates
+## Getting Updates
 
 To get the latest features, simply do a pull, install any new dependencies, and rebuild:
 
@@ -107,7 +109,7 @@ docker compose up --force-recreate -d
 
 ---
 
-## 🛟 Support
+## Support
 
 <p align="center">
   <a href="https://github.com/umami-software/umami"><img src="https://img.shields.io/badge/GitHub--blue?style=social&logo=github" alt="GitHub" /></a>
