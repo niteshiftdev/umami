@@ -26,10 +26,28 @@ test('formatNumber', () => {
 });
 
 test('formatLongNumber', () => {
+  // billions
+  expect(format.formatLongNumber(1200000000)).toBe('1.2b');
+  expect(format.formatLongNumber(1000000000)).toBe('1.0b');
+  expect(format.formatLongNumber(15700000000)).toBe('15.7b');
+
+  // millions
   expect(format.formatLongNumber(1200000)).toBe('1.2m');
+  expect(format.formatLongNumber(1000000)).toBe('1.0m');
+
+  // thousands
   expect(format.formatLongNumber(575000)).toBe('575k');
   expect(format.formatLongNumber(10500)).toBe('10.5k');
   expect(format.formatLongNumber(1200)).toBe('1.20k');
+
+  // below 1000
+  expect(format.formatLongNumber(999)).toBe('999');
+  expect(format.formatLongNumber(0)).toBe('0');
+
+  // negative values fall through to formatNumber (not abbreviated)
+  expect(format.formatLongNumber(-1200)).toBe('-1200');
+  expect(format.formatLongNumber(-1200000)).toBe('-1200000');
+  expect(format.formatLongNumber(-1200000000)).toBe('-1200000000');
 });
 
 test('stringToColor', () => {
