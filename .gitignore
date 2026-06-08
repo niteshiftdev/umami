@@ -17,10 +17,14 @@ package-lock.json
 # production
 /build
 /public/script.js
+/public/tracker.wasm
+/public/tracker.wasm.js
+/public/tracker.wasm.d.ts
 /geo
 /dist
 /generated
 /src/generated
+/packages/tracker-wasm/dist
 
 # misc
 .DS_Store
