@@ -53,8 +53,10 @@
 
   <style>
     .arch-map {
-      position: relative;
-      min-height: 620px;
+      display: grid;
+      grid-template-columns: minmax(170px, 1fr) 34px minmax(190px, 1.1fr) 34px minmax(220px, 1.25fr) 34px minmax(210px, 1.1fr) 34px minmax(190px, 1fr);
+      gap: 1rem;
+      align-items: stretch;
       border: 1px solid color-mix(in oklab, var(--border), white 8%);
       background:
         linear-gradient(90deg, color-mix(in oklab, var(--muted), transparent 90%) 1px, transparent 1px),
@@ -66,9 +68,17 @@
       padding: 1.25rem;
     }
 
+    .arch-stack {
+      display: grid;
+      gap: 0.85rem;
+      align-content: start;
+    }
+
+    .arch-stack.stores {
+      grid-template-rows: repeat(3, minmax(0, auto));
+    }
+
     .arch-node {
-      position: absolute;
-      width: 210px;
       min-height: 112px;
       padding: 1rem;
       border: 1px solid color-mix(in oklab, var(--border), white 14%);
@@ -94,44 +104,73 @@
       margin-bottom: 0.7rem;
     }
 
-    .arch-node.source { left: 24px; top: 70px; }
-    .arch-node.ui { left: 24px; top: 310px; }
-    .arch-node.edge { left: 290px; top: 56px; width: 235px; }
-    .arch-node.app { left: 580px; top: 72px; width: 260px; min-height: 170px; }
-    .arch-node.auth { left: 580px; top: 324px; width: 260px; }
-    .arch-node.query { right: 300px; top: 92px; width: 230px; }
-    .arch-node.meta { right: 26px; top: 52px; }
-    .arch-node.events { right: 26px; top: 230px; }
-    .arch-node.cache { right: 26px; top: 412px; }
-    .arch-node.enrich { left: 292px; top: 304px; width: 235px; }
+    .arch-connector {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      color: color-mix(in oklab, var(--accent-cyan), white 10%);
+    }
 
-    .arch-lines {
+    .arch-connector::before {
+      content: "";
       position: absolute;
-      inset: 0;
-      pointer-events: none;
+      top: 3.25rem;
+      bottom: 3.25rem;
+      left: 50%;
+      border-left: 1px dashed color-mix(in oklab, currentColor, transparent 18%);
+      transform: translateX(-50%);
     }
 
-    .arch-lines path {
-      fill: none;
-      stroke: color-mix(in oklab, var(--accent-cyan), white 10%);
-      stroke-width: 2.4;
-      stroke-linecap: round;
-      stroke-dasharray: 6 8;
-      opacity: 0.85;
+    .arch-connector::after {
+      content: "";
+      width: 100%;
+      border-top: 2px solid color-mix(in oklab, currentColor, transparent 2%);
+      box-shadow: 0 0 20px color-mix(in oklab, currentColor, transparent 76%);
     }
 
-    .arch-lines path.hot {
-      stroke: color-mix(in oklab, var(--accent-orange), white 10%);
-      stroke-dasharray: none;
+    .arch-connector i {
+      position: absolute;
+      z-index: 1;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid color-mix(in oklab, currentColor, transparent 20%);
+      background: color-mix(in oklab, var(--background), transparent 4%);
+      color: currentColor;
     }
 
-    .arch-lines path.cold {
-      stroke: color-mix(in oklab, var(--accent-green), white 12%);
+    .arch-connector.hot {
+      color: color-mix(in oklab, var(--accent-orange), white 10%);
     }
 
-    .arch-lines marker path {
-      fill: currentColor;
-      stroke: none;
+    .arch-connector.cold {
+      color: color-mix(in oklab, var(--accent-green), white 12%);
+    }
+
+    .arch-mini-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+    }
+
+    .arch-mini-flow span {
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.5rem;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .kv-v,
+    .kv-v code {
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .flow-chip {
@@ -172,22 +211,18 @@
       line-height: 1.4;
     }
 
-    @media (max-width: 1000px) {
+    @media (max-width: 1240px) {
       .arch-map {
-        min-height: auto;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .arch-node {
-        position: static;
-        width: auto !important;
-        min-height: auto;
-      }
-
-      .arch-lines {
+      .arch-connector {
         display: none;
+      }
+
+      .arch-stack.stores {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .entity-map {
@@ -198,6 +233,11 @@
     @media (max-width: 680px) {
       .topbar .meta span:first-child {
         display: none;
+      }
+
+      .arch-map,
+      .arch-stack.stores {
+        grid-template-columns: 1fr;
       }
 
       .entity-map {
@@ -216,87 +256,92 @@
     </div>
 
     <div class="arch-map">
-      <svg class="arch-lines" viewBox="0 0 1280 620" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <marker id="arrow-cyan" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-cyan), white 10%)"></path>
-          </marker>
-          <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-orange), white 10%)"></path>
-          </marker>
-          <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-green), white 12%)"></path>
-          </marker>
-        </defs>
-        <path class="hot" marker-end="url(#arrow-orange)" d="M225 128 C270 128 284 128 312 128"></path>
-        <path class="hot" marker-end="url(#arrow-orange)" d="M525 128 C560 128 560 128 590 128"></path>
-        <path class="cold" marker-end="url(#arrow-green)" d="M235 372 C380 372 422 368 580 376"></path>
-        <path marker-end="url(#arrow-cyan)" d="M840 150 C900 150 890 150 938 150"></path>
-        <path class="cold" marker-end="url(#arrow-green)" d="M1070 142 C1115 120 1135 116 1170 112"></path>
-        <path class="hot" marker-end="url(#arrow-orange)" d="M1070 174 C1115 226 1138 248 1170 292"></path>
-        <path marker-end="url(#arrow-cyan)" d="M840 390 C936 432 1035 472 1170 474"></path>
-        <path marker-end="url(#arrow-cyan)" d="M525 360 C558 300 575 242 600 214"></path>
-        <path class="hot" marker-end="url(#arrow-orange)" d="M410 304 C456 262 512 221 590 184"></path>
-      </svg>
+      <div class="arch-stack">
+        <div class="arch-node source">
+          <span class="badge orange">collection sources</span>
+          <h3>Tracked sites, links, pixels</h3>
+          <p>Browser tracker emits pageviews, custom events, identify payloads, short-link hits, and 1x1 GIF pixel hits.</p>
+        </div>
 
-      <div class="arch-node source">
-        <span class="badge orange">collection sources</span>
-        <h3>Tracked sites, links, pixels</h3>
-        <p>Browser tracker emits pageviews, custom events, identify payloads, short-link hits, and 1x1 GIF pixel hits.</p>
+        <div class="arch-node ui">
+          <span class="badge blue">dashboard clients</span>
+          <h3>React pages + hooks</h3>
+          <p>Dashboard, reports, teams, websites, links, pixels, settings, admin, and shared views call JSON APIs through React Query.</p>
+        </div>
       </div>
 
-      <div class="arch-node edge">
-        <span class="badge orange">public edge</span>
-        <h3>Collection routes</h3>
-        <p><code>/api/send</code>, <code>/api/batch</code>, <code>/q/[slug]</code>, and <code>/p/[slug]</code> validate and normalize anonymous traffic.</p>
+      <div class="arch-connector hot" aria-hidden="true"><i class="ri-arrow-right-line"></i></div>
+
+      <div class="arch-stack">
+        <div class="arch-node edge">
+          <span class="badge orange">public edge</span>
+          <h3>Collection routes</h3>
+          <p><code>/api/send</code>, <code>/api/batch</code>, <code>/q/[slug]</code>, and <code>/p/[slug]</code> validate and normalize anonymous traffic.</p>
+        </div>
+
+        <div class="arch-node enrich">
+          <span class="badge purple">enrichment</span>
+          <h3>Detect + classify</h3>
+          <p>IP headers, MaxMind, user-agent parsing, bot detection, blocked IPs, UTM fields, click IDs, and URL normalization feed event rows.</p>
+        </div>
       </div>
 
-      <div class="arch-node app">
-        <span class="badge cyan">next server</span>
-        <h3>App Router API layer</h3>
-        <p>Route handlers parse Zod schemas, verify auth, enforce permissions, enrich events, and call query helpers.</p>
+      <div class="arch-connector hot" aria-hidden="true"><i class="ri-arrow-right-line"></i></div>
+
+      <div class="arch-stack">
+        <div class="arch-node app">
+          <span class="badge cyan">next server</span>
+          <h3>App Router API layer</h3>
+          <p>Route handlers parse Zod schemas, verify auth, enforce permissions, enrich events, and call query helpers.</p>
+          <div class="arch-mini-flow" aria-label="API responsibilities">
+            <span>Zod</span>
+            <span>RBAC</span>
+            <span>Query</span>
+          </div>
+        </div>
+
+        <div class="arch-node auth">
+          <span class="badge blue">auth boundary</span>
+          <h3>JWT, share tokens, RBAC</h3>
+          <p>Bearer tokens, Redis-backed auth keys, share tokens, and permission checks guard most dashboard and report endpoints.</p>
+        </div>
       </div>
 
-      <div class="arch-node ui">
-        <span class="badge blue">dashboard clients</span>
-        <h3>React pages + hooks</h3>
-        <p>Dashboard, reports, teams, websites, links, pixels, settings, admin, and shared views call JSON APIs through React Query.</p>
+      <div class="arch-connector cold" aria-hidden="true"><i class="ri-arrow-right-line"></i></div>
+
+      <div class="arch-stack">
+        <div class="arch-node query">
+          <span class="badge green">query dispatch</span>
+          <h3>Prisma + SQL helpers</h3>
+          <p><code>runQuery</code> selects Prisma/Postgres or ClickHouse/Kafka implementations from shared report and event functions.</p>
+          <div class="arch-mini-flow" aria-label="Query modes">
+            <span>Prisma</span>
+            <span>SQL</span>
+            <span>Kafka</span>
+          </div>
+        </div>
       </div>
 
-      <div class="arch-node enrich">
-        <span class="badge purple">enrichment</span>
-        <h3>Detect + classify</h3>
-        <p>IP headers, MaxMind, user-agent parsing, bot detection, blocked IPs, UTM fields, click IDs, and URL normalization feed event rows.</p>
-      </div>
+      <div class="arch-connector" aria-hidden="true"><i class="ri-arrow-right-line"></i></div>
 
-      <div class="arch-node auth">
-        <span class="badge blue">auth boundary</span>
-        <h3>JWT, share tokens, RBAC</h3>
-        <p>Bearer tokens, Redis-backed auth keys, share tokens, and permission checks guard most dashboard and report endpoints.</p>
-      </div>
+      <div class="arch-stack stores">
+        <div class="arch-node meta">
+          <span class="badge green">metadata store</span>
+          <h3>Postgres via Prisma</h3>
+          <p>Users, teams, websites, reports, segments, links, pixels, plus default event/session tables.</p>
+        </div>
 
-      <div class="arch-node query">
-        <span class="badge green">query dispatch</span>
-        <h3>Prisma + SQL helpers</h3>
-        <p><code>runQuery</code> selects Prisma/Postgres or ClickHouse/Kafka implementations from shared report and event functions.</p>
-      </div>
+        <div class="arch-node events">
+          <span class="badge purple">analytics store</span>
+          <h3>ClickHouse optional</h3>
+          <p>High-volume website events, event data, session data, revenue, materialized views, and projections.</p>
+        </div>
 
-      <div class="arch-node meta">
-        <span class="badge green">metadata store</span>
-        <h3>Postgres via Prisma</h3>
-        <p>Users, teams, websites, reports, segments, links, pixels, plus default event/session tables.</p>
-      </div>
-
-      <div class="arch-node events">
-        <span class="badge purple">analytics store</span>
-        <h3>ClickHouse optional</h3>
-        <p>High-volume website events, event data, session data, revenue, materialized views, and projections.</p>
-      </div>
-
-      <div class="arch-node cache">
-        <span class="badge blue">cache / queue</span>
-        <h3>Redis and Kafka optional</h3>
-        <p>Redis caches auth keys and slug lookups. Kafka can receive event messages before ClickHouse ingestion.</p>
+        <div class="arch-node cache">
+          <span class="badge blue">cache / queue</span>
+          <h3>Redis and Kafka optional</h3>
+          <p>Redis caches auth keys and slug lookups. Kafka can receive event messages before ClickHouse ingestion.</p>
+        </div>
       </div>
     </div>
   </section>
