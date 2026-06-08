@@ -1,0 +1,672 @@
+<!--
+@title: Umami Architecture Overview
+@description: Architecture, data sources, data flows, and storage boundaries for this Umami codebase.
+-->
+
+<div class="shell shell-wide">
+  <div class="topbar">
+    <div class="row" style="gap: 1.25rem">
+      <div class="dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="crumbs">
+        <span>umami</span>
+        <span class="crumb-sep">/</span>
+        <span>architecture</span>
+        <span class="crumb-sep">/</span>
+        <span style="color: var(--foreground)">overview</span>
+      </div>
+    </div>
+    <div class="meta">
+      <span>Next.js 15</span>
+      <span><strong>v3.0.3</strong></span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="section-label"><i class="ri-radar-line"></i> System Map</span>
+      <h1 class="hero-title">Umami is a Next.js analytics app with a dual-mode event store.</h1>
+      <p class="hero-lede">
+        The same app serves the dashboard, JSON API, collection endpoint, link redirects, pixel GIFs,
+        and tracking script. Postgres/Prisma is the default system of record; ClickHouse and Kafka
+        can take over high-volume event ingestion while Prisma keeps account metadata.
+      </p>
+      <div class="row" style="margin-top: 1.5rem">
+        <span class="badge cyan">App Router</span>
+        <span class="badge green">Postgres</span>
+        <span class="badge purple">ClickHouse optional</span>
+        <span class="badge orange">Kafka optional</span>
+        <span class="badge blue">Redis optional</span>
+      </div>
+    </div>
+    <aside class="hero-aside">
+      <div class="row-line"><span class="k">Runtime</span><span class="v">Node + Next server</span></div>
+      <hr />
+      <div class="row-line"><span class="k">UI</span><span class="v">React 19 + React Query</span></div>
+      <hr />
+      <div class="row-line"><span class="k">ORM</span><span class="v">Prisma Client</span></div>
+      <hr />
+      <div class="row-line"><span class="k">Tracker</span><span class="v">Rollup-built public/script.js</span></div>
+    </aside>
+  </section>
+
+  <style>
+    .arch-map {
+      position: relative;
+      min-height: 620px;
+      border: 1px solid color-mix(in oklab, var(--border), white 8%);
+      background:
+        linear-gradient(90deg, color-mix(in oklab, var(--muted), transparent 90%) 1px, transparent 1px),
+        linear-gradient(color-mix(in oklab, var(--muted), transparent 90%) 1px, transparent 1px),
+        radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--accent-cyan), transparent 78%), transparent 32%),
+        radial-gradient(circle at 78% 18%, color-mix(in oklab, var(--accent-purple), transparent 82%), transparent 28%);
+      background-size: 36px 36px, 36px 36px, auto, auto;
+      overflow: hidden;
+      padding: 1.25rem;
+    }
+
+    .arch-node {
+      position: absolute;
+      width: 210px;
+      min-height: 112px;
+      padding: 1rem;
+      border: 1px solid color-mix(in oklab, var(--border), white 14%);
+      background: color-mix(in oklab, var(--card), transparent 6%);
+      box-shadow: 0 18px 40px color-mix(in oklab, black, transparent 78%);
+      backdrop-filter: blur(10px);
+    }
+
+    .arch-node h3 {
+      margin: 0 0 0.45rem;
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+
+    .arch-node p {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .arch-node .badge {
+      margin-bottom: 0.7rem;
+    }
+
+    .arch-node.source { left: 24px; top: 70px; }
+    .arch-node.ui { left: 24px; top: 310px; }
+    .arch-node.edge { left: 290px; top: 56px; width: 235px; }
+    .arch-node.app { left: 580px; top: 72px; width: 260px; min-height: 170px; }
+    .arch-node.auth { left: 580px; top: 324px; width: 260px; }
+    .arch-node.query { right: 300px; top: 92px; width: 230px; }
+    .arch-node.meta { right: 26px; top: 52px; }
+    .arch-node.events { right: 26px; top: 230px; }
+    .arch-node.cache { right: 26px; top: 412px; }
+    .arch-node.enrich { left: 292px; top: 304px; width: 235px; }
+
+    .arch-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .arch-lines path {
+      fill: none;
+      stroke: color-mix(in oklab, var(--accent-cyan), white 10%);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-dasharray: 6 8;
+      opacity: 0.85;
+    }
+
+    .arch-lines path.hot {
+      stroke: color-mix(in oklab, var(--accent-orange), white 10%);
+      stroke-dasharray: none;
+    }
+
+    .arch-lines path.cold {
+      stroke: color-mix(in oklab, var(--accent-green), white 12%);
+    }
+
+    .arch-lines marker path {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .flow-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border);
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .entity-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .entity {
+      border: 1px solid var(--border);
+      padding: 0.8rem;
+      min-height: 92px;
+      background: color-mix(in oklab, var(--muted), transparent 82%);
+    }
+
+    .entity strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 0.9rem;
+    }
+
+    .entity span {
+      display: block;
+      color: var(--muted-foreground);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1000px) {
+      .arch-map {
+        min-height: auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .arch-node {
+        position: static;
+        width: auto !important;
+        min-height: auto;
+      }
+
+      .arch-lines {
+        display: none;
+      }
+
+      .entity-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar .meta span:first-child {
+        display: none;
+      }
+
+      .entity-map {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-route-line"></i> Architecture Diagram</span>
+        <h2>Request paths, enrichment, query dispatch, and stores.</h2>
+      </div>
+      <span class="badge cyan">source-backed</span>
+    </div>
+
+    <div class="arch-map">
+      <svg class="arch-lines" viewBox="0 0 1280 620" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="arrow-cyan" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-cyan), white 10%)"></path>
+          </marker>
+          <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-orange), white 10%)"></path>
+          </marker>
+          <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-green), white 12%)"></path>
+          </marker>
+        </defs>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M225 128 C270 128 284 128 312 128"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M525 128 C560 128 560 128 590 128"></path>
+        <path class="cold" marker-end="url(#arrow-green)" d="M235 372 C380 372 422 368 580 376"></path>
+        <path marker-end="url(#arrow-cyan)" d="M840 150 C900 150 890 150 938 150"></path>
+        <path class="cold" marker-end="url(#arrow-green)" d="M1070 142 C1115 120 1135 116 1170 112"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M1070 174 C1115 226 1138 248 1170 292"></path>
+        <path marker-end="url(#arrow-cyan)" d="M840 390 C936 432 1035 472 1170 474"></path>
+        <path marker-end="url(#arrow-cyan)" d="M525 360 C558 300 575 242 600 214"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M410 304 C456 262 512 221 590 184"></path>
+      </svg>
+
+      <div class="arch-node source">
+        <span class="badge orange">collection sources</span>
+        <h3>Tracked sites, links, pixels</h3>
+        <p>Browser tracker emits pageviews, custom events, identify payloads, short-link hits, and 1x1 GIF pixel hits.</p>
+      </div>
+
+      <div class="arch-node edge">
+        <span class="badge orange">public edge</span>
+        <h3>Collection routes</h3>
+        <p><code>/api/send</code>, <code>/api/batch</code>, <code>/q/[slug]</code>, and <code>/p/[slug]</code> validate and normalize anonymous traffic.</p>
+      </div>
+
+      <div class="arch-node app">
+        <span class="badge cyan">next server</span>
+        <h3>App Router API layer</h3>
+        <p>Route handlers parse Zod schemas, verify auth, enforce permissions, enrich events, and call query helpers.</p>
+      </div>
+
+      <div class="arch-node ui">
+        <span class="badge blue">dashboard clients</span>
+        <h3>React pages + hooks</h3>
+        <p>Dashboard, reports, teams, websites, links, pixels, settings, admin, and shared views call JSON APIs through React Query.</p>
+      </div>
+
+      <div class="arch-node enrich">
+        <span class="badge purple">enrichment</span>
+        <h3>Detect + classify</h3>
+        <p>IP headers, MaxMind, user-agent parsing, bot detection, blocked IPs, UTM fields, click IDs, and URL normalization feed event rows.</p>
+      </div>
+
+      <div class="arch-node auth">
+        <span class="badge blue">auth boundary</span>
+        <h3>JWT, share tokens, RBAC</h3>
+        <p>Bearer tokens, Redis-backed auth keys, share tokens, and permission checks guard most dashboard and report endpoints.</p>
+      </div>
+
+      <div class="arch-node query">
+        <span class="badge green">query dispatch</span>
+        <h3>Prisma + SQL helpers</h3>
+        <p><code>runQuery</code> selects Prisma/Postgres or ClickHouse/Kafka implementations from shared report and event functions.</p>
+      </div>
+
+      <div class="arch-node meta">
+        <span class="badge green">metadata store</span>
+        <h3>Postgres via Prisma</h3>
+        <p>Users, teams, websites, reports, segments, links, pixels, plus default event/session tables.</p>
+      </div>
+
+      <div class="arch-node events">
+        <span class="badge purple">analytics store</span>
+        <h3>ClickHouse optional</h3>
+        <p>High-volume website events, event data, session data, revenue, materialized views, and projections.</p>
+      </div>
+
+      <div class="arch-node cache">
+        <span class="badge blue">cache / queue</span>
+        <h3>Redis and Kafka optional</h3>
+        <p>Redis caches auth keys and slug lookups. Kafka can receive event messages before ClickHouse ingestion.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid-4">
+      <div class="metric">
+        <div class="k">Primary app surface</div>
+        <div class="v">src/app</div>
+        <div class="delta flat"><i class="ri-layout-2-line"></i> App Router routes</div>
+      </div>
+      <div class="metric">
+        <div class="k">Default database</div>
+        <div class="v">Postgres</div>
+        <div class="delta up"><i class="ri-database-2-line"></i> Prisma schema</div>
+      </div>
+      <div class="metric">
+        <div class="k">Event scale path</div>
+        <div class="v">ClickHouse</div>
+        <div class="delta flat"><i class="ri-bar-chart-box-line"></i> Enabled by URL</div>
+      </div>
+      <div class="metric">
+        <div class="k">Tracker output</div>
+        <div class="v">script.js</div>
+        <div class="delta flat"><i class="ri-javascript-line"></i> Rollup bundle</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-database-2-line"></i> Data Sources</span>
+        <h2>Inputs that create or read system state.</h2>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Entry points</th>
+            <th>Payload / signal</th>
+            <th>Primary consumers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Browser tracker</td>
+            <td><code>public/script.js</code><div class="cell-mono">src/tracker/index.js</div></td>
+            <td>Pageviews, custom events, identify data, screen, language, title, URL, referrer.</td>
+            <td><code>/api/send</code>, <code>/api/batch</code></td>
+          </tr>
+          <tr>
+            <td>Short links</td>
+            <td><code>/q/[slug]</code><div class="cell-mono">src/app/(collect)/q/[slug]/route.ts</div></td>
+            <td>Slug lookup, redirect target, referrer, request URL.</td>
+            <td>Link event rows, redirect response.</td>
+          </tr>
+          <tr>
+            <td>Tracking pixels</td>
+            <td><code>/p/[slug]</code><div class="cell-mono">src/app/(collect)/p/[slug]/route.ts</div></td>
+            <td>Slug lookup, referrer, request URL, 1x1 GIF response.</td>
+            <td>Pixel event rows.</td>
+          </tr>
+          <tr>
+            <td>Dashboard users</td>
+            <td><code>src/app/(main)</code><div class="cell-mono">React Query hooks</div></td>
+            <td>CRUD and report requests for users, teams, websites, links, pixels, settings, reports.</td>
+            <td>Authenticated API route handlers.</td>
+          </tr>
+          <tr>
+            <td>Shared dashboards</td>
+            <td><code>/api/share/[shareId]</code><div class="cell-mono">src/app/share/[...shareId]</div></td>
+            <td>Share ID exchanged for a share token scoped to one website.</td>
+            <td>Read-only report APIs via share-token header.</td>
+          </tr>
+          <tr>
+            <td>Request metadata</td>
+            <td><code>getClientInfo</code><div class="cell-mono">src/lib/detect.ts</div></td>
+            <td>IP, provider geo headers, MaxMind GeoLite DB, UA parser, bot and blocked-IP checks.</td>
+            <td>Session, event, location, browser, OS, device fields.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-flow-chart"></i> Data Flows</span>
+        <h2>The important read and write paths.</h2>
+      </div>
+    </div>
+    <div class="tabs" data-tabs>
+      <div class="tabs-bar">
+        <button class="tab active" data-tab="0">Event collection</button>
+        <button class="tab" data-tab="1">Dashboard reads</button>
+        <button class="tab" data-tab="2">Management writes</button>
+        <button class="tab" data-tab="3">Share reads</button>
+      </div>
+      <div class="tab-panel active" data-panel="0">
+        <div class="row">
+          <span class="flow-chip">tracker</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">/api/send</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">parse + enrich</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">saveEvent</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">Postgres or ClickHouse</span>
+        </div>
+        <div class="grid-3" style="margin-top: 1rem">
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-shield-check-line"></i></div><span class="badge orange">public</span></div>
+            <h3>Validation</h3>
+            <p>Zod requires exactly one source ID: website, link, or pixel.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-fingerprint-line"></i></div><span class="badge purple">identity</span></div>
+            <h3>Session and visit</h3>
+            <p>Session IDs hash source, IP, user agent, identity, and monthly salt; visits expire after 30 minutes.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-inbox-archive-line"></i></div><span class="badge green">write</span></div>
+            <h3>Storage dispatch</h3>
+            <p>Postgres writes sessions first; ClickHouse mode embeds session dimensions in event rows.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="1">
+        <div class="row">
+          <span class="flow-chip">React page</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">useApi + token</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">API route</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">canViewWebsite</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">queries/sql</span>
+        </div>
+        <div class="callout" style="margin-top: 1rem">
+          <i class="ri-information-line"></i>
+          <div class="callout-body">
+            Website stats, metrics, pageviews, sessions, events, values, realtime, and reports all converge on filter parsing in <code>src/lib/request.ts</code>, then use SQL helper modules under <code>src/queries/sql</code>.
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="2">
+        <div class="row">
+          <span class="flow-chip">form/action</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">API route</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">auth + RBAC</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">queries/prisma</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">Postgres</span>
+        </div>
+        <div class="grid-3" style="margin-top: 1rem">
+          <div class="card"><h3>Owned metadata</h3><p>Users, websites, teams, links, pixels, reports, and segments are Prisma models.</p></div>
+          <div class="card"><h3>Soft deletion</h3><p>Many user-facing entities keep <code>deletedAt</code> instead of being immediately removed.</p></div>
+          <div class="card"><h3>Permission checks</h3><p>Route handlers call permission helpers before returning or mutating scoped resources.</p></div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="3">
+        <div class="row">
+          <span class="flow-chip">share URL</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">shareId lookup</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">signed share token</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">read APIs</span>
+        </div>
+        <div class="callout success" style="margin-top: 1rem">
+          <i class="ri-lock-unlock-line"></i>
+          <div class="callout-body">
+            Shared views do not authenticate as a user; they send a signed share token that authorizes report reads for a specific website.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-hard-drive-2-line"></i> Stores And Tables</span>
+        <h2>What each persistence layer owns.</h2>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-database-2-line"></i></div><span class="badge green">required</span></div>
+        <h3>Postgres + Prisma</h3>
+        <p>System of record for product metadata and the default analytics store.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Config</span><span class="kv-v"><code>DATABASE_URL</code></span></div>
+          <div class="kv-row"><span class="kv-k">Schema</span><span class="kv-v"><code>prisma/schema.prisma</code></span></div>
+          <div class="kv-row"><span class="kv-k">Queries</span><span class="kv-v"><code>src/queries/prisma</code></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-bar-chart-grouped-line"></i></div><span class="badge purple">optional</span></div>
+        <h3>ClickHouse</h3>
+        <p>Analytic event store enabled by <code>CLICKHOUSE_URL</code>.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Raw</span><span class="kv-v"><code>website_event</code></span></div>
+          <div class="kv-row"><span class="kv-k">Data</span><span class="kv-v"><code>event_data</code>, <code>session_data</code></span></div>
+          <div class="kv-row"><span class="kv-k">Derived</span><span class="kv-v">hourly stats + revenue MV</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-flashlight-line"></i></div><span class="badge blue">optional</span></div>
+        <h3>Redis and Kafka</h3>
+        <p>Performance helpers, not primary state owners.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Redis</span><span class="kv-v">auth keys, link/pixel cache</span></div>
+          <div class="kv-row"><span class="kv-k">Kafka</span><span class="kv-v">event topic producer</span></div>
+          <div class="kv-row"><span class="kv-k">Config</span><span class="kv-v"><code>REDIS_URL</code>, <code>KAFKA_URL</code></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-node-tree"></i> Domain Model</span>
+        <h2>Prisma entities and their boundaries.</h2>
+      </div>
+    </div>
+    <div class="entity-map">
+      <div class="entity"><strong>User</strong><span>Login, role, logo, display name, created websites, reports, links, pixels, team memberships.</span></div>
+      <div class="entity"><strong>Team</strong><span>Shared ownership boundary for websites, links, pixels, and members.</span></div>
+      <div class="entity"><strong>Website</strong><span>Tracked property with owner/team, share ID, reset time, reports, segments, revenue, session/event data.</span></div>
+      <div class="entity"><strong>Session</strong><span>Visitor profile fields: browser, OS, device, screen, language, country, region, city, distinct ID.</span></div>
+      <div class="entity"><strong>WebsiteEvent</strong><span>Pageview/custom/link/pixel event facts with URL, referrer, UTM, click IDs, tag, and visit ID.</span></div>
+      <div class="entity"><strong>EventData</strong><span>Typed key/value properties attached to an event; also feeds revenue extraction.</span></div>
+      <div class="entity"><strong>SessionData</strong><span>Typed key/value identity traits attached to a session.</span></div>
+      <div class="entity"><strong>Report</strong><span>Saved report definition with type, name, description, and JSON parameters.</span></div>
+      <div class="entity"><strong>Segment</strong><span>Saved segment filters and action parameters for website analysis.</span></div>
+      <div class="entity"><strong>Link / Pixel</strong><span>Collectable aliases that map public slugs to event sources.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-settings-3-line"></i> Runtime Switches</span>
+        <h2>Environment variables that materially change architecture.</h2>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Switch</th>
+            <th>Effect</th>
+            <th>Code area</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>DATABASE_URL</code></td>
+            <td>Required Postgres connection for Prisma and migrations.</td>
+            <td><code>src/lib/prisma.ts</code>, <code>prisma/schema.prisma</code></td>
+          </tr>
+          <tr>
+            <td><code>DATABASE_REPLICA_URL</code></td>
+            <td>Adds Prisma read-replica extension for raw query reads.</td>
+            <td><code>src/lib/prisma.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>CLICKHOUSE_URL</code></td>
+            <td>Switches analytic reads/writes to ClickHouse implementations where available.</td>
+            <td><code>src/lib/db.ts</code>, <code>src/lib/clickhouse.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>KAFKA_URL</code> + <code>KAFKA_BROKER</code></td>
+            <td>Sends event messages to Kafka topic <code>event</code> instead of direct ClickHouse insert.</td>
+            <td><code>src/lib/kafka.ts</code>, <code>saveEvent.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>REDIS_URL</code></td>
+            <td>Enables auth-key storage and cached link/pixel slug lookups.</td>
+            <td><code>src/lib/redis.ts</code>, collect routes</td>
+          </tr>
+          <tr>
+            <td><code>COLLECT_API_ENDPOINT</code></td>
+            <td>Rewrites an alternate public collection path to <code>/api/send</code>.</td>
+            <td><code>next.config.ts</code>, tracker build</td>
+          </tr>
+          <tr>
+            <td><code>TRACKER_SCRIPT_NAME</code></td>
+            <td>Publishes additional script aliases that rewrite to <code>/script.js</code>.</td>
+            <td><code>next.config.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>DISABLE_AUTH</code></td>
+            <td>Returns the built-in admin user from auth checks when enabled.</td>
+            <td><code>src/lib/auth.ts</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-folder-chart-line"></i> Code Map</span>
+        <h2>Where to look for each architectural layer.</h2>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>Routes</h3><p><code>src/app/api</code> for JSON APIs; <code>src/app/(collect)</code> for public link and pixel collection.</p></div>
+      <div class="card"><h3>Dashboard UI</h3><p><code>src/app/(main)</code> page shells and <code>src/components/hooks/queries</code> for client reads.</p></div>
+      <div class="card"><h3>Auth and request parsing</h3><p><code>src/lib/auth.ts</code>, <code>src/lib/request.ts</code>, and <code>src/permissions</code>.</p></div>
+      <div class="card"><h3>Database clients</h3><p><code>src/lib/prisma.ts</code>, <code>src/lib/clickhouse.ts</code>, <code>src/lib/redis.ts</code>, and <code>src/lib/kafka.ts</code>.</p></div>
+      <div class="card"><h3>Query implementations</h3><p><code>src/queries/prisma</code> for metadata and <code>src/queries/sql</code> for analytics/reporting.</p></div>
+      <div class="card"><h3>Build and deployment</h3><p><code>package.json</code>, <code>next.config.ts</code>, <code>Dockerfile</code>, <code>docker-compose.yml</code>, and migrations.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-compass-3-line"></i> Operational Shape</span>
+        <h2>Default deployment and scale-out path.</h2>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="ts">01</div>
+        <div>
+          <div class="ttl">Small/default install</div>
+          <div class="desc">Next.js server plus Postgres. Prisma owns metadata and analytics rows; Docker Compose provisions both services.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">02</div>
+        <div>
+          <div class="ttl">Read-heavy dashboard</div>
+          <div class="desc">Add <code>DATABASE_REPLICA_URL</code> so Prisma raw query reads can use a replica while writes stay primary.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">03</div>
+        <div>
+          <div class="ttl">High-volume analytics</div>
+          <div class="desc">Enable ClickHouse; event writes and report reads use ClickHouse-specific SQL helpers and schema.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">04</div>
+        <div>
+          <div class="ttl">Buffered ingestion</div>
+          <div class="desc">Enable Kafka in front of ClickHouse for event messages; Redis can cache auth and slug lookups.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="shell-foot">
+    Generated from repository inspection: package scripts, Next routes, Prisma schema, ClickHouse schema, tracker bundle source, and query libraries.
+  </footer>
+</div>

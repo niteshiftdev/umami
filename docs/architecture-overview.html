@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Umami Architecture Overview</title>
+<meta name="description" content="Architecture, data sources, data flows, and storage boundaries for this Umami codebase." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+<style>
+/* =========================================================
+   html-output kit v1 — base styles
+   Mirrors the @niteshift/ui-v2 dark v2 theme
+   ========================================================= */
+
+:root {
+  color-scheme: dark;
+
+  --background: oklch(0.162 0.008 265);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.2 0.007 265);
+  --card-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.242 0.006 265);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.706 0.032 58);
+  --primary-foreground: oklch(0.2 0.007 265);
+
+  --muted: oklch(0.242 0.006 265);
+  --muted-foreground: oklch(0.705 0.008 265);
+
+  --border: oklch(1 0 0 / 7%);
+  --border-active: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 8%);
+  --ring: oklch(0.552 0.015 265);
+
+  --destructive: oklch(0.62 0.09 25);
+  --warning: oklch(0.68 0.09 72);
+  --success: oklch(0.62 0.08 155);
+  --info: oklch(0.58 0.08 265);
+
+  --accent-blue: oklch(0.58 0.08 265);
+  --accent-purple: oklch(0.58 0.08 295);
+  --accent-green: oklch(0.62 0.08 155);
+  --accent-orange: oklch(0.68 0.09 72);
+  --accent-red: oklch(0.62 0.09 25);
+  --accent-cyan: oklch(0.65 0.07 210);
+  --accent-pink: oklch(0.6 0.08 330);
+
+  --glow-blue: oklch(0.58 0.08 265 / 10%);
+  --glow-purple: oklch(0.58 0.08 295 / 8%);
+  --glow-green: oklch(0.62 0.08 155 / 8%);
+  --glow-orange: oklch(0.68 0.09 72 / 8%);
+  --glow-red: oklch(0.62 0.09 25 / 8%);
+  --glow-cyan: oklch(0.65 0.07 210 / 8%);
+
+  --radius: 0px;
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-panel: 0 24px 60px rgba(0, 0, 0, 0.34);
+}
+
+/* ── Reset + base ──────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Geist Sans", "Geist", system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+code,
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+a {
+  color: var(--foreground);
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+h1 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+h2 {
+  font-size: 1.65rem;
+}
+h3 {
+  font-size: 1.05rem;
+}
+p {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+/* ── Noise overlay ─────────────────────────────────────── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: overlay;
+}
+
+/* ── Layout primitives ─────────────────────────────────── */
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 6rem;
+}
+.shell-narrow {
+  max-width: 880px;
+}
+.shell-wide {
+  max-width: 1400px;
+}
+.section {
+  padding: 4rem 0;
+}
+.section + .section {
+  border-top: 1px solid var(--border);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.stack-sm {
+  gap: 0.6rem;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 900px) {
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .shell {
+    padding: 1.5rem 1.25rem 4rem;
+  }
+}
+
+/* ── Topbar ────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  background: oklch(from var(--card) l c h / 70%);
+  backdrop-filter: blur(10px);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  margin-bottom: 2.5rem;
+}
+.topbar .dots {
+  display: flex;
+  gap: 6px;
+}
+.topbar .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: oklch(1 0 0 / 8%);
+}
+.topbar .crumbs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.topbar .crumb-sep {
+  color: oklch(1 0 0 / 20%);
+}
+.topbar .meta {
+  display: flex;
+  gap: 1rem;
+}
+.topbar .meta strong {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+/* ── Hero ──────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+  padding: 3rem 0 4rem;
+}
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+.hero-title {
+  margin-top: 1rem;
+}
+.hero-lede {
+  margin-top: 1.25rem;
+  max-width: 52ch;
+  font-size: 1.05rem;
+}
+.hero-aside {
+  border: 1px solid var(--border);
+  background: oklch(from var(--card) l c h / 60%);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.hero-aside .row-line {
+  display: flex;
+  justify-content: space-between;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+}
+.hero-aside .row-line .k {
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+.hero-aside .row-line .v {
+  color: var(--foreground);
+}
+
+/* ── Section labels + heads ────────────────────────────── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.42rem 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: oklch(1 0 0 / 3.5%);
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+.section-label i {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.section-head .lede {
+  max-width: 42ch;
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Card ──────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.3s var(--ease-smooth);
+}
+.card:hover {
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+}
+.card-flat {
+  background: transparent;
+}
+.card-flat:hover {
+  transform: none;
+}
+.card-glass {
+  background: oklch(from var(--card) l c h / 70%);
+  backdrop-filter: blur(10px);
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+.card-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+.card p {
+  font-size: 0.88rem;
+}
+
+/* ── Metric ────────────────────────────────────────────── */
+.metric {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.metric .k {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.metric .v {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.85rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.metric .delta {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+}
+.delta.up {
+  color: var(--accent-green);
+}
+.delta.down {
+  color: var(--accent-red);
+}
+.delta.flat {
+  color: var(--muted-foreground);
+}
+
+/* ── Badge ─────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  background: oklch(1 0 0 / 3%);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.badge.blue {
+  color: var(--accent-blue);
+  background: var(--glow-blue);
+  border-color: oklch(from var(--accent-blue) l c h / 25%);
+}
+.badge.purple {
+  color: var(--accent-purple);
+  background: var(--glow-purple);
+  border-color: oklch(from var(--accent-purple) l c h / 25%);
+}
+.badge.green {
+  color: var(--accent-green);
+  background: var(--glow-green);
+  border-color: oklch(from var(--accent-green) l c h / 25%);
+}
+.badge.orange {
+  color: var(--accent-orange);
+  background: var(--glow-orange);
+  border-color: oklch(from var(--accent-orange) l c h / 25%);
+}
+.badge.red {
+  color: var(--accent-red);
+  background: var(--glow-red);
+  border-color: oklch(from var(--accent-red) l c h / 25%);
+}
+.badge.cyan {
+  color: var(--accent-cyan);
+  background: var(--glow-cyan);
+  border-color: oklch(from var(--accent-cyan) l c h / 25%);
+}
+
+/* ── Code block ────────────────────────────────────────── */
+.code-block {
+  background: oklch(0.14 0.006 265);
+  border: 1px solid var(--border);
+  border-left: 2px solid oklch(from var(--accent-purple) l c h / 25%);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 3%);
+  color: var(--foreground);
+  margin: 0;
+}
+.code-block .tok-com {
+  color: var(--muted-foreground);
+}
+.code-block .tok-key {
+  color: var(--accent-purple);
+}
+.code-block .tok-str {
+  color: var(--accent-green);
+}
+.code-block .tok-num {
+  color: var(--accent-orange);
+}
+
+/* ── Copyable refs ─────────────────────────────────────── */
+.copyable {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.76rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: 1px 4px;
+  transition: color 0.2s;
+  position: relative;
+}
+.copyable:hover {
+  color: var(--foreground);
+}
+.copyable.copied {
+  color: var(--accent-green);
+}
+
+/* ── Tabs ──────────────────────────────────────────────── */
+.tabs {
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.tabs-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: oklch(1 0 0 / 2%);
+  overflow-x: auto;
+}
+.tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--muted-foreground);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.85rem 1.1rem;
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.tab:hover {
+  color: var(--foreground);
+}
+.tab.active {
+  color: var(--foreground);
+  background: var(--card);
+  position: relative;
+}
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent-cyan);
+}
+.tab-panel {
+  padding: 1.5rem;
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+}
+
+/* ── Collapsible ───────────────────────────────────────── */
+.collapsible {
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.collapsible + .collapsible {
+  border-top: 0;
+}
+.collapsible-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.collapsible-head:hover {
+  background: oklch(1 0 0 / 2%);
+}
+.collapsible-head .label {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-weight: 500;
+}
+.collapsible-head .label .idx {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+.collapsible-head i {
+  color: var(--muted-foreground);
+  transition: transform 0.25s var(--ease-smooth);
+}
+.collapsible.open .collapsible-head i {
+  transform: rotate(180deg);
+}
+.collapsible-body {
+  display: none;
+  padding: 0 1.25rem 1.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+}
+.collapsible.open .collapsible-body {
+  display: block;
+}
+
+/* ── Timeline ──────────────────────────────────────────── */
+.timeline {
+  position: relative;
+  padding-left: 1.5rem;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item {
+  position: relative;
+  padding-bottom: 1.75rem;
+}
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -1.5rem;
+  top: 0.4rem;
+  width: 11px;
+  height: 11px;
+  background: var(--card);
+  border: 1px solid var(--border-active);
+}
+.timeline-item .ts {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.timeline-item .ttl {
+  font-weight: 500;
+  margin: 0.15rem 0 0.3rem;
+}
+.timeline-item .desc {
+  font-size: 0.88rem;
+}
+
+/* ── Table / matrix ────────────────────────────────────── */
+.table-wrap {
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+table.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+table.matrix th,
+table.matrix td {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+table.matrix th {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  background: oklch(1 0 0 / 2%);
+  border-bottom-color: var(--border-active);
+}
+table.matrix tr:last-child td {
+  border-bottom: 0;
+}
+table.matrix tr:hover td {
+  background: oklch(1 0 0 / 1.5%);
+}
+table.matrix td .cell-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+.check {
+  color: var(--accent-green);
+}
+.cross {
+  color: var(--muted-foreground);
+}
+
+/* ── Flow ──────────────────────────────────────────────── */
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--border);
+}
+.flow.flow-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.flow.flow-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .flow,
+  .flow.flow-3,
+  .flow.flow-5 {
+    grid-template-columns: 1fr;
+  }
+}
+.flow-step {
+  padding: 1.25rem;
+  border-right: 1px solid var(--border);
+  position: relative;
+  background: var(--card);
+  cursor: pointer;
+  transition: background 0.25s var(--ease-smooth);
+}
+.flow-step:last-child {
+  border-right: 0;
+}
+@media (max-width: 900px) {
+  .flow-step {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .flow-step:last-child {
+    border-bottom: 0;
+  }
+}
+.flow-step:hover {
+  background: oklch(1 0 0 / 2.5%);
+}
+.flow-step.active {
+  background: oklch(1 0 0 / 4%);
+}
+.flow-step .num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.12em;
+}
+.flow-step h3 {
+  margin: 0.4rem 0 0.4rem;
+  font-size: 0.95rem;
+}
+.flow-step p {
+  font-size: 0.82rem;
+}
+.flow-detail {
+  border: 1px solid var(--border);
+  border-top: 0;
+  padding: 1.5rem;
+  background: oklch(0.18 0.006 265);
+}
+.flow-detail .pane {
+  display: none;
+}
+.flow-detail .pane.active {
+  display: block;
+}
+
+/* ── KV list ───────────────────────────────────────────── */
+.kv {
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.kv-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.86rem;
+}
+.kv-row:last-child {
+  border-bottom: 0;
+}
+.kv-row .kv-k {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.kv-row .kv-v {
+  color: var(--foreground);
+}
+@media (max-width: 600px) {
+  .kv-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
+/* ── Callout ───────────────────────────────────────────── */
+.callout {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent-cyan);
+  padding: 1rem 1.25rem;
+  background: oklch(1 0 0 / 2%);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.callout i {
+  color: var(--accent-cyan);
+  font-size: 1.1rem;
+  margin-top: 0.1rem;
+}
+.callout.warn {
+  border-left-color: var(--accent-orange);
+}
+.callout.warn i {
+  color: var(--accent-orange);
+}
+.callout.danger {
+  border-left-color: var(--accent-red);
+}
+.callout.danger i {
+  color: var(--accent-red);
+}
+.callout.success {
+  border-left-color: var(--accent-green);
+}
+.callout.success i {
+  color: var(--accent-green);
+}
+.callout .callout-body {
+  font-size: 0.88rem;
+  color: var(--foreground);
+}
+.callout .callout-body strong {
+  font-weight: 600;
+}
+
+/* ── Progress bar ──────────────────────────────────────── */
+.progress {
+  height: 6px;
+  background: oklch(1 0 0 / 6%);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.progress .progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent-cyan);
+}
+.progress.green .progress-fill {
+  background: var(--accent-green);
+}
+.progress.orange .progress-fill {
+  background: var(--accent-orange);
+}
+.progress.red .progress-fill {
+  background: var(--accent-red);
+}
+
+/* ── Diff list (simple add/remove lines) ───────────────── */
+.diff {
+  border: 1px solid var(--border);
+  background: oklch(0.14 0.006 265);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.diff .diff-line {
+  padding: 0 1rem;
+  white-space: pre;
+}
+.diff .diff-line.add {
+  background: oklch(from var(--accent-green) l c h / 8%);
+  color: var(--accent-green);
+}
+.diff .diff-line.del {
+  background: oklch(from var(--accent-red) l c h / 8%);
+  color: var(--accent-red);
+}
+.diff .diff-line.ctx {
+  color: var(--muted-foreground);
+}
+
+/* ── Footer ────────────────────────────────────────────── */
+.shell-foot {
+  border-top: 1px solid var(--border);
+  margin-top: 4rem;
+  padding: 1.5rem 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+/* ── Reveal-on-scroll ──────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.6s var(--ease-smooth);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+</style>
+
+</head>
+<body>
+<div class="shell shell-wide">
+  <div class="topbar">
+    <div class="row" style="gap: 1.25rem">
+      <div class="dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="crumbs">
+        <span>umami</span>
+        <span class="crumb-sep">/</span>
+        <span>architecture</span>
+        <span class="crumb-sep">/</span>
+        <span style="color: var(--foreground)">overview</span>
+      </div>
+    </div>
+    <div class="meta">
+      <span>Next.js 15</span>
+      <span><strong>v3.0.3</strong></span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="section-label"><i class="ri-radar-line"></i> System Map</span>
+      <h1 class="hero-title">Umami is a Next.js analytics app with a dual-mode event store.</h1>
+      <p class="hero-lede">
+        The same app serves the dashboard, JSON API, collection endpoint, link redirects, pixel GIFs,
+        and tracking script. Postgres/Prisma is the default system of record; ClickHouse and Kafka
+        can take over high-volume event ingestion while Prisma keeps account metadata.
+      </p>
+      <div class="row" style="margin-top: 1.5rem">
+        <span class="badge cyan">App Router</span>
+        <span class="badge green">Postgres</span>
+        <span class="badge purple">ClickHouse optional</span>
+        <span class="badge orange">Kafka optional</span>
+        <span class="badge blue">Redis optional</span>
+      </div>
+    </div>
+    <aside class="hero-aside">
+      <div class="row-line"><span class="k">Runtime</span><span class="v">Node + Next server</span></div>
+      <hr />
+      <div class="row-line"><span class="k">UI</span><span class="v">React 19 + React Query</span></div>
+      <hr />
+      <div class="row-line"><span class="k">ORM</span><span class="v">Prisma Client</span></div>
+      <hr />
+      <div class="row-line"><span class="k">Tracker</span><span class="v">Rollup-built public/script.js</span></div>
+    </aside>
+  </section>
+
+  <style>
+    .arch-map {
+      position: relative;
+      min-height: 620px;
+      border: 1px solid color-mix(in oklab, var(--border), white 8%);
+      background:
+        linear-gradient(90deg, color-mix(in oklab, var(--muted), transparent 90%) 1px, transparent 1px),
+        linear-gradient(color-mix(in oklab, var(--muted), transparent 90%) 1px, transparent 1px),
+        radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--accent-cyan), transparent 78%), transparent 32%),
+        radial-gradient(circle at 78% 18%, color-mix(in oklab, var(--accent-purple), transparent 82%), transparent 28%);
+      background-size: 36px 36px, 36px 36px, auto, auto;
+      overflow: hidden;
+      padding: 1.25rem;
+    }
+
+    .arch-node {
+      position: absolute;
+      width: 210px;
+      min-height: 112px;
+      padding: 1rem;
+      border: 1px solid color-mix(in oklab, var(--border), white 14%);
+      background: color-mix(in oklab, var(--card), transparent 6%);
+      box-shadow: 0 18px 40px color-mix(in oklab, black, transparent 78%);
+      backdrop-filter: blur(10px);
+    }
+
+    .arch-node h3 {
+      margin: 0 0 0.45rem;
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+
+    .arch-node p {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .arch-node .badge {
+      margin-bottom: 0.7rem;
+    }
+
+    .arch-node.source { left: 24px; top: 70px; }
+    .arch-node.ui { left: 24px; top: 310px; }
+    .arch-node.edge { left: 290px; top: 56px; width: 235px; }
+    .arch-node.app { left: 580px; top: 72px; width: 260px; min-height: 170px; }
+    .arch-node.auth { left: 580px; top: 324px; width: 260px; }
+    .arch-node.query { right: 300px; top: 92px; width: 230px; }
+    .arch-node.meta { right: 26px; top: 52px; }
+    .arch-node.events { right: 26px; top: 230px; }
+    .arch-node.cache { right: 26px; top: 412px; }
+    .arch-node.enrich { left: 292px; top: 304px; width: 235px; }
+
+    .arch-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .arch-lines path {
+      fill: none;
+      stroke: color-mix(in oklab, var(--accent-cyan), white 10%);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-dasharray: 6 8;
+      opacity: 0.85;
+    }
+
+    .arch-lines path.hot {
+      stroke: color-mix(in oklab, var(--accent-orange), white 10%);
+      stroke-dasharray: none;
+    }
+
+    .arch-lines path.cold {
+      stroke: color-mix(in oklab, var(--accent-green), white 12%);
+    }
+
+    .arch-lines marker path {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .flow-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border);
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .entity-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .entity {
+      border: 1px solid var(--border);
+      padding: 0.8rem;
+      min-height: 92px;
+      background: color-mix(in oklab, var(--muted), transparent 82%);
+    }
+
+    .entity strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 0.9rem;
+    }
+
+    .entity span {
+      display: block;
+      color: var(--muted-foreground);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1000px) {
+      .arch-map {
+        min-height: auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .arch-node {
+        position: static;
+        width: auto !important;
+        min-height: auto;
+      }
+
+      .arch-lines {
+        display: none;
+      }
+
+      .entity-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar .meta span:first-child {
+        display: none;
+      }
+
+      .entity-map {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-route-line"></i> Architecture Diagram</span>
+        <h2>Request paths, enrichment, query dispatch, and stores.</h2>
+      </div>
+      <span class="badge cyan">source-backed</span>
+    </div>
+
+    <div class="arch-map">
+      <svg class="arch-lines" viewBox="0 0 1280 620" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="arrow-cyan" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-cyan), white 10%)"></path>
+          </marker>
+          <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-orange), white 10%)"></path>
+          </marker>
+          <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" style="fill: color-mix(in oklab, var(--accent-green), white 12%)"></path>
+          </marker>
+        </defs>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M225 128 C270 128 284 128 312 128"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M525 128 C560 128 560 128 590 128"></path>
+        <path class="cold" marker-end="url(#arrow-green)" d="M235 372 C380 372 422 368 580 376"></path>
+        <path marker-end="url(#arrow-cyan)" d="M840 150 C900 150 890 150 938 150"></path>
+        <path class="cold" marker-end="url(#arrow-green)" d="M1070 142 C1115 120 1135 116 1170 112"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M1070 174 C1115 226 1138 248 1170 292"></path>
+        <path marker-end="url(#arrow-cyan)" d="M840 390 C936 432 1035 472 1170 474"></path>
+        <path marker-end="url(#arrow-cyan)" d="M525 360 C558 300 575 242 600 214"></path>
+        <path class="hot" marker-end="url(#arrow-orange)" d="M410 304 C456 262 512 221 590 184"></path>
+      </svg>
+
+      <div class="arch-node source">
+        <span class="badge orange">collection sources</span>
+        <h3>Tracked sites, links, pixels</h3>
+        <p>Browser tracker emits pageviews, custom events, identify payloads, short-link hits, and 1x1 GIF pixel hits.</p>
+      </div>
+
+      <div class="arch-node edge">
+        <span class="badge orange">public edge</span>
+        <h3>Collection routes</h3>
+        <p><code>/api/send</code>, <code>/api/batch</code>, <code>/q/[slug]</code>, and <code>/p/[slug]</code> validate and normalize anonymous traffic.</p>
+      </div>
+
+      <div class="arch-node app">
+        <span class="badge cyan">next server</span>
+        <h3>App Router API layer</h3>
+        <p>Route handlers parse Zod schemas, verify auth, enforce permissions, enrich events, and call query helpers.</p>
+      </div>
+
+      <div class="arch-node ui">
+        <span class="badge blue">dashboard clients</span>
+        <h3>React pages + hooks</h3>
+        <p>Dashboard, reports, teams, websites, links, pixels, settings, admin, and shared views call JSON APIs through React Query.</p>
+      </div>
+
+      <div class="arch-node enrich">
+        <span class="badge purple">enrichment</span>
+        <h3>Detect + classify</h3>
+        <p>IP headers, MaxMind, user-agent parsing, bot detection, blocked IPs, UTM fields, click IDs, and URL normalization feed event rows.</p>
+      </div>
+
+      <div class="arch-node auth">
+        <span class="badge blue">auth boundary</span>
+        <h3>JWT, share tokens, RBAC</h3>
+        <p>Bearer tokens, Redis-backed auth keys, share tokens, and permission checks guard most dashboard and report endpoints.</p>
+      </div>
+
+      <div class="arch-node query">
+        <span class="badge green">query dispatch</span>
+        <h3>Prisma + SQL helpers</h3>
+        <p><code>runQuery</code> selects Prisma/Postgres or ClickHouse/Kafka implementations from shared report and event functions.</p>
+      </div>
+
+      <div class="arch-node meta">
+        <span class="badge green">metadata store</span>
+        <h3>Postgres via Prisma</h3>
+        <p>Users, teams, websites, reports, segments, links, pixels, plus default event/session tables.</p>
+      </div>
+
+      <div class="arch-node events">
+        <span class="badge purple">analytics store</span>
+        <h3>ClickHouse optional</h3>
+        <p>High-volume website events, event data, session data, revenue, materialized views, and projections.</p>
+      </div>
+
+      <div class="arch-node cache">
+        <span class="badge blue">cache / queue</span>
+        <h3>Redis and Kafka optional</h3>
+        <p>Redis caches auth keys and slug lookups. Kafka can receive event messages before ClickHouse ingestion.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid-4">
+      <div class="metric">
+        <div class="k">Primary app surface</div>
+        <div class="v">src/app</div>
+        <div class="delta flat"><i class="ri-layout-2-line"></i> App Router routes</div>
+      </div>
+      <div class="metric">
+        <div class="k">Default database</div>
+        <div class="v">Postgres</div>
+        <div class="delta up"><i class="ri-database-2-line"></i> Prisma schema</div>
+      </div>
+      <div class="metric">
+        <div class="k">Event scale path</div>
+        <div class="v">ClickHouse</div>
+        <div class="delta flat"><i class="ri-bar-chart-box-line"></i> Enabled by URL</div>
+      </div>
+      <div class="metric">
+        <div class="k">Tracker output</div>
+        <div class="v">script.js</div>
+        <div class="delta flat"><i class="ri-javascript-line"></i> Rollup bundle</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-database-2-line"></i> Data Sources</span>
+        <h2>Inputs that create or read system state.</h2>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Entry points</th>
+            <th>Payload / signal</th>
+            <th>Primary consumers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Browser tracker</td>
+            <td><code>public/script.js</code><div class="cell-mono">src/tracker/index.js</div></td>
+            <td>Pageviews, custom events, identify data, screen, language, title, URL, referrer.</td>
+            <td><code>/api/send</code>, <code>/api/batch</code></td>
+          </tr>
+          <tr>
+            <td>Short links</td>
+            <td><code>/q/[slug]</code><div class="cell-mono">src/app/(collect)/q/[slug]/route.ts</div></td>
+            <td>Slug lookup, redirect target, referrer, request URL.</td>
+            <td>Link event rows, redirect response.</td>
+          </tr>
+          <tr>
+            <td>Tracking pixels</td>
+            <td><code>/p/[slug]</code><div class="cell-mono">src/app/(collect)/p/[slug]/route.ts</div></td>
+            <td>Slug lookup, referrer, request URL, 1x1 GIF response.</td>
+            <td>Pixel event rows.</td>
+          </tr>
+          <tr>
+            <td>Dashboard users</td>
+            <td><code>src/app/(main)</code><div class="cell-mono">React Query hooks</div></td>
+            <td>CRUD and report requests for users, teams, websites, links, pixels, settings, reports.</td>
+            <td>Authenticated API route handlers.</td>
+          </tr>
+          <tr>
+            <td>Shared dashboards</td>
+            <td><code>/api/share/[shareId]</code><div class="cell-mono">src/app/share/[...shareId]</div></td>
+            <td>Share ID exchanged for a share token scoped to one website.</td>
+            <td>Read-only report APIs via share-token header.</td>
+          </tr>
+          <tr>
+            <td>Request metadata</td>
+            <td><code>getClientInfo</code><div class="cell-mono">src/lib/detect.ts</div></td>
+            <td>IP, provider geo headers, MaxMind GeoLite DB, UA parser, bot and blocked-IP checks.</td>
+            <td>Session, event, location, browser, OS, device fields.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-flow-chart"></i> Data Flows</span>
+        <h2>The important read and write paths.</h2>
+      </div>
+    </div>
+    <div class="tabs" data-tabs>
+      <div class="tabs-bar">
+        <button class="tab active" data-tab="0">Event collection</button>
+        <button class="tab" data-tab="1">Dashboard reads</button>
+        <button class="tab" data-tab="2">Management writes</button>
+        <button class="tab" data-tab="3">Share reads</button>
+      </div>
+      <div class="tab-panel active" data-panel="0">
+        <div class="row">
+          <span class="flow-chip">tracker</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">/api/send</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">parse + enrich</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">saveEvent</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">Postgres or ClickHouse</span>
+        </div>
+        <div class="grid-3" style="margin-top: 1rem">
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-shield-check-line"></i></div><span class="badge orange">public</span></div>
+            <h3>Validation</h3>
+            <p>Zod requires exactly one source ID: website, link, or pixel.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-fingerprint-line"></i></div><span class="badge purple">identity</span></div>
+            <h3>Session and visit</h3>
+            <p>Session IDs hash source, IP, user agent, identity, and monthly salt; visits expire after 30 minutes.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-icon"><i class="ri-inbox-archive-line"></i></div><span class="badge green">write</span></div>
+            <h3>Storage dispatch</h3>
+            <p>Postgres writes sessions first; ClickHouse mode embeds session dimensions in event rows.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="1">
+        <div class="row">
+          <span class="flow-chip">React page</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">useApi + token</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">API route</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">canViewWebsite</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">queries/sql</span>
+        </div>
+        <div class="callout" style="margin-top: 1rem">
+          <i class="ri-information-line"></i>
+          <div class="callout-body">
+            Website stats, metrics, pageviews, sessions, events, values, realtime, and reports all converge on filter parsing in <code>src/lib/request.ts</code>, then use SQL helper modules under <code>src/queries/sql</code>.
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="2">
+        <div class="row">
+          <span class="flow-chip">form/action</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">API route</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">auth + RBAC</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">queries/prisma</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">Postgres</span>
+        </div>
+        <div class="grid-3" style="margin-top: 1rem">
+          <div class="card"><h3>Owned metadata</h3><p>Users, websites, teams, links, pixels, reports, and segments are Prisma models.</p></div>
+          <div class="card"><h3>Soft deletion</h3><p>Many user-facing entities keep <code>deletedAt</code> instead of being immediately removed.</p></div>
+          <div class="card"><h3>Permission checks</h3><p>Route handlers call permission helpers before returning or mutating scoped resources.</p></div>
+        </div>
+      </div>
+      <div class="tab-panel" data-panel="3">
+        <div class="row">
+          <span class="flow-chip">share URL</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">shareId lookup</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">signed share token</span>
+          <i class="ri-arrow-right-line"></i>
+          <span class="flow-chip">read APIs</span>
+        </div>
+        <div class="callout success" style="margin-top: 1rem">
+          <i class="ri-lock-unlock-line"></i>
+          <div class="callout-body">
+            Shared views do not authenticate as a user; they send a signed share token that authorizes report reads for a specific website.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-hard-drive-2-line"></i> Stores And Tables</span>
+        <h2>What each persistence layer owns.</h2>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-database-2-line"></i></div><span class="badge green">required</span></div>
+        <h3>Postgres + Prisma</h3>
+        <p>System of record for product metadata and the default analytics store.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Config</span><span class="kv-v"><code>DATABASE_URL</code></span></div>
+          <div class="kv-row"><span class="kv-k">Schema</span><span class="kv-v"><code>prisma/schema.prisma</code></span></div>
+          <div class="kv-row"><span class="kv-k">Queries</span><span class="kv-v"><code>src/queries/prisma</code></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-bar-chart-grouped-line"></i></div><span class="badge purple">optional</span></div>
+        <h3>ClickHouse</h3>
+        <p>Analytic event store enabled by <code>CLICKHOUSE_URL</code>.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Raw</span><span class="kv-v"><code>website_event</code></span></div>
+          <div class="kv-row"><span class="kv-k">Data</span><span class="kv-v"><code>event_data</code>, <code>session_data</code></span></div>
+          <div class="kv-row"><span class="kv-k">Derived</span><span class="kv-v">hourly stats + revenue MV</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon"><i class="ri-flashlight-line"></i></div><span class="badge blue">optional</span></div>
+        <h3>Redis and Kafka</h3>
+        <p>Performance helpers, not primary state owners.</p>
+        <div class="kv" style="margin-top: 1rem">
+          <div class="kv-row"><span class="kv-k">Redis</span><span class="kv-v">auth keys, link/pixel cache</span></div>
+          <div class="kv-row"><span class="kv-k">Kafka</span><span class="kv-v">event topic producer</span></div>
+          <div class="kv-row"><span class="kv-k">Config</span><span class="kv-v"><code>REDIS_URL</code>, <code>KAFKA_URL</code></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-node-tree"></i> Domain Model</span>
+        <h2>Prisma entities and their boundaries.</h2>
+      </div>
+    </div>
+    <div class="entity-map">
+      <div class="entity"><strong>User</strong><span>Login, role, logo, display name, created websites, reports, links, pixels, team memberships.</span></div>
+      <div class="entity"><strong>Team</strong><span>Shared ownership boundary for websites, links, pixels, and members.</span></div>
+      <div class="entity"><strong>Website</strong><span>Tracked property with owner/team, share ID, reset time, reports, segments, revenue, session/event data.</span></div>
+      <div class="entity"><strong>Session</strong><span>Visitor profile fields: browser, OS, device, screen, language, country, region, city, distinct ID.</span></div>
+      <div class="entity"><strong>WebsiteEvent</strong><span>Pageview/custom/link/pixel event facts with URL, referrer, UTM, click IDs, tag, and visit ID.</span></div>
+      <div class="entity"><strong>EventData</strong><span>Typed key/value properties attached to an event; also feeds revenue extraction.</span></div>
+      <div class="entity"><strong>SessionData</strong><span>Typed key/value identity traits attached to a session.</span></div>
+      <div class="entity"><strong>Report</strong><span>Saved report definition with type, name, description, and JSON parameters.</span></div>
+      <div class="entity"><strong>Segment</strong><span>Saved segment filters and action parameters for website analysis.</span></div>
+      <div class="entity"><strong>Link / Pixel</strong><span>Collectable aliases that map public slugs to event sources.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-settings-3-line"></i> Runtime Switches</span>
+        <h2>Environment variables that materially change architecture.</h2>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Switch</th>
+            <th>Effect</th>
+            <th>Code area</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>DATABASE_URL</code></td>
+            <td>Required Postgres connection for Prisma and migrations.</td>
+            <td><code>src/lib/prisma.ts</code>, <code>prisma/schema.prisma</code></td>
+          </tr>
+          <tr>
+            <td><code>DATABASE_REPLICA_URL</code></td>
+            <td>Adds Prisma read-replica extension for raw query reads.</td>
+            <td><code>src/lib/prisma.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>CLICKHOUSE_URL</code></td>
+            <td>Switches analytic reads/writes to ClickHouse implementations where available.</td>
+            <td><code>src/lib/db.ts</code>, <code>src/lib/clickhouse.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>KAFKA_URL</code> + <code>KAFKA_BROKER</code></td>
+            <td>Sends event messages to Kafka topic <code>event</code> instead of direct ClickHouse insert.</td>
+            <td><code>src/lib/kafka.ts</code>, <code>saveEvent.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>REDIS_URL</code></td>
+            <td>Enables auth-key storage and cached link/pixel slug lookups.</td>
+            <td><code>src/lib/redis.ts</code>, collect routes</td>
+          </tr>
+          <tr>
+            <td><code>COLLECT_API_ENDPOINT</code></td>
+            <td>Rewrites an alternate public collection path to <code>/api/send</code>.</td>
+            <td><code>next.config.ts</code>, tracker build</td>
+          </tr>
+          <tr>
+            <td><code>TRACKER_SCRIPT_NAME</code></td>
+            <td>Publishes additional script aliases that rewrite to <code>/script.js</code>.</td>
+            <td><code>next.config.ts</code></td>
+          </tr>
+          <tr>
+            <td><code>DISABLE_AUTH</code></td>
+            <td>Returns the built-in admin user from auth checks when enabled.</td>
+            <td><code>src/lib/auth.ts</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-folder-chart-line"></i> Code Map</span>
+        <h2>Where to look for each architectural layer.</h2>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>Routes</h3><p><code>src/app/api</code> for JSON APIs; <code>src/app/(collect)</code> for public link and pixel collection.</p></div>
+      <div class="card"><h3>Dashboard UI</h3><p><code>src/app/(main)</code> page shells and <code>src/components/hooks/queries</code> for client reads.</p></div>
+      <div class="card"><h3>Auth and request parsing</h3><p><code>src/lib/auth.ts</code>, <code>src/lib/request.ts</code>, and <code>src/permissions</code>.</p></div>
+      <div class="card"><h3>Database clients</h3><p><code>src/lib/prisma.ts</code>, <code>src/lib/clickhouse.ts</code>, <code>src/lib/redis.ts</code>, and <code>src/lib/kafka.ts</code>.</p></div>
+      <div class="card"><h3>Query implementations</h3><p><code>src/queries/prisma</code> for metadata and <code>src/queries/sql</code> for analytics/reporting.</p></div>
+      <div class="card"><h3>Build and deployment</h3><p><code>package.json</code>, <code>next.config.ts</code>, <code>Dockerfile</code>, <code>docker-compose.yml</code>, and migrations.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <span class="section-label"><i class="ri-compass-3-line"></i> Operational Shape</span>
+        <h2>Default deployment and scale-out path.</h2>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="ts">01</div>
+        <div>
+          <div class="ttl">Small/default install</div>
+          <div class="desc">Next.js server plus Postgres. Prisma owns metadata and analytics rows; Docker Compose provisions both services.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">02</div>
+        <div>
+          <div class="ttl">Read-heavy dashboard</div>
+          <div class="desc">Add <code>DATABASE_REPLICA_URL</code> so Prisma raw query reads can use a replica while writes stay primary.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">03</div>
+        <div>
+          <div class="ttl">High-volume analytics</div>
+          <div class="desc">Enable ClickHouse; event writes and report reads use ClickHouse-specific SQL helpers and schema.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="ts">04</div>
+        <div>
+          <div class="ttl">Buffered ingestion</div>
+          <div class="desc">Enable Kafka in front of ClickHouse for event messages; Redis can cache auth and slug lookups.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="shell-foot">
+    Generated from repository inspection: package scripts, Next routes, Prisma schema, ClickHouse schema, tracker bundle source, and query libraries.
+  </footer>
+</div>
+<script>
+/* =========================================================
+   html-output kit v1 — base interactions
+   Wire components by adding data-attributes; no custom JS needed.
+   ========================================================= */
+
+(() => {
+  // ── Copy-to-clipboard (.copyable [data-copy]) ───────────
+  // Caches the original label once so rapid re-clicks during the
+  // 1200ms "copied!" window can't snapshot the transient label.
+  const restoreTimers = new WeakMap();
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest(".copyable");
+    if (!el) return;
+    const text = el.dataset.copy || el.dataset.original || el.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      if (el.dataset.original === undefined) {
+        el.dataset.original = el.textContent;
+      }
+      const pending = restoreTimers.get(el);
+      if (pending) clearTimeout(pending);
+      el.classList.add("copied");
+      el.textContent = "copied!";
+      restoreTimers.set(
+        el,
+        setTimeout(() => {
+          el.textContent = el.dataset.original;
+          el.classList.remove("copied");
+          restoreTimers.delete(el);
+        }, 1200)
+      );
+    });
+  });
+
+  // ── Tabs ([data-tabs] > .tab[data-tab] / .tab-panel[data-panel]) ──
+  document.querySelectorAll("[data-tabs]").forEach((root) => {
+    const tabs = root.querySelectorAll(".tab");
+    const panels = root.querySelectorAll(".tab-panel");
+    tabs.forEach((tab) =>
+      tab.addEventListener("click", () => {
+        const idx = tab.dataset.tab;
+        tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === idx));
+        panels.forEach((p) => p.classList.toggle("active", p.dataset.panel === idx));
+      })
+    );
+  });
+
+  // ── Flow steps ([data-flow] → next .flow-detail sibling .pane) ──
+  // Walks subsequent siblings so multiple flows in the same parent each
+  // bind to their own detail pane.
+  document.querySelectorAll("[data-flow]").forEach((root) => {
+    const steps = root.querySelectorAll(".flow-step");
+    let detail = root.nextElementSibling;
+    while (detail && !detail.classList.contains("flow-detail")) {
+      if (detail.matches("[data-flow]")) {
+        detail = null;
+        break;
+      }
+      detail = detail.nextElementSibling;
+    }
+    if (!detail) return;
+    const panes = detail.querySelectorAll(".pane");
+    steps.forEach((step) =>
+      step.addEventListener("click", () => {
+        const idx = step.dataset.flowStep;
+        steps.forEach((s) => s.classList.toggle("active", s.dataset.flowStep === idx));
+        panes.forEach((p) => p.classList.toggle("active", p.dataset.flowPane === idx));
+      })
+    );
+  });
+
+  // ── Collapsibles ([data-collapsible]) ───────────────────
+  document.querySelectorAll("[data-collapsible]").forEach((c) => {
+    const head = c.querySelector(".collapsible-head");
+    if (!head) return;
+    head.addEventListener("click", () => c.classList.toggle("open"));
+  });
+
+  // ── Reveal-on-scroll (.reveal) ──────────────────────────
+  const obs = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("visible")),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+})();
+
+</script>
+</body>
+</html>
