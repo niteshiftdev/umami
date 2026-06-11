@@ -1,0 +1,5 @@
+.venv/
+out/
+*.nii
+*.nii.gz
+__pycache__/
