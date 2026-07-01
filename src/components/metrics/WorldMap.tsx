@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams, query } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -52,6 +54,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const getOpacity = (code: string) => {
     return code === 'AQ' ? 0 : 1;
+  };
+
+  const handleClick = (code: string) => {
+    if (!code || code === 'AQ') return;
+    const selected = query.country === `eq.${code}`;
+    router.replace(updateParams({ country: selected ? undefined : `eq.${code}` }));
   };
 
   const handleHover = (code: string) => {
@@ -86,12 +94,20 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: {
+                        outline: 'none',
+                        cursor: code && code !== 'AQ' ? 'pointer' : 'default',
+                      },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: code && code !== 'AQ' ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
