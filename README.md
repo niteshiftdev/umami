@@ -21,6 +21,9 @@
 
 A detailed getting started guide can be found at [umami.is/docs](https://umami.is/docs/).
 
+New to the codebase? See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for a
+contributor-focused overview of how the project is structured.
+
 ---
 
 ## 🛠 Installing from Source
