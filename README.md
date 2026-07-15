@@ -98,7 +98,7 @@ pnpm install
 pnpm build
 ```
 
-To update the Docker image, simply pull the new images and rebuild:
+To update the Docker image, pull the new images and rebuild:
 
 ```bash
 docker compose pull
