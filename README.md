@@ -72,7 +72,7 @@ By default, this will launch the application on `http://localhost:3000`. You wil
 
 ## 🐳 Installing with Docker
 
-Umami provides Docker images as well as a Docker compose file for easy deployment.
+Umami provides Docker images and a Docker compose file for easy deployment.
 
 Docker image:
 
@@ -90,7 +90,7 @@ docker compose up -d
 
 ## 🔄 Getting Updates
 
-To get the latest features, simply do a pull, install any new dependencies, and rebuild:
+To get the latest features, pull, install any new dependencies, and rebuild:
 
 ```bash
 git pull
