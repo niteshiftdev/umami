@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams, query } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,16 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const isInteractive = (code: string) => !!websiteId && code !== 'AQ';
+
+  const isActive = (code: string) => query.country === `eq.${code}`;
+
+  const handleClick = (code: string) => {
+    if (!isInteractive(code)) return;
+    const isSelected = isActive(code);
+    router.replace(updateParams({ country: isSelected ? undefined : `eq.${code}` }));
+  };
+
   return (
     <Column
       {...props}
@@ -77,21 +89,25 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const interactive = isInteractive(code);
+                const active = isActive(code);
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={getFillColor(code)}
+                    fill={active ? colors.map.hoverColor : getFillColor(code)}
                     stroke={colors.map.strokeColor}
+                    strokeWidth={active ? 1.5 : 0}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
+                      default: { outline: 'none', cursor: interactive ? 'pointer' : 'default' },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={interactive ? () => handleClick(code) : undefined}
                   />
                 );
               });
