@@ -93,7 +93,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: code ? 'pointer' : 'default' },
+                      default: {
+                        outline: 'none',
+                        cursor: code && code !== 'AQ' ? 'pointer' : 'default',
+                      },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
