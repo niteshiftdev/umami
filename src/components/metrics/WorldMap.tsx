@@ -29,7 +29,7 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
   const { countryNames } = useCountryNames(locale);
   const { router, updateParams, query } = useNavigation();
   const pointerRef = useRef<{ x: number; y: number }>(null);
-  const selectedCountry = allowFilter ? query.country?.replace(/^eq\./, '') : null;
+  const selectedCountry = allowFilter ? query.country?.replace(/^eq\./, '') || null : null;
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -42,11 +42,15 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
     [data, mapData],
   );
 
+  const isSelected = (code: string) => {
+    return Boolean(code) && code === selectedCountry;
+  };
+
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
 
-    if (code === selectedCountry) {
+    if (isSelected(code)) {
       return colors.map.baseColor;
     }
 
@@ -118,7 +122,7 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
                     geography={geo}
                     fill={getFillColor(code)}
                     stroke={colors.map.strokeColor}
-                    strokeWidth={code === selectedCountry ? 1 : undefined}
+                    strokeWidth={isSelected(code) ? 1 : undefined}
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none', cursor },
