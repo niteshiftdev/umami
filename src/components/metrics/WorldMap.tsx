@@ -1,11 +1,12 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -16,15 +17,19 @@ import { formatLongNumber } from '@/lib/format';
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
   data?: any[];
+  allowFilter?: boolean;
 }
 
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+export function WorldMap({ websiteId, data, allowFilter = true, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams, query } = useNavigation();
+  const pointerRef = useRef<{ x: number; y: number }>(null);
+  const selectedCountry = allowFilter ? query.country?.replace(/^eq\./, '') : null;
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -41,6 +46,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
 
+    if (code === selectedCountry) {
+      return colors.map.baseColor;
+    }
+
     if (!country) {
       return colors.map.fillColor;
     }
@@ -54,6 +63,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     return code === 'AQ' ? 0 : 1;
   };
 
+  const isClickable = (code: string) => {
+    return Boolean(allowFilter && code && code !== 'AQ');
+  };
+
   const handleHover = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
@@ -62,6 +75,26 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
         country?.y || 0,
       )} ${visitorsLabel}` as any,
     );
+  };
+
+  const handlePointerDown = (e: { clientX: number; clientY: number }) => {
+    pointerRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleClick = (code: string, e: { clientX: number; clientY: number }) => {
+    if (!isClickable(code)) return;
+
+    // ignore clicks that are the end of a pan/drag on the map
+    const start = pointerRef.current;
+    pointerRef.current = null;
+
+    if (start && Math.abs(e.clientX - start.x) + Math.abs(e.clientY - start.y) > 4) {
+      return;
+    }
+
+    router.replace(updateParams({ country: code === selectedCountry ? undefined : `eq.${code}` }), {
+      scroll: false,
+    });
   };
 
   return (
@@ -77,6 +110,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const cursor = isClickable(code) ? 'pointer' : 'default';
 
                 return (
                   <Geography
@@ -84,14 +118,17 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     geography={geo}
                     fill={getFillColor(code)}
                     stroke={colors.map.strokeColor}
+                    strokeWidth={code === selectedCountry ? 1 : undefined}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: { outline: 'none', cursor },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onMouseDown={handlePointerDown}
+                    onClick={(e: any) => handleClick(code, e)}
                   />
                 );
               });
