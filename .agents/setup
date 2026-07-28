@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+echo "==> Installing PostgreSQL when needed"
+if ! command -v psql >/dev/null 2>&1; then
+  sudo apt-get update
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql postgresql-client
+fi
+
+echo "==> Starting PostgreSQL"
+sudo service postgresql start >/dev/null
+
+echo "==> Creating the local development database"
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = 'umami'" | grep -q 1; then
+  sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE ROLE umami LOGIN PASSWORD 'umami'"
+else
+  sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER ROLE umami WITH LOGIN PASSWORD 'umami'" >/dev/null
+fi
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = 'umami'" | grep -q 1; then
+  sudo -u postgres createdb --owner=umami umami
+fi
+
+echo "==> Configuring the local development environment"
+touch .env
+if ! grep -Eq '^[[:space:]]*DATABASE_URL=' .env; then
+  cat >> .env <<'EOF'
+
+# Local database created by .agents/setup
+DATABASE_URL=postgresql://umami:umami@localhost:5432/umami
+EOF
+fi
+
+echo "==> Enabling the repository-pinned pnpm"
+mkdir -p "$HOME/.local/bin"
+corepack enable pnpm --install-directory "$HOME/.local/bin"
+
+echo "==> Installing JavaScript dependencies"
+pnpm install --frozen-lockfile
+
+echo "==> Generating database clients and applying migrations"
+pnpm build-db
+pnpm update-db
+
+echo "==> Building development assets"
+pnpm build-tracker
+if [ ! -f geo/GeoLite2-City.mmdb ]; then
+  pnpm build-geo
+else
+  echo "GeoIP database already exists."
+fi
+
+echo "==> Orb setup complete"
