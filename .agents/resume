@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if pg_isready -q; then
+  echo "PostgreSQL is ready."
+  exit 0
+fi
+
+echo "Starting PostgreSQL..."
+sudo service postgresql start >/dev/null
+pg_isready -q
+echo "PostgreSQL is ready."
