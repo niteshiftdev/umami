@@ -1,0 +1,25 @@
+.page {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(165deg, #0a48bd 0%, #1470f0 50%, #56a8ff 100%);
+}
+
+/* Header sits directly on the blue background, so invert its colors */
+.header [class*="Heading_heading"] {
+  color: #fff !important;
+}
+
+.header > * {
+  border-color: rgb(255 255 255 / 30%) !important;
+}
+
+.header [class*="Button_variant-primary"] {
+  color: #0a48bd !important;
+  background: #fff !important;
+  border-color: #fff !important;
+}
+
+.panel {
+  border-color: rgb(255 255 255 / 50%) !important;
+  box-shadow: 0 18px 40px rgb(6 40 105 / 25%);
+}
