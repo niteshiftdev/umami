@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -16,17 +17,21 @@ import { formatLongNumber } from '@/lib/format';
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
   data?: any[];
+  allowFilter?: boolean;
 }
 
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+export function WorldMap({ websiteId, data, allowFilter = true, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams, query } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
+  const selectedCountry =
+    allowFilter && query.country?.startsWith('eq.') ? query.country.slice(3) : null;
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
@@ -37,12 +42,20 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     [data, mapData],
   );
 
+  const isClickable = (code: string) => {
+    return allowFilter && code && code !== 'AQ' && metrics?.some(({ x }) => x === code);
+  };
+
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
 
     if (!country) {
       return colors.map.fillColor;
+    }
+
+    if (selectedCountry) {
+      return code === selectedCountry ? colors.map.baseColor : colors.map.fillColor;
     }
 
     return colord(colors.map.baseColor)
@@ -64,6 +77,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleClick = (code: string) => {
+    if (!isClickable(code)) return;
+
+    router.replace(updateParams({ country: code === selectedCountry ? undefined : `eq.${code}` }));
+  };
+
   return (
     <Column
       {...props}
@@ -77,6 +96,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const clickable = isClickable(code);
 
                 return (
                   <Geography
@@ -86,12 +106,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
+                      default: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
