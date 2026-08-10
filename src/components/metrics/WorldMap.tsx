@@ -96,7 +96,9 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
-                const clickable = isClickable(code);
+                // react-simple-maps swaps these style objects instead of merging them,
+                // so the cursor has to be repeated in each state.
+                const cursor = isClickable(code) ? 'pointer' : 'default';
 
                 return (
                   <Geography
@@ -106,9 +108,9 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
-                      pressed: { outline: 'none' },
+                      default: { outline: 'none', cursor },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor },
+                      pressed: { outline: 'none', cursor },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
