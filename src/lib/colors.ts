@@ -85,6 +85,7 @@ export function getThemeColors(theme: string) {
         fillColor: fill,
         strokeColor: primary,
         hoverColor: primary,
+        backgroundColor: theme === 'light' ? '#cfe4fa' : '#10263d',
       },
     },
   };
