@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# One-shot setup for a fresh Umami sandbox. Idempotent: safe to re-run.
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_DIR"
+
+export DATABASE_URL="postgresql://umami:umami@localhost:5432/umami"
+
+echo "==> Starting PostgreSQL"
+bash .niteshift/start-postgres.sh
+
+# .env is gitignored. Prisma (prisma.config.ts), the build/seed scripts and
+# next.config.ts all load it through dotenv, so CLI commands work without extra flags.
+echo "==> Writing .env"
+cat > .env <<EOF
+DATABASE_URL=${DATABASE_URL}
+ALLOWED_FRAME_URLS=https://niteshift.dev https://*.niteshift.dev
+EOF
+
+echo "==> Installing dependencies"
+pnpm install --frozen-lockfile
+
+echo "==> Generating Prisma client"
+pnpm run build-db
+
+echo "==> Building tracker script"
+pnpm run build-tracker
+
+echo "==> Building geo database"
+pnpm run build-geo
+
+# Also creates the default admin/umami login on a fresh database.
+echo "==> Applying database migrations"
+pnpm run check-db
+
+echo "==> Seeding demo analytics data"
+website_count="$(docker exec umami-db psql -U umami -d umami -tAc 'select count(*) from website' 2>/dev/null || echo 0)"
+if [ "${website_count:-0}" = "0" ]; then
+  pnpm seed-data -- --days 30
+else
+  echo "Skipping seed: ${website_count} website(s) already present"
+fi
+
+# Log preview viewers in automatically as the seeded admin user.
+echo "==> Minting preview session"
+mkdir -p /root/.niteshift/agent-browser
+printf '%s\n' task-provisioned > /root/.niteshift/agent-browser/auth-strategy
+npx tsx .niteshift/mint-session.ts
+
+echo "==> Setup complete (login: admin / umami)"
