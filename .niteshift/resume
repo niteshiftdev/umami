@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Filesystem-only resume: dependencies, builds and the database volume are already on
+# disk, so the only recovery needed is bringing the PostgreSQL container back up before
+# `ns services up` restarts the dev server.
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_DIR"
+
+echo "==> Starting PostgreSQL"
+bash .niteshift/start-postgres.sh
+
+echo "==> Resume complete"

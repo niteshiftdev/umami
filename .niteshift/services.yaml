@@ -1,0 +1,12 @@
+services:
+  # Next.js dev server with hot reload. PostgreSQL is a Docker container owned by
+  # Docker itself; .niteshift/setup and .niteshift/resume bring it up.
+  - name: web
+    command: pnpm run dev
+    port: 3001
+    environment:
+      - name: DATABASE_URL
+        value: "postgresql://umami:umami@localhost:5432/umami"
+      # Allows the preview panel to embed the app (next.config.ts frame-ancestors).
+      - name: ALLOWED_FRAME_URLS
+        value: "https://niteshift.dev https://*.niteshift.dev"
