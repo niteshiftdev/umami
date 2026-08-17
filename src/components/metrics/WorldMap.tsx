@@ -1,6 +1,6 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
@@ -28,6 +28,7 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
   const { router, updateParams, query } = useNavigation();
+  const pointerDown = useRef<{ x: number; y: number }>(null);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -40,21 +41,24 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
     [data, mapData],
   );
 
-  const isSelected = (code: string) => allowFilter && query.country === `eq.${code}`;
+  const selectedCountry = query?.country?.startsWith('eq.') ? query.country.slice(3) : null;
 
-  const isClickable = (code: string) =>
-    allowFilter && code && code !== 'AQ' && metrics?.some(({ x }) => x === code);
+  const isClickable = (code: string) => {
+    if (!allowFilter || !code || code === 'AQ') return false;
+
+    return code === selectedCountry || metrics?.some(({ x }) => x === code);
+  };
 
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
 
-    if (isSelected(code)) {
-      return colors.map.baseColor;
-    }
-
     if (!country) {
       return colors.map.fillColor;
+    }
+
+    if (code === selectedCountry) {
+      return colors.map.baseColor;
     }
 
     return colord(colors.map.baseColor)
@@ -76,10 +80,21 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
     );
   };
 
-  const handleClick = (code: string) => {
+  const handleClick = (code: string, e: { clientX: number; clientY: number }) => {
     if (!isClickable(code)) return;
 
-    router.replace(updateParams({ country: isSelected(code) ? undefined : `eq.${code}` }));
+    // ignore clicks that are the end of a map pan
+    const start = pointerDown.current;
+
+    if (start && Math.abs(e.clientX - start.x) + Math.abs(e.clientY - start.y) > 5) {
+      return;
+    }
+
+    setTooltipPopup(null);
+
+    router.replace(updateParams({ country: code === selectedCountry ? undefined : `eq.${code}` }), {
+      scroll: false,
+    });
   };
 
   return (
@@ -95,6 +110,7 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const clickable = isClickable(code);
 
                 return (
                   <Geography
@@ -104,17 +120,20 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none', cursor: isClickable(code) ? 'pointer' : null },
+                      default: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
                       hover: {
                         outline: 'none',
                         fill: colors.map.hoverColor,
-                        cursor: isClickable(code) ? 'pointer' : null,
+                        cursor: clickable ? 'pointer' : 'default',
                       },
-                      pressed: { outline: 'none' },
+                      pressed: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
-                    onClick={() => handleClick(code)}
+                    onPointerDown={(e: any) => {
+                      pointerDown.current = { x: e.clientX, y: e.clientY };
+                    }}
+                    onClick={(e: any) => handleClick(code, e)}
                   />
                 );
               });
