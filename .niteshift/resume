@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Niteshift resume hook: runs after the sandbox wakes, before services restart.
+# Dependencies and build artifacts survive suspension, so the only work needed is
+# re-establishing the database: wake the (serverless) Postgres endpoint and apply
+# any migrations that landed while the sandbox was suspended.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "ERROR: DATABASE_URL is not set. Add it to the repository environment." >&2
+  exit 1
+fi
+
+echo "==> Checking database and applying migrations"
+pnpm run check-db
