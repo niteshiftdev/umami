@@ -1,0 +1,20 @@
+services:
+  # Next.js dev server with hot reloading (package.json: "dev" -> next dev -p 3001 --turbo)
+  - name: web
+    command: pnpm run dev
+    port: 3001
+    stopGracePeriod: 15s
+    environment:
+      # Provisioned per task; kept out of the repository.
+      - name: DATABASE_URL
+        secret: DATABASE_URL
+      # Preview viewers are auto-authenticated as the seeded admin user.
+      - name: DISABLE_AUTH
+        value: "1"
+      # Allows the Niteshift preview panel to embed the app in an iframe
+      # (next.config.ts renders this into the Content-Security-Policy frame-ancestors).
+      - name: ALLOWED_FRAME_URLS
+        value: https://niteshift.dev https://*.niteshift.dev
+      # Enables the /console test-data page used for local event generation.
+      - name: ENABLE_TEST_CONSOLE
+        value: "1"

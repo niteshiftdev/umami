@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Niteshift one-shot setup for umami.
+# Runs on a fresh sandbox before services start. Must be idempotent: it may run
+# against a cached sandbox that already has node_modules and build artifacts.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "ERROR: DATABASE_URL is not set. Add it to the repository environment." >&2
+  exit 1
+fi
+
+echo "==> Installing dependencies (pnpm)"
+pnpm install --frozen-lockfile
+
+echo "==> Generating Prisma client"
+pnpm run build-db
+
+echo "==> Building tracker script"
+pnpm run build-tracker
+
+echo "==> Building geo database"
+pnpm run build-geo
+
+echo "==> Checking database and applying migrations"
+pnpm run check-db
+
+echo "==> Setup complete. Dev server is declared in .niteshift/services.yaml (port 3001)."
+echo "    Auth is disabled for previews (DISABLE_AUTH=1); the seeded admin login is admin / umami."
