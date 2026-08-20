@@ -123,7 +123,7 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
                       default: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
                       hover: {
                         outline: 'none',
-                        fill: colors.map.hoverColor,
+                        fill: clickable ? colors.map.hoverColor : getFillColor(code),
                         cursor: clickable ? 'pointer' : 'default',
                       },
                       pressed: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
