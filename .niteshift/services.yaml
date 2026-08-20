@@ -1,0 +1,38 @@
+services:
+  - name: database
+    command: >-
+      docker run --rm --name umami-niteshift-db
+      -p 127.0.0.1:5432:5432
+      -v umami-niteshift-db-data:/var/lib/postgresql/data
+      -e POSTGRES_DB
+      -e POSTGRES_USER
+      -e POSTGRES_PASSWORD
+      postgres:15-alpine
+    restart: always
+    stopGracePeriod: 30s
+    environment:
+      - name: POSTGRES_DB
+        value: umami
+      - name: POSTGRES_USER
+        value: umami
+      - name: POSTGRES_PASSWORD
+        value: umami
+
+  - name: web
+    command: |
+      for _ in $(seq 1 30); do
+        if docker exec umami-niteshift-db pg_isready -U umami -d umami >/dev/null 2>&1; then
+          exec pnpm run dev
+        fi
+        sleep 1
+      done
+      exit 1
+    port: 3001
+    restart: always
+    environment:
+      - name: DATABASE_URL
+        value: postgresql://umami:umami@127.0.0.1:5432/umami
+      - name: ALLOWED_FRAME_URLS
+        value: https://niteshift.dev https://*.niteshift.dev
+      - name: npm_config_manage_package_manager_versions
+        value: "false"

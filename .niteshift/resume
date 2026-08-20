@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Keep the restored checkout in sync when a task resumes after dependency
+# changes. The database volume and declared services are restored by Niteshift.
+export npm_config_manage_package_manager_versions=false
+
+pnpm install --frozen-lockfile

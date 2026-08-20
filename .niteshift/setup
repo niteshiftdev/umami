@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+database_url='postgresql://umami:umami@127.0.0.1:5432/umami'
+
+# The sandbox provides pnpm 10.25.0; avoid a redundant download of the
+# package.json-pinned 10.22.0 release on every setup.
+export npm_config_manage_package_manager_versions=false
+
+pnpm install --frozen-lockfile
+
+ns services start database
+
+for _ in $(seq 1 30); do
+  if docker exec umami-niteshift-db pg_isready -U umami -d umami >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+docker exec umami-niteshift-db pg_isready -U umami -d umami
+DATABASE_URL="$database_url" pnpm run build
