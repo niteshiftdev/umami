@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_dir="${NITESHIFT_CHECKOUT_ROOT:?NITESHIFT_CHECKOUT_ROOT is required}/umami"
+cd "$repo_dir"
+
+: "${DATABASE_URL:?DATABASE_URL is required}"
+
+# Wake the hosted database and apply migrations added while the sandbox slept.
+pnpm run check-db
