@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_dir="${NITESHIFT_CHECKOUT_ROOT:?NITESHIFT_CHECKOUT_ROOT is required}/umami"
+cd "$repo_dir"
+
+: "${DATABASE_URL:?DATABASE_URL is required}"
+
+pnpm install --frozen-lockfile
+pnpm run build-db
+pnpm run build-tracker
+pnpm run build-geo
+pnpm run check-db

@@ -1,0 +1,16 @@
+services:
+  - name: web
+    command: pnpm run dev
+    port: 3001
+    stopGracePeriod: 15s
+    environment:
+      - name: DATABASE_URL
+        secret: DATABASE_URL
+      # Development mode signs preview viewers in as the seeded admin user.
+      - name: DISABLE_AUTH
+        value: "1"
+      # Allow the Niteshift preview panel to embed the application.
+      - name: ALLOWED_FRAME_URLS
+        value: https://niteshift.dev https://*.niteshift.dev
+      - name: ENABLE_TEST_CONSOLE
+        value: "1"
