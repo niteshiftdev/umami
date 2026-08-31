@@ -1,11 +1,12 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -16,21 +17,25 @@ import { formatLongNumber } from '@/lib/format';
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
   data?: any[];
+  allowFilter?: boolean;
 }
 
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+export function WorldMap({ websiteId, data, allowFilter = true, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
+  const { router, updateParams, query } = useNavigation();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const dragOrigin = useRef<[number, number]>(null);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
   });
+  const selectedCountry = query.country?.replace(/^eq\./, '');
 
   const metrics = useMemo(
     () => (data || mapData ? percentFilter((data || mapData) as any[]) : []),
@@ -45,6 +50,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
       return colors.map.fillColor;
     }
 
+    if (selectedCountry && selectedCountry === code) {
+      return colors.map.baseColor;
+    }
+
     return colord(colors.map.baseColor)
       [theme === 'light' ? 'lighten' : 'darken'](0.4 * (1.0 - country.z / 100))
       .toHex();
@@ -52,6 +61,25 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const getOpacity = (code: string) => {
     return code === 'AQ' ? 0 : 1;
+  };
+
+  const isClickable = (code: string) => {
+    return allowFilter && !!code && code !== 'AQ' && metrics?.some(({ x }) => x === code);
+  };
+
+  const handleMouseDown = (e: any) => {
+    dragOrigin.current = [e.clientX, e.clientY];
+  };
+
+  const handleClick = (code: string, e: any) => {
+    const [x, y] = dragOrigin.current || [e.clientX, e.clientY];
+
+    // ignore clicks that are the end of a map pan
+    if (Math.abs(e.clientX - x) > 5 || Math.abs(e.clientY - y) > 5) return;
+
+    if (!isClickable(code)) return;
+
+    router.replace(updateParams({ country: selectedCountry === code ? undefined : `eq.${code}` }));
   };
 
   const handleHover = (code: string) => {
@@ -90,8 +118,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                       hover: { outline: 'none', fill: colors.map.hoverColor },
                       pressed: { outline: 'none' },
                     }}
+                    cursor={isClickable(code) ? 'pointer' : 'default'}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onMouseDown={handleMouseDown}
+                    onClick={(e: any) => handleClick(code, e)}
                   />
                 );
               });
