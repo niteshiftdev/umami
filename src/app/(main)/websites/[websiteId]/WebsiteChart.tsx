@@ -55,6 +55,7 @@ export function WebsiteChart({
         minDate={startDate}
         maxDate={endDate}
         unit={unit}
+        palette="red"
       />
     </LoadingPanel>
   );
