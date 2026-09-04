@@ -1,10 +1,23 @@
-import { useTheme } from '@umami/react-zen';
+import { colord } from 'colord';
 import { useCallback, useMemo } from 'react';
 import { BarChart, type BarChartProps } from '@/components/charts/BarChart';
 import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
-import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
+
+const chartRed = colord('#e34850');
+const visitorsRed = {
+  hoverBackgroundColor: chartRed.alpha(0.9).toRgbString(),
+  backgroundColor: chartRed.alpha(0.6).toRgbString(),
+  borderColor: chartRed.alpha(0.9).toRgbString(),
+  hoverBorderColor: chartRed.toRgbString(),
+};
+const viewsRed = {
+  hoverBackgroundColor: chartRed.alpha(0.7).toRgbString(),
+  backgroundColor: chartRed.alpha(0.4).toRgbString(),
+  borderColor: chartRed.alpha(0.7).toRgbString(),
+  hoverBorderColor: chartRed.toRgbString(),
+};
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
@@ -20,9 +33,7 @@ export interface PageviewsChartProps extends BarChartProps {
 
 export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
-  const { theme } = useTheme();
   const { locale, dateLocale } = useLocale();
-  const { colors } = useMemo(() => getThemeColors(theme), [theme]);
 
   const chartData: any = useMemo(() => {
     if (!data) return;
@@ -37,7 +48,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           borderWidth: 1,
           barPercentage: 0.9,
           categoryPercentage: 0.9,
-          ...colors.chart.visitors,
+          ...visitorsRed,
           order: 3,
         },
         {
@@ -47,7 +58,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
           barPercentage: 0.9,
           categoryPercentage: 0.9,
           borderWidth: 1,
-          ...colors.chart.views,
+          ...viewsRed,
           order: 4,
         },
         ...(data.compare

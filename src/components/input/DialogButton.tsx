@@ -5,6 +5,7 @@ import {
   type DialogProps,
   DialogTrigger,
   IconLabel,
+  type IconLabelProps,
   Modal,
 } from '@umami/react-zen';
 import type { CSSProperties, ReactNode } from 'react';
@@ -18,6 +19,7 @@ export interface DialogButtonProps extends Omit<ButtonProps, 'children'> {
   height?: string;
   minWidth?: string;
   minHeight?: string;
+  labelProps?: IconLabelProps['labelProps'];
   children?: DialogProps['children'];
 }
 
@@ -29,6 +31,7 @@ export function DialogButton({
   height,
   minWidth,
   minHeight,
+  labelProps,
   children,
   ...props
 }: DialogButtonProps) {
@@ -52,7 +55,7 @@ export function DialogButton({
   return (
     <DialogTrigger>
       <Button {...props}>
-        <IconLabel icon={icon} label={label} />
+        <IconLabel icon={icon} label={label} labelProps={labelProps} />
       </Button>
       <Modal placement={isMobile ? 'fullscreen' : 'center'}>
         <Dialog variant={isMobile ? 'sheet' : undefined} title={title || label} style={style}>

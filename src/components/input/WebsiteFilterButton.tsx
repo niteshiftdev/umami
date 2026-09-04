@@ -23,7 +23,12 @@ export function WebsiteFilterButton({
   };
 
   return (
-    <DialogButton icon={<ListFilter />} label={formatMessage(labels.filter)} variant="outline">
+    <DialogButton
+      icon={<ListFilter />}
+      label={formatMessage(labels.filter)}
+      labelProps={{ weight: 'bold' }}
+      variant="outline"
+    >
       {({ close }) => {
         return <FilterEditForm websiteId={websiteId} onChange={handleChange} onClose={close} />;
       }}
