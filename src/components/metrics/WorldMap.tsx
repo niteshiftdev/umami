@@ -1,30 +1,36 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
-import { ISO_COUNTRIES, MAP_FILE } from '@/lib/constants';
+import { ISO_COUNTRIES, MAP_FILE, OPERATORS } from '@/lib/constants';
 import { percentFilter } from '@/lib/filters';
 import { formatLongNumber } from '@/lib/format';
+import { parseFilterValue } from '@/lib/params';
 
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
   data?: any[];
+  allowFilter?: boolean;
 }
 
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+export function WorldMap({ websiteId, data, allowFilter = true, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
+  const { router, query, updateParams } = useNavigation();
   const { countryNames } = useCountryNames(locale);
+  const dragOrigin = useRef<[number, number]>(null);
+  const isDragging = useRef(false);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -37,11 +43,19 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     [data, mapData],
   );
 
+  // only an equals filter maps to a single highlighted country
+  const { operator, value } = parseFilterValue(query.country);
+  const selectedCountry = allowFilter && operator === OPERATORS.equals ? value : undefined;
+
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
     const country = metrics?.find(({ x }) => x === code);
 
     if (!country) {
+      return colors.map.fillColor;
+    }
+
+    if (selectedCountry && selectedCountry !== code) {
       return colors.map.fillColor;
     }
 
@@ -52,6 +66,27 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const getOpacity = (code: string) => {
     return code === 'AQ' ? 0 : 1;
+  };
+
+  const handlePointerDown = (e: { clientX: number; clientY: number }) => {
+    dragOrigin.current = [e.clientX, e.clientY];
+    isDragging.current = false;
+  };
+
+  const handlePointerUp = (e: { clientX: number; clientY: number }) => {
+    const [x, y] = dragOrigin.current || [e.clientX, e.clientY];
+    isDragging.current = Math.abs(e.clientX - x) > 3 || Math.abs(e.clientY - y) > 3;
+  };
+
+  const isClickable = (code: string) => {
+    return allowFilter && code !== 'AQ' && !!metrics?.find(({ x }) => x === code);
+  };
+
+  const handleClick = (code: string) => {
+    // ignore clicks that end a pan/zoom drag
+    if (!isClickable(code) || isDragging.current) return;
+
+    router.replace(updateParams({ country: selectedCountry === code ? undefined : `eq.${code}` }));
   };
 
   const handleHover = (code: string) => {
@@ -71,7 +106,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
       data-for="world-map-tooltip"
       style={{ margin: 'auto 0', overflow: 'hidden' }}
     >
-      <ComposableMap projection="geoMercator">
+      <ComposableMap
+        projection="geoMercator"
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
         <ZoomableGroup zoom={0.8} minZoom={0.7} center={[0, 40]}>
           <Geographies geography={`${process.env.basePath || ''}${MAP_FILE}`}>
             {({ geographies }) => {
@@ -86,12 +125,20 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      default: {
+                        outline: 'none',
+                        cursor: isClickable(code) ? 'pointer' : 'default',
+                      },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: isClickable(code) ? 'pointer' : 'default',
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
