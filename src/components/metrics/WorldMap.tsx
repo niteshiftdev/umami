@@ -10,9 +10,10 @@ import {
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
-import { ISO_COUNTRIES, MAP_FILE } from '@/lib/constants';
+import { ISO_COUNTRIES, MAP_FILE, OPERATORS } from '@/lib/constants';
 import { percentFilter } from '@/lib/filters';
 import { formatLongNumber } from '@/lib/format';
+import { parseFilterValue } from '@/lib/params';
 
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
@@ -42,7 +43,9 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
     [data, mapData],
   );
 
-  const selectedCountry = allowFilter ? (query.country as string)?.replace(/^eq\./, '') : undefined;
+  // only an equals filter maps to a single highlighted country
+  const { operator, value } = parseFilterValue(query.country);
+  const selectedCountry = allowFilter && operator === OPERATORS.equals ? value : undefined;
 
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
