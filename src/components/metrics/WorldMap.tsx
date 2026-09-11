@@ -29,7 +29,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { router, query, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
-  const selectedCountry = query.country?.replace(/^[a-z]+\./, '');
+  const selectedCountry = query.country?.startsWith('eq.') ? query.country.slice(3) : undefined;
   const clickable = !!websiteId;
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
@@ -43,7 +43,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const getFillColor = (code: string) => {
     if (code === 'AQ') return;
-    if (code === selectedCountry) {
+    if (code && code === selectedCountry) {
       return colors.map.hoverColor;
     }
     const country = metrics?.find(({ x }) => x === code);
