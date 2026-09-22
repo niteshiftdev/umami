@@ -23,7 +23,7 @@ export interface WorldMapProps extends ColumnProps {
 export function WorldMap({ websiteId, data, allowFilter = true, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
   const { router, query, updateParams } = useNavigation();
-  const selectedCountry = query.country?.replace(/^eq\./, '');
+  const selectedCountry = allowFilter ? query.country?.replace(/^eq\./, '') : undefined;
   const pointerOrigin = useRef<[number, number] | null>(null);
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
@@ -96,16 +96,15 @@ export function WorldMap({ websiteId, data, allowFilter = true, ...props }: Worl
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const isSelected = !!code && selectedCountry === code;
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     fill={getFillColor(code)}
-                    stroke={
-                      selectedCountry === code ? colors.map.baseColor : colors.map.strokeColor
-                    }
-                    strokeWidth={selectedCountry === code ? 2 : 1}
+                    stroke={isSelected ? colors.map.baseColor : colors.map.strokeColor}
+                    strokeWidth={isSelected ? 2 : 1}
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none', cursor: allowFilter ? 'pointer' : 'default' },
