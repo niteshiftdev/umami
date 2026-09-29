@@ -66,12 +66,14 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
-  const handleClick = (code: string) => {
-    if (!websiteId || !code || code === 'AQ') return;
-    router.replace(updateParams({ country: `eq.${code}` }));
+  const isClickable = (code: string) => {
+    return !!websiteId && !!code && code !== 'AQ';
   };
 
-  const cursor = websiteId ? 'pointer' : undefined;
+  const handleClick = (code: string) => {
+    if (!isClickable(code)) return;
+    router.replace(updateParams({ country: `eq.${code}` }));
+  };
 
   return (
     <Column
@@ -86,6 +88,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const cursor = isClickable(code) ? 'pointer' : undefined;
 
                 return (
                   <Geography
