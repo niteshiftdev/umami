@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleClick = (code: string) => {
+    if (!websiteId || !code || code === 'AQ') return;
+
+    setTooltipPopup(null);
+    router.push(updateParams({ country: `eq.${code}` }), { scroll: false });
+  };
+
   return (
     <Column
       {...props}
@@ -77,6 +86,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const canFilter = !!websiteId && !!code && code !== 'AQ';
 
                 return (
                   <Geography
@@ -85,11 +95,35 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     fill={getFillColor(code)}
                     stroke={colors.map.strokeColor}
                     opacity={getOpacity(code)}
+                    role={canFilter ? 'button' : undefined}
+                    aria-label={countryNames[code] || unknownLabel}
+                    tabIndex={canFilter ? 0 : -1}
                     style={{
-                      default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
-                      pressed: { outline: 'none' },
+                      default: {
+                        outline: canFilter ? undefined : 'none',
+                        cursor: canFilter ? 'pointer' : undefined,
+                      },
+                      hover: {
+                        outline: canFilter ? undefined : 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: canFilter ? 'pointer' : undefined,
+                      },
+                      pressed: {
+                        outline: canFilter ? undefined : 'none',
+                        cursor: canFilter ? 'pointer' : undefined,
+                      },
                     }}
+                    onClick={canFilter ? () => handleClick(code) : undefined}
+                    onKeyDown={
+                      canFilter
+                        ? event => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              handleClick(code);
+                            }
+                          }
+                        : undefined
+                    }
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />
