@@ -562,6 +562,7 @@ export const ISO_COUNTRIES = {
   SOM: 'SO',
   SPM: 'PM',
   SRB: 'RS',
+  SSD: 'SS',
   SUR: 'SR',
   STP: 'ST',
   SVK: 'SK',
