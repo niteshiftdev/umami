@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,10 +26,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, query, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
-  const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
+  const { data: mapData, isPlaceholderData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
   });
 
@@ -64,6 +66,18 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const isFilterable = (code: string) => {
+    return (
+      !!websiteId && !isPlaceholderData && code !== 'AQ' && !!metrics?.find(({ x }) => x === code)
+    );
+  };
+
+  const handleClick = (code: string) => {
+    if (!isFilterable(code)) return;
+    const value = `eq.${code}`;
+    router.replace(updateParams({ country: query.country === value ? undefined : value }));
+  };
+
   return (
     <Column
       {...props}
@@ -77,6 +91,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const filterable = isFilterable(code);
 
                 return (
                   <Geography
@@ -87,8 +102,22 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: filterable ? 'pointer' : undefined,
+                      },
                       pressed: { outline: 'none' },
+                    }}
+                    tabIndex={filterable ? 0 : -1}
+                    role={filterable ? 'button' : undefined}
+                    aria-label={filterable ? countryNames[code] || code : undefined}
+                    onClick={() => handleClick(code)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleClick(code);
+                      }
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
