@@ -68,14 +68,27 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
 
   const canFilter = !data;
 
+  // The map metrics are filtered by the active country, so fetch them without it
+  // to know which other countries can be switched to
+  const { data: unfilteredData } = useWebsiteMetricsQuery(
+    websiteId,
+    { type: 'country', country: undefined },
+    { enabled: canFilter && !!websiteId && !!query.country },
+  );
+
+  const clickableMetrics = query.country ? unfilteredData : metrics;
+
+  // Country filters may be written as `US` or `eq.US`
+  const isSelected = (code: string) => [code, `eq.${code}`].includes(query.country);
+
   const isClickable = (code: string) => {
-    return canFilter && code !== 'AQ' && metrics?.some(({ x }) => x === code);
+    if (!canFilter || code === 'AQ') return false;
+    return isSelected(code) || clickableMetrics?.some(({ x }) => x === code);
   };
 
   const handleClick = (code: string) => {
     if (!isClickable(code)) return;
-    const value = `eq.${code}`;
-    router.replace(updateParams({ country: query.country === value ? undefined : value }));
+    router.replace(updateParams({ country: isSelected(code) ? undefined : `eq.${code}` }));
   };
 
   return (
