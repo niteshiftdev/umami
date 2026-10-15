@@ -11,7 +11,7 @@ export type WebsiteMetricsData = {
 
 export function useWebsiteMetricsQuery(
   websiteId: string,
-  params: { type: string; limit?: number; search?: string },
+  params: { type: string; limit?: number; search?: string; country?: string },
   options?: ReactQueryOptions<WebsiteMetricsData>,
 ) {
   const { get, useQuery } = useApi();
