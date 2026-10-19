@@ -42,7 +42,11 @@ export function App({ children }) {
       columns={{ xs: '1fr', lg: 'auto 1fr' }}
       rows={{ xs: 'auto 1fr', lg: '1fr' }}
       height={{ xs: 'auto', lg: '100vh' }}
+      minHeight="100vh"
       width="100%"
+      // Below the xs breakpoint no row template applies, so size the implicit rows
+      // to let the content row (not the mobile nav) fill the viewport.
+      style={{ gridAutoRows: 'min-content auto' }}
     >
       <Row display={{ xs: 'flex', lg: 'none' }} alignItems="center" gap padding="3">
         <MobileNav />
