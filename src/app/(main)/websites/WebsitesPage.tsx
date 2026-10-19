@@ -12,15 +12,24 @@ export function WebsitesPage() {
   const { formatMessage, labels } = useMessages();
 
   return (
-    <PageBody>
-      <Column gap="6" margin="2">
-        <PageHeader title={formatMessage(labels.websites)}>
-          <WebsiteAddButton teamId={teamId} />
-        </PageHeader>
-        <Panel>
-          <WebsitesDataTable teamId={teamId} />
-        </Panel>
-      </Column>
-    </PageBody>
+    <Column
+      width="100%"
+      alignItems="center"
+      style={{
+        flexGrow: 1,
+        backgroundColor: 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
+      }}
+    >
+      <PageBody>
+        <Column gap="6" margin="2">
+          <PageHeader title={formatMessage(labels.websites)}>
+            <WebsiteAddButton teamId={teamId} />
+          </PageHeader>
+          <Panel>
+            <WebsitesDataTable teamId={teamId} />
+          </Panel>
+        </Column>
+      </PageBody>
+    </Column>
   );
 }
