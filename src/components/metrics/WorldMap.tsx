@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const isClickable = (code: string) => {
+    return !!websiteId && code !== 'AQ' && !!metrics?.find(({ x }) => x === code);
+  };
+
+  const handleClick = (code: string) => {
+    if (!isClickable(code)) return;
+    router.replace(updateParams({ country: `eq.${code}` }));
+  };
+
   return (
     <Column
       {...props}
@@ -87,11 +98,16 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: isClickable(code) ? 'pointer' : undefined,
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
