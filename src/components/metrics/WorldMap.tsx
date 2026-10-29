@@ -1,11 +1,12 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { type KeyboardEvent, useMemo, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -25,6 +26,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +66,22 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const isClickable = (code: string) => {
+    return !data && code !== 'AQ' && metrics?.some(({ x }) => x === code);
+  };
+
+  const handleClick = (code: string) => {
+    if (!isClickable(code)) return;
+    router.replace(updateParams({ country: `eq.${code}` }));
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<SVGPathElement>, code: string) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleClick(code);
+    }
+  };
+
   return (
     <Column
       {...props}
@@ -77,6 +95,8 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const clickable = isClickable(code);
+                const cursor = clickable ? 'pointer' : undefined;
 
                 return (
                   <Geography
@@ -87,9 +107,16 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
-                      pressed: { outline: 'none' },
+                      hover: { outline: 'none', fill: colors.map.hoverColor, cursor },
+                      pressed: { outline: 'none', cursor },
                     }}
+                    tabIndex={clickable ? 0 : -1}
+                    role={clickable ? 'button' : undefined}
+                    aria-label={clickable ? countryNames[code] || code : undefined}
+                    onClick={() => handleClick(code)}
+                    onKeyDown={event => handleKeyDown(event, code)}
+                    onFocus={() => clickable && handleHover(code)}
+                    onBlur={() => setTooltipPopup(null)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />
