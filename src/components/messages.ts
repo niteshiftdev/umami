@@ -346,6 +346,7 @@ export const labels = defineMessages({
   chart: { id: 'label.chart', defaultMessage: 'Chart' },
   table: { id: 'label.table', defaultMessage: 'Table' },
   download: { id: 'label.download', defaultMessage: 'Download' },
+  exportCsv: { id: 'label.export-csv', defaultMessage: 'Export CSV' },
   traffic: { id: 'label.traffic', defaultMessage: 'Traffic' },
   behavior: { id: 'label.behavior', defaultMessage: 'Behavior' },
   growth: { id: 'label.growth', defaultMessage: 'Growth' },
