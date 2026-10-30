@@ -29,7 +29,7 @@ export function DownloadButton({
   );
 }
 
-function downloadCsv(filename: string, data: any) {
+export function downloadCsv(filename: string, data: any) {
   const blob = new Blob([data], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
 
