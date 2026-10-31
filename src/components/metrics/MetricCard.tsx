@@ -2,6 +2,7 @@ import { useSpring } from '@react-spring/web';
 import { Column, Text } from '@umami/react-zen';
 import { AnimatedDiv } from '@/components/common/AnimatedDiv';
 import { ChangeLabel } from '@/components/metrics/ChangeLabel';
+import { Sparkline } from '@/components/metrics/Sparkline';
 import { formatNumber } from '@/lib/format';
 
 export interface MetricCardProps {
@@ -19,6 +20,8 @@ export interface MetricCardProps {
   valueWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
   labelColor?: string;
   valueColor?: string;
+  sparkline?: number[];
+  sparklineTitle?: string;
 }
 
 export const MetricCard = ({
@@ -35,6 +38,8 @@ export const MetricCard = ({
   valueWeight,
   labelColor,
   valueColor,
+  sparkline,
+  sparklineTitle,
 }: MetricCardProps) => {
   const diff = value - change;
   const pct = ((value - diff) / diff) * 100;
@@ -72,6 +77,11 @@ export const MetricCard = ({
         <ChangeLabel value={change} title={formatValue(change)} reverseColors={reverseColors}>
           <AnimatedDiv>{changeProps?.x?.to(x => `${Math.abs(~~x)}%`)}</AnimatedDiv>
         </ChangeLabel>
+      )}
+      {sparkline && (
+        <div style={{ marginTop: 8 }}>
+          <Sparkline data={sparkline} title={sparklineTitle} />
+        </div>
       )}
     </Column>
   );

@@ -1,11 +1,15 @@
+import { format, subDays } from 'date-fns';
 import { useContext } from 'react';
 import { LoadingPanel } from '@/components/common/LoadingPanel';
 import { useDateRange, useMessages } from '@/components/hooks';
 import { useWebsiteStatsQuery } from '@/components/hooks/queries/useWebsiteStatsQuery';
+import { useWebsiteStatsSeriesQuery } from '@/components/hooks/queries/useWebsiteStatsSeriesQuery';
 import { MetricCard } from '@/components/metrics/MetricCard';
 import { MetricsBar } from '@/components/metrics/MetricsBar';
 import { formatLongNumber, formatShortTime } from '@/lib/format';
 import { TypographyContext } from './WebsitePage';
+
+const SPARKLINE_DAYS = 7;
 
 export function WebsiteMetricsBar({
   websiteId,
@@ -15,9 +19,31 @@ export function WebsiteMetricsBar({
   compareMode?: boolean;
 }) {
   const typography = useContext(TypographyContext);
-  const { isAllTime } = useDateRange();
+  const {
+    isAllTime,
+    dateRange: { endDate },
+  } = useDateRange();
   const { formatMessage, labels, getErrorMessage } = useMessages();
   const { data, isLoading, isFetching, error } = useWebsiteStatsQuery(websiteId);
+  const { data: seriesData } = useWebsiteStatsSeriesQuery(websiteId, SPARKLINE_DAYS);
+
+  // One entry per day ending on the selected end date, zero-filled for days with no data
+  const days = seriesData
+    ? Array.from({ length: SPARKLINE_DAYS }, (_, i) => {
+        const key = format(subDays(endDate, SPARKLINE_DAYS - 1 - i), 'yyyy-MM-dd');
+        const row = seriesData.find(({ x }) => x?.startsWith(key));
+        return {
+          pageviews: Number(row?.pageviews) || 0,
+          visitors: Number(row?.visitors) || 0,
+          visits: Number(row?.visits) || 0,
+          bounces: Number(row?.bounces) || 0,
+          totaltime: Number(row?.totaltime) || 0,
+        };
+      })
+    : null;
+
+  const sparkline = (fn: (day: (typeof days)[number]) => number) => days?.map(fn);
+  const sparklineTitle = formatMessage(labels.lastDays, { x: SPARKLINE_DAYS });
 
   const { pageviews, visitors, visits, bounces, totaltime, comparison } = data || {};
 
@@ -28,18 +54,21 @@ export function WebsiteMetricsBar({
           label: formatMessage(labels.visitors),
           change: visitors - comparison.visitors,
           formatValue: formatLongNumber,
+          sparkline: sparkline(d => d.visitors),
         },
         {
           value: visits,
           label: formatMessage(labels.visits),
           change: visits - comparison.visits,
           formatValue: formatLongNumber,
+          sparkline: sparkline(d => d.visits),
         },
         {
           value: pageviews,
           label: formatMessage(labels.views),
           change: pageviews - comparison.pageviews,
           formatValue: formatLongNumber,
+          sparkline: sparkline(d => d.pageviews),
         },
         {
           label: formatMessage(labels.bounceRate),
@@ -50,6 +79,9 @@ export function WebsiteMetricsBar({
             (Math.min(comparison.visits, comparison.bounces) / comparison.visits) * 100,
           formatValue: n => `${Math.round(+n)}%`,
           reverseColors: true,
+          sparkline: sparkline(d =>
+            d.visits ? (Math.min(d.visits, d.bounces) / d.visits) * 100 : 0,
+          ),
         },
         {
           label: formatMessage(labels.visitDuration),
@@ -58,6 +90,7 @@ export function WebsiteMetricsBar({
           change: totaltime / visits - comparison.totaltime / comparison.visits,
           formatValue: n =>
             `${+n < 0 ? '-' : ''}${formatShortTime(Math.abs(~~n), ['m', 's'], ' ')}`,
+          sparkline: sparkline(d => (d.visits ? d.totaltime / d.visits : 0)),
         },
       ]
     : null;
@@ -71,7 +104,7 @@ export function WebsiteMetricsBar({
       minHeight="136px"
     >
       <MetricsBar>
-        {metrics?.map(({ label, value, prev, change, formatValue, reverseColors }) => {
+        {metrics?.map(({ label, value, prev, change, formatValue, reverseColors, sparkline }) => {
           return (
             <MetricCard
               key={label}
@@ -88,6 +121,8 @@ export function WebsiteMetricsBar({
               valueWeight={typography.metricValueWeight as any}
               labelColor={typography.metricLabelColor}
               valueColor={typography.metricValueColor}
+              sparkline={sparkline}
+              sparklineTitle={sparklineTitle}
             />
           );
         })}

@@ -18,6 +18,7 @@ export * from './getRealtimeData';
 export * from './getValues';
 export * from './getWebsiteDateRange';
 export * from './getWebsiteStats';
+export * from './getWebsiteStatsSeries';
 export * from './getWeeklyTraffic';
 export * from './pageviews/getPageviewExpandedMetrics';
 export * from './pageviews/getPageviewMetrics';
