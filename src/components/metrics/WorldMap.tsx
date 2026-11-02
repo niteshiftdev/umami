@@ -34,6 +34,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     type: 'country',
   });
 
+  // Same query minus the country filter, so other countries stay clickable while one is selected
+  const { data: unfilteredCountryData } = useWebsiteMetricsQuery(websiteId, {
+    type: 'country',
+    country: undefined,
+  });
+
   const metrics = useMemo(
     () => (data || mapData ? percentFilter((data || mapData) as any[]) : []),
     [data, mapData],
@@ -60,7 +66,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const canFilter = !!websiteId && !data;
   const selectedCountry = query.country?.startsWith('eq.') ? query.country.slice(3) : undefined;
 
-  const hasData = (code: string) => !!metrics?.find(({ x }) => x === code);
+  const hasData = (code: string) => !!unfilteredCountryData?.find(({ x }) => x === code);
 
   const handleClick = (code: string) => {
     if (!canFilter || !code || code === 'AQ') return;
