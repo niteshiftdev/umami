@@ -11,7 +11,13 @@ export type WebsiteMetricsData = {
 
 export function useWebsiteMetricsQuery(
   websiteId: string,
-  params: { type: string; limit?: number; search?: string },
+  params: {
+    type: string;
+    limit?: number;
+    search?: string;
+    // Override (or clear with undefined) a URL filter for this query
+    [filter: string]: string | number | undefined;
+  },
   options?: ReactQueryOptions<WebsiteMetricsData>,
 ) {
   const { get, useQuery } = useApi();
