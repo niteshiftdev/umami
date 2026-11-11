@@ -1,6 +1,6 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
@@ -28,6 +28,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { countryNames } = useCountryNames(locale);
   const { router, updateParams, query } = useNavigation();
   const canFilter = !!websiteId;
+  const pointerDown = useRef<{ x: number; y: number } | null>(null);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -67,8 +68,17 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
-  const handleClick = (code: string) => {
-    if (!canFilter || !code || code === 'AQ') return;
+  const isFilterable = (code: string) => canFilter && !!code && code !== 'AQ';
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    pointerDown.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleClick = (code: string, e: React.MouseEvent) => {
+    if (!isFilterable(code)) return;
+    // Ignore clicks that end a map pan (drag).
+    const start = pointerDown.current;
+    if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 5) return;
     const value = `eq.${code}`;
     // Clicking the currently filtered country clears the filter.
     router.replace(updateParams({ country: query.country === value ? undefined : value }));
@@ -79,6 +89,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
       {...props}
       data-tip=""
       data-for="world-map-tooltip"
+      onMouseDownCapture={handleMouseDown}
       style={{ margin: 'auto 0', overflow: 'hidden' }}
     >
       <ComposableMap projection="geoMercator">
@@ -100,11 +111,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                       hover: {
                         outline: 'none',
                         fill: colors.map.hoverColor,
-                        cursor: canFilter && code !== 'AQ' ? 'pointer' : undefined,
+                        cursor: isFilterable(code) ? 'pointer' : undefined,
                       },
                       pressed: { outline: 'none' },
                     }}
-                    onClick={() => handleClick(code)}
+                    onClick={e => handleClick(code, e)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />

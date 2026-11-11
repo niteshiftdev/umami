@@ -550,6 +550,7 @@ export const ISO_COUNTRIES = {
   RWA: 'RW',
   SAU: 'SA',
   SDN: 'SD',
+  SSD: 'SS',
   SEN: 'SN',
   SGP: 'SG',
   SGS: 'GS',
