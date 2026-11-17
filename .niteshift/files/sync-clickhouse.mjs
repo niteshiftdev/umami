@@ -4,7 +4,7 @@
 // test-data generator writes to Postgres. Only reads from Postgres.
 //
 //   node .niteshift/files/sync-clickhouse.mjs             # replace ClickHouse analytics with Postgres
-//   node .niteshift/files/sync-clickhouse.mjs --if-empty  # only when ClickHouse has no events yet
+//   node .niteshift/files/sync-clickhouse.mjs --if-empty  # only if no sync has completed on this volume
 //
 // Run it through `ns secrets exec --env DATABASE_URL=DATABASE_URL -- ...` so DATABASE_URL is set.
 import { createClient } from '@clickhouse/client';
@@ -12,6 +12,9 @@ import pg from 'pg';
 
 const BATCH = 10000;
 const ifEmpty = process.argv.includes('--if-empty');
+// One row per completed sync; written only after every table loads, so an interrupted
+// sync is retried by the next setup instead of leaving partial analytics behind.
+const MARKER = 'niteshift_sync';
 const chUrl = new URL(process.env.CLICKHOUSE_URL || 'http://umami:umami@localhost:8123/umami');
 
 if (!process.env.DATABASE_URL) {
@@ -37,8 +40,10 @@ async function count(table) {
 }
 
 // Keyset-paginate a Postgres query ordered by (created_at, id) and insert each page.
+// Queries select `_created_at` as text: pg's Date parsing drops microseconds, which would
+// move the cursor behind the last row and repeat it forever.
 async function copy(label, sql, table, map) {
-  let cursor = [new Date(0), '00000000-0000-0000-0000-000000000000'];
+  let cursor = ['-infinity', '00000000-0000-0000-0000-000000000000'];
   let total = 0;
   for (;;) {
     const { rows } = await pgClient.query(sql, [...cursor, BATCH]);
@@ -53,11 +58,16 @@ async function copy(label, sql, table, map) {
 
 await pgClient.connect();
 
-if (ifEmpty && (await count('website_event')) > 0) {
-  console.log('ClickHouse already has events; skipping sync.');
+await ch.command({
+  query: `CREATE TABLE IF NOT EXISTS ${MARKER} (synced_at DateTime('UTC')) ENGINE = MergeTree ORDER BY synced_at`,
+});
+
+if (ifEmpty && (await count(MARKER)) > 0) {
+  console.log('ClickHouse already synced from Postgres; skipping sync.');
 } else {
   console.log('Syncing Postgres analytics into ClickHouse...');
   for (const t of [
+    MARKER,
     'website_event',
     'event_data',
     'session_data',
@@ -70,9 +80,9 @@ if (ifEmpty && (await count('website_event')) > 0) {
   await copy(
     'website_event',
     `SELECT e.*, s.browser, s.os, s.device, s.screen, s.language, s.country, s.region, s.city,
-            s.distinct_id, e.created_at AS _created_at, e.event_id AS _id
+            s.distinct_id, e.created_at::text AS _created_at, e.event_id AS _id
        FROM website_event e JOIN session s ON s.session_id = e.session_id
-      WHERE (e.created_at, e.event_id) > ($1, $2)
+      WHERE (e.created_at, e.event_id) > ($1::timestamptz, $2::uuid)
       ORDER BY e.created_at, e.event_id LIMIT $3`,
     'website_event',
     r => ({
@@ -117,9 +127,9 @@ if (ifEmpty && (await count('website_event')) > 0) {
   await copy(
     'event_data',
     `SELECT d.*, e.session_id, e.url_path, e.event_name,
-            d.created_at AS _created_at, d.event_data_id AS _id
+            d.created_at::text AS _created_at, d.event_data_id AS _id
        FROM event_data d JOIN website_event e ON e.event_id = d.website_event_id
-      WHERE (d.created_at, d.event_data_id) > ($1, $2)
+      WHERE (d.created_at, d.event_data_id) > ($1::timestamptz, $2::uuid)
       ORDER BY d.created_at, d.event_data_id LIMIT $3`,
     'event_data',
     r => ({
@@ -139,9 +149,9 @@ if (ifEmpty && (await count('website_event')) > 0) {
 
   await copy(
     'session_data',
-    `SELECT d.*, d.created_at AS _created_at, d.session_data_id AS _id
+    `SELECT d.*, d.created_at::text AS _created_at, d.session_data_id AS _id
        FROM session_data d
-      WHERE (d.created_at, d.session_data_id) > ($1, $2)
+      WHERE (d.created_at, d.session_data_id) > ($1::timestamptz, $2::uuid)
       ORDER BY d.created_at, d.session_data_id LIMIT $3`,
     'session_data',
     r => ({
@@ -162,9 +172,9 @@ if (ifEmpty && (await count('website_event')) > 0) {
   await ch.command({ query: 'TRUNCATE TABLE website_revenue' });
   await copy(
     'website_revenue',
-    `SELECT r.*, r.created_at AS _created_at, r.revenue_id AS _id
+    `SELECT r.*, r.created_at::text AS _created_at, r.revenue_id AS _id
        FROM revenue r
-      WHERE (r.created_at, r.revenue_id) > ($1, $2)
+      WHERE (r.created_at, r.revenue_id) > ($1::timestamptz, $2::uuid)
       ORDER BY r.created_at, r.revenue_id LIMIT $3`,
     'website_revenue',
     r => ({
@@ -177,6 +187,13 @@ if (ifEmpty && (await count('website_event')) > 0) {
       created_at: dt(r.created_at),
     }),
   );
+
+  await ch.insert({
+    table: MARKER,
+    values: [{ synced_at: dt(new Date()) }],
+    format: 'JSONEachRow',
+  });
+  console.log('Sync complete.');
 }
 
 await pgClient.end();

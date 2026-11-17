@@ -39,11 +39,14 @@ services:
     port: 8123
     stopGracePeriod: 30s
 
-  # Single-node KRaft broker on localhost:9092. Topics auto-create; setup also creates them.
+  # Single-node KRaft broker on localhost:9092 with persistent logs, so events not yet
+  # consumed by ClickHouse survive a restart. Topics auto-create; setup also creates them.
   - name: kafka
     command: |
       docker rm -f umami-kafka >/dev/null 2>&1 || true
-      exec docker run --rm --name umami-kafka --network host apache/kafka:4.1.0
+      exec docker run --rm --name umami-kafka --network host \
+        --env-file .niteshift/files/kafka.env \
+        -v umami-kafka-data:/var/lib/kafka/data apache/kafka:4.1.0
     stopGracePeriod: 30s
 
   - name: redis

@@ -62,7 +62,7 @@ for topic in event event_data session_data; do
 done
 ch --multiquery <.niteshift/files/clickhouse/kafka.sql
 
-# Mirror the Postgres analytics (e.g. the Hulu test data) into ClickHouse on a fresh volume.
+# Mirror the Postgres analytics (e.g. the Hulu test data) into ClickHouse until one sync completes.
 # Rerun without --if-empty after regenerating test data.
 with_db env CLICKHOUSE_URL=http://umami:umami@localhost:8123/umami \
   node "$REPO_ROOT/.niteshift/files/sync-clickhouse.mjs" --if-empty
