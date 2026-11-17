@@ -7,10 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **This repository is running in a Niteshift sandbox with the following already configured:**
 
 ✅ **Dev server is ALREADY RUNNING** on http://localhost:3001 with hot reload enabled
-✅ Database is set up and migrated (PostgreSQL)
+✅ Hosted PostgreSQL (shared across tasks) plus local ClickHouse, Kafka, and Redis are running
 ✅ All dependencies are installed (pnpm)
-✅ Environment variables are configured (.env file exists)
+✅ Environment variables are set on the services (see `.niteshift/services.yaml`; there is no `.env` file). Run one-off scripts that need the database through `ns secrets exec --env DATABASE_URL=DATABASE_URL -- <command>`
 ✅ Tracker script and geo database are built
+
+Setup lives in `.niteshift/setup`; services are managed with `ns services status|logs|restart <name>`.
 
 **Default credentials:**
 - Username: `admin`

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Niteshift setup for Umami. Safe to rerun; cheap on a warm disk.
+#
+# Stack: hosted Postgres (DATABASE_URL secret) + local ClickHouse, Kafka and Redis
+# (declared in .niteshift/services.yaml). The web app reads analytics from ClickHouse
+# and publishes tracked events to Kafka, which ClickHouse consumes.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+REPO_ROOT="$PWD"
+
+log() { echo "[setup] $*"; }
+with_db() { ns secrets exec --env DATABASE_URL=DATABASE_URL -- "$@"; }
+
+# --- Dependencies and build artifacts --------------------------------------
+corepack enable
+pnpm install --frozen-lockfile
+
+# prisma.config.ts requires DATABASE_URL even just to generate the client.
+with_db pnpm run build-db          # Prisma client -> src/generated/prisma
+pnpm run build-tracker             # public/script.js
+if [ ! -s geo/GeoLite2-City.mmdb ]; then
+  pnpm run build-geo
+fi
+
+# --- Hosted Postgres ---------------------------------------------------------
+# DATABASE_URL points at a hosted database shared by every task and branch, so setup
+# only checks the connection; it never migrates. Apply a new migration deliberately
+# with: ns secrets exec --env DATABASE_URL=DATABASE_URL -- pnpm update-db
+with_db env SKIP_DB_MIGRATION=1 pnpm run check-db
+if ! with_db pnpm exec prisma migrate status >/tmp/umami-migrate-status.log 2>&1; then
+  log "WARNING: Prisma reports the shared database differs from prisma/migrations:"
+  tail -n 15 /tmp/umami-migrate-status.log
+fi
+
+# --- ClickHouse, Kafka, Redis --------------------------------------------------
+ns services start clickhouse kafka redis
+
+wait_for() { # wait_for <label> <command...>
+  local label=$1; shift
+  for _ in $(seq 1 90); do
+    if "$@" >/dev/null 2>&1; then log "$label is ready"; return 0; fi
+    sleep 2
+  done
+  log "ERROR: $label did not become ready"; return 1
+}
+ch() { docker exec -i umami-clickhouse clickhouse-client --user umami --password umami "$@"; }
+kafka_topics() { docker exec umami-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 "$@"; }
+
+wait_for clickhouse ch --query 'SELECT 1'
+wait_for kafka kafka_topics --list
+wait_for redis docker exec umami-redis redis-cli ping
+
+# Umami's ClickHouse schema has no IF NOT EXISTS, so apply it only to an empty database.
+if [ "$(ch --query "EXISTS TABLE umami.website_event")" != "1" ]; then
+  log "Creating ClickHouse schema"
+  ch --multiquery <db/clickhouse/schema.sql
+fi
+
+for topic in event event_data session_data; do
+  kafka_topics --create --if-not-exists --topic "$topic" --partitions 1 --replication-factor 1 >/dev/null
+done
+ch --multiquery <.niteshift/files/clickhouse/kafka.sql
+
+# Mirror the Postgres analytics (e.g. the Hulu test data) into ClickHouse on a fresh volume.
+# Rerun without --if-empty after regenerating test data.
+with_db env CLICKHOUSE_URL=http://umami:umami@localhost:8123/umami \
+  node "$REPO_ROOT/.niteshift/files/sync-clickhouse.mjs" --if-empty
+
+log "done"

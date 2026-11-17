@@ -1,0 +1,54 @@
+# Umami runs the way a scaled production deployment does:
+#   Postgres (hosted, DATABASE_URL secret) for users, websites, reports
+#   ClickHouse for analytics queries, Kafka for event ingestion, Redis for auth sessions.
+# Setup creates the ClickHouse schema and Kafka pipeline and mirrors Postgres analytics into ClickHouse.
+services:
+  - name: web
+    command: pnpm dev # next dev -p 3001 --turbo
+    port: 3001
+    environment:
+      - name: DATABASE_URL
+        secret: DATABASE_URL
+      # Every request runs as the seeded admin, so the preview lands signed in.
+      - name: DISABLE_AUTH
+        value: '1'
+      - name: ENABLE_TEST_CONSOLE
+        value: '1'
+      # CSP frame-ancestors, so the Niteshift preview panel can embed the app.
+      - name: ALLOWED_FRAME_URLS
+        value: https://niteshift.dev https://*.niteshift.dev https://niteshift.local
+      - name: CLICKHOUSE_URL
+        value: http://umami:umami@localhost:8123/umami
+      - name: KAFKA_URL
+        value: kafka://localhost:9092
+      - name: KAFKA_BROKER
+        value: localhost:9092
+      - name: REDIS_URL
+        value: redis://localhost:6379
+
+  # Port 8123 is ClickHouse's HTTP interface; its preview serves the SQL console at /play.
+  - name: clickhouse
+    command: |
+      docker rm -f umami-clickhouse >/dev/null 2>&1 || true
+      exec docker run --rm --name umami-clickhouse --network host \
+        --ulimit nofile=262144:262144 \
+        -e CLICKHOUSE_DB=umami -e CLICKHOUSE_USER=umami -e CLICKHOUSE_PASSWORD=umami \
+        -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 \
+        -v umami-clickhouse-data:/var/lib/clickhouse \
+        clickhouse/clickhouse-server:25.8
+    port: 8123
+    stopGracePeriod: 30s
+
+  # Single-node KRaft broker on localhost:9092. Topics auto-create; setup also creates them.
+  - name: kafka
+    command: |
+      docker rm -f umami-kafka >/dev/null 2>&1 || true
+      exec docker run --rm --name umami-kafka --network host apache/kafka:4.1.0
+    stopGracePeriod: 30s
+
+  - name: redis
+    command: |
+      docker rm -f umami-redis >/dev/null 2>&1 || true
+      exec docker run --rm --name umami-redis --network host \
+        -v umami-redis-data:/data redis:7-alpine redis-server --appendonly yes
+    stopGracePeriod: 15s
