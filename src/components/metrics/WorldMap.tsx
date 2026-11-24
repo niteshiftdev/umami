@@ -1,6 +1,7 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
 import {
+  type KeyboardEvent,
   memo,
   type Ref,
   useCallback,
@@ -102,6 +103,7 @@ export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props 
     >
       <MapCountries
         countries={countries}
+        countryNames={countryNames}
         colors={mapColors}
         allowFilter={allowFilter}
         onHover={handleHover}
@@ -126,6 +128,7 @@ function MapTooltip({ ref }: { ref: Ref<TooltipHandle> }) {
 // Memoized so the ~180 country paths only re-render when country data or theme changes.
 const MapCountries = memo(function MapCountries({
   countries,
+  countryNames,
   colors,
   allowFilter,
   onHover,
@@ -133,6 +136,7 @@ const MapCountries = memo(function MapCountries({
   onClick,
 }: {
   countries: CountryMetrics;
+  countryNames: Record<string, string>;
   colors: MapColors;
   allowFilter: boolean;
   onHover: (code: string) => void;
@@ -167,7 +171,22 @@ const MapCountries = memo(function MapCountries({
                   stroke={colors.strokeColor}
                   opacity={isHidden ? 0 : 1}
                   style={isClickable ? styles.clickable : styles.static}
+                  // Only countries that can filter are reachable by keyboard; they act as buttons
+                  // (Enter/Space), and focus shows the same highlight as hover.
+                  tabIndex={isClickable ? 0 : -1}
+                  role={isClickable ? 'button' : undefined}
+                  aria-label={isClickable ? countryNames[code] || code : undefined}
                   onClick={isClickable ? () => onClick(code) : undefined}
+                  onKeyDown={
+                    isClickable
+                      ? (e: KeyboardEvent<SVGPathElement>) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onClick(code);
+                          }
+                        }
+                      : undefined
+                  }
                   onMouseOver={() => onHover(code)}
                   onMouseOut={onLeave}
                 />
