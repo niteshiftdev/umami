@@ -1,6 +1,15 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  memo,
+  type Ref,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
@@ -19,6 +28,7 @@ const MAP_CENTER: [number, number] = [0, 40];
 
 type MapColors = ReturnType<typeof getThemeColors>['colors']['map'];
 type CountryMetrics = Map<string, { visitors: number; fill: string }>;
+type TooltipHandle = { show: (text: string | null) => void };
 
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
@@ -27,7 +37,7 @@ export interface WorldMapProps extends ColumnProps {
 }
 
 export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props }: WorldMapProps) {
-  const [tooltip, setTooltipPopup] = useState<string>();
+  const tooltipRef = useRef<TooltipHandle>(null);
   const { theme } = useTheme();
   const mapColors = useMemo(() => getThemeColors(theme).colors.map, [theme]);
   const { locale } = useLocale();
@@ -61,7 +71,7 @@ export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props 
   const handleHover = useCallback(
     (code: string) => {
       if (code === 'AQ') return;
-      setTooltipPopup(
+      tooltipRef.current?.show(
         `${countryNames[code] || unknownLabel}: ${formatLongNumber(
           countries.get(code)?.visitors || 0,
         )} ${visitorsLabel}`,
@@ -70,7 +80,7 @@ export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props 
     [countries, countryNames, unknownLabel, visitorsLabel],
   );
 
-  const handleLeave = useCallback(() => setTooltipPopup(null), []);
+  const handleLeave = useCallback(() => tooltipRef.current?.show(null), []);
 
   // Navigation helpers change identity on every render; read the latest through a ref so the
   // memoized map below doesn't re-render because of them.
@@ -98,12 +108,22 @@ export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props 
         onLeave={handleLeave}
         onClick={handleClick}
       />
-      {tooltip && <FloatingTooltip>{tooltip}</FloatingTooltip>}
+      <MapTooltip ref={tooltipRef} />
     </Column>
   );
 }
 
-// Memoized so tooltip updates on hover don't re-render all ~180 country paths.
+// Owns the hover text so showing/hiding it re-renders only the tooltip, not WorldMap
+// (whose data/date/navigation hooks are comparatively expensive to re-run on every hover).
+function MapTooltip({ ref }: { ref: Ref<TooltipHandle> }) {
+  const [text, setText] = useState<string | null>(null);
+
+  useImperativeHandle(ref, () => ({ show: setText }), []);
+
+  return text ? <FloatingTooltip>{text}</FloatingTooltip> : null;
+}
+
+// Memoized so the ~180 country paths only re-render when country data or theme changes.
 const MapCountries = memo(function MapCountries({
   countries,
   colors,
