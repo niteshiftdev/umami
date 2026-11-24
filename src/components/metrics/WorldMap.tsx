@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -16,15 +17,17 @@ import { formatLongNumber } from '@/lib/format';
 export interface WorldMapProps extends ColumnProps {
   websiteId?: string;
   data?: any[];
+  allowFilter?: boolean;
 }
 
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+export function WorldMap({ websiteId, data, allowFilter = !!websiteId, ...props }: WorldMapProps) {
   const [tooltip, setTooltipPopup] = useState();
   const { theme } = useTheme();
   const { colors } = getThemeColors(theme);
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
+  const { router, query, updateParams } = useNavigation();
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
 
@@ -64,6 +67,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const isClickable = (code: string) =>
+    allowFilter && code !== 'AQ' && !!metrics?.find(({ x }) => x === code);
+
+  const handleClick = (code: string) => {
+    if (!isClickable(code)) return;
+    const value = `eq.${code}`;
+    router.replace(updateParams({ country: query.country === value ? undefined : value }));
+  };
+
   return (
     <Column
       {...props}
@@ -87,9 +99,14 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: isClickable(code) ? 'pointer' : undefined,
+                      },
                       pressed: { outline: 'none' },
                     }}
+                    onClick={() => handleClick(code)}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                   />
