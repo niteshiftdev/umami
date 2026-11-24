@@ -1,6 +1,6 @@
 import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
 import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { type KeyboardEvent, useMemo, useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import {
   useCountryNames,
@@ -76,6 +76,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     router.replace(updateParams({ country: code === selectedCountry ? undefined : `eq.${code}` }));
   };
 
+  const handleKeyDown = (e: KeyboardEvent<SVGPathElement>, code: string) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    handleClick(code);
+  };
+
   return (
     <Column
       {...props}
@@ -89,6 +95,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
             {({ geographies }) => {
               return geographies.map(geo => {
                 const code = ISO_COUNTRIES[geo.id];
+                const isFilterable = canFilter && !!code && code !== 'AQ';
 
                 return (
                   <Geography
@@ -109,6 +116,12 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
                     onClick={() => handleClick(code)}
+                    {...(isFilterable && {
+                      role: 'button',
+                      'aria-label': countryNames[code] || code,
+                      'aria-pressed': code === selectedCountry,
+                      onKeyDown: (e: KeyboardEvent<SVGPathElement>) => handleKeyDown(e, code),
+                    })}
                   />
                 );
               });
