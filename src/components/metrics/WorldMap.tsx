@@ -6,6 +6,7 @@ import {
   useCountryNames,
   useLocale,
   useMessages,
+  useNavigation,
   useWebsiteMetricsQuery,
 } from '@/components/hooks';
 import { getThemeColors } from '@/lib/colors';
@@ -27,6 +28,10 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const { countryNames } = useCountryNames(locale);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
+  const { router, updateParams, query } = useNavigation();
+  // Only filterable when backed by a website query (e.g. not the realtime map, which passes data).
+  const canFilter = !!websiteId && !data;
+  const selectedCountry = query.country?.startsWith('eq.') ? query.country.slice(3) : undefined;
 
   const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
     type: 'country',
@@ -64,6 +69,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
     );
   };
 
+  const handleClick = (code: string) => {
+    if (!canFilter || !code || code === 'AQ') return;
+    setTooltipPopup(null);
+    // Clicking the already-selected country clears the filter.
+    router.replace(updateParams({ country: code === selectedCountry ? undefined : `eq.${code}` }));
+  };
+
   return (
     <Column
       {...props}
@@ -87,11 +99,16 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     opacity={getOpacity(code)}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', fill: colors.map.hoverColor },
+                      hover: {
+                        outline: 'none',
+                        fill: colors.map.hoverColor,
+                        cursor: canFilter ? 'pointer' : undefined,
+                      },
                       pressed: { outline: 'none' },
                     }}
                     onMouseOver={() => handleHover(code)}
                     onMouseOut={() => setTooltipPopup(null)}
+                    onClick={() => handleClick(code)}
                   />
                 );
               });
