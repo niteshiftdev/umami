@@ -57,14 +57,15 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   const map = useMemo(() => {
     const { colors } = getThemeColors(theme);
     const adjust = theme === 'light' ? 'lighten' : 'darken';
-    const style = {
-      default: { outline: 'none', cursor: canFilter ? 'pointer' : undefined },
-      hover: {
-        outline: 'none',
-        cursor: canFilter ? 'pointer' : undefined,
-        fill: colors.map.hoverColor,
-      },
+    const staticStyle = {
+      default: { outline: 'none' },
+      hover: { outline: 'none', fill: colors.map.hoverColor },
       pressed: { outline: 'none' },
+    };
+    const interactiveStyle = {
+      default: { ...staticStyle.default, cursor: 'pointer' },
+      hover: { ...staticStyle.hover, cursor: 'pointer' },
+      pressed: staticStyle.pressed,
     };
 
     const getFillColor = (code: string) => {
@@ -88,6 +89,7 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                 const code = ISO_COUNTRIES[geo.id];
                 const hidden = code === HIDDEN_CODE;
                 const selected = code === selectedCode;
+                const interactive = canFilter && !!code && !hidden;
 
                 return (
                   <Geography
@@ -95,12 +97,13 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
                     geography={geo}
                     data-code={code}
                     aria-label={countryNames[code]}
-                    aria-pressed={canFilter ? selected : undefined}
+                    role={interactive ? 'button' : undefined}
+                    aria-pressed={interactive ? selected : undefined}
                     fill={hidden ? undefined : getFillColor(code)}
                     stroke={colors.map.strokeColor}
                     strokeWidth={selected ? SELECTED_STROKE_WIDTH : undefined}
                     opacity={hidden ? 0 : 1}
-                    style={style}
+                    style={interactive ? interactiveStyle : staticStyle}
                   />
                 );
               })
