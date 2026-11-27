@@ -173,6 +173,17 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
         value,
       };
     case 'day':
+      if (num < 0) {
+        const target = subDays(now, Math.abs(num));
+        return {
+          startDate: startOfDay(target),
+          endDate: endOfDay(target),
+          unit: 'hour',
+          offset: 0,
+          num: 1,
+          value,
+        };
+      }
       return {
         startDate: num ? subDays(startOfDay(now), num) : startOfDay(now),
         endDate: endOfDay(now),

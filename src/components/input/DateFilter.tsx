@@ -29,6 +29,7 @@ export function DateFilter({
 
   const options = [
     { label: formatMessage(labels.today), value: '0day' },
+    { label: formatMessage(labels.yesterday), value: '-1day' },
     {
       label: formatMessage(labels.lastHours, { x: '24' }),
       value: '24hour',
