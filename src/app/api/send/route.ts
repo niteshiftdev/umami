@@ -153,6 +153,13 @@ export async function POST(request: Request) {
       });
     }
 
+    // Ignore hostnames (e.g. staging or preview deployments)
+    const ignoredHostnames = process.env.IGNORE_HOSTNAMES?.split(',');
+
+    if (ignoredHostnames?.includes(hostname)) {
+      return json({ beep: 'boop' });
+    }
+
     // Visit info
     let visitId = cache?.visitId || uuid(sessionId, visitSalt);
     let iat = cache?.iat || now;
